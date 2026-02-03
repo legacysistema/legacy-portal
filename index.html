@@ -106,7 +106,7 @@
 
     .header-spacer { width: 50px; }
 
-    /* ================= MAIN STRUTUCTURE ================= */
+    /* ================= MAIN STRUCTURE ================= */
     main {
       padding-top: 110px;
       min-height: 100vh;
@@ -907,7 +907,7 @@
       </div>
       <h3 class="card-title">Legacy Cloud CRM</h3>
       <p class="card-role">Enterprise Edition</p>
-      <button class="btn-glass" onclick="abrirPopup('https://legacysistema.github.io/legacy-crm/')">
+      <button class="btn-glass" onclick="abrirPopup('https://legacycrm.netlify.app/')">
         Acessar Sistema
       </button>
     </div>
@@ -918,7 +918,7 @@
       </div>
       <h3 class="card-title">Legacy Contracts</h3>
       <p class="card-role">Gestão de Contratos</p>
-      <button class="btn-glass" onclick="abrirPopup('https://legacysistema.github.io/legacy-contrato/')">
+      <button class="btn-glass" onclick="abrirPopup('https://legacycontratos.netlify.app')">
         Acessar Sistema
       </button>
     </div>
@@ -929,7 +929,7 @@
       </div>
       <h3 class="card-title">Legacy Forms</h3>
       <p class="card-role">Gestão de Formulários</p>
-      <button class="btn-glass" onclick="abrirPopup('https://legacysistema.github.io/legacy-forms/')">
+      <button class="btn-glass" onclick="abrirPopup('https://legacyforms.netlify.app')">
         Acessar Sistema
       </button>
     </div>
@@ -1577,7 +1577,7 @@ Acesse seu portal para mais detalhes: {link_portal}
     if (event.target == modal) closePayment();
   }
 
-  // ==================== PORTAL DO CLIENTE (NOVO CÓDIGO ATUALIZADO) ====================
+  // ==================== PORTAL DO CLIENTE (CORRIGIDO PARA USAR TEMPLATES SIMPLES) ====================
   const plataforma = {
     db: null,
     adminPassword: 'admin@legacy2024',
@@ -1610,10 +1610,10 @@ Acesse seu portal para mais detalhes: {link_portal}
     });
   });
 
-  // Inicialização do IndexedDB (ATUALIZADA)
+  // Inicialização do IndexedDB (CORRIGIDA - USANDO TEMPLATES SIMPLES)
   function plataforma_initDB() {
     return new Promise((resolve, reject) => {
-      const request = indexedDB.open('lg_crmDB', 9); // Versão atualizada para 9
+      const request = indexedDB.open('lg_crmDB', 9); // Versão existente
       
       request.onerror = (event) => {
         console.error('Erro ao abrir o banco de dados:', event.target.error);
@@ -1634,69 +1634,52 @@ Acesse seu portal para mais detalhes: {link_portal}
         const db = event.target.result;
         const oldVersion = event.oldVersion;
         
-        // ObjectStores obrigatórios com sufixo _plataforma
-        if (!db.objectStoreNames.contains('clientes_plataforma')) {
-          const clientesStore = db.createObjectStore('clientes_plataforma', { keyPath: 'id', autoIncrement: true });
-          clientesStore.createIndex('cpf', 'cpf', { unique: true });
-          clientesStore.createIndex('status', 'status', { unique: false });
-        }
+        // ObjectStores da Plataforma (templates simples sem sufixo _plataforma)
+        // Usando apenas o nome base do sistema + "plataforma"
+        const templates = [
+          'clientesplataforma',
+          'projetosplataforma',
+          'etapasplataforma',
+          'linksplataforma',
+          'orientacoesplataforma',
+          'prazosplataforma',
+          'lembretesplataforma',
+          'alertasplataforma',
+          'configplataforma',
+          'usuariosplataforma'
+        ];
         
-        if (!db.objectStoreNames.contains('projetos_plataforma')) {
-          const projetosStore = db.createObjectStore('projetos_plataforma', { keyPath: 'id', autoIncrement: true });
-          projetosStore.createIndex('clienteId', 'clienteId', { unique: false });
-          projetosStore.createIndex('status', 'status', { unique: false });
-        }
-        
-        if (!db.objectStoreNames.contains('etapas_plataforma')) {
-          const etapasStore = db.createObjectStore('etapas_plataforma', { keyPath: 'id', autoIncrement: true });
-          etapasStore.createIndex('projetoId', 'projetoId', { unique: false });
-          etapasStore.createIndex('data', 'data', { unique: false });
-        }
-        
-        if (!db.objectStoreNames.contains('links_plataforma')) {
-          const linksStore = db.createObjectStore('links_plataforma', { keyPath: 'id', autoIncrement: true });
-          linksStore.createIndex('clienteId', 'clienteId', { unique: false });
-        }
-        
-        if (!db.objectStoreNames.contains('orientacoes_plataforma')) {
-          const orientacoesStore = db.createObjectStore('orientacoes_plataforma', { keyPath: 'id', autoIncrement: true });
-          orientacoesStore.createIndex('clienteId', 'clienteId', { unique: false });
-        }
-        
-        if (!db.objectStoreNames.contains('prazos_plataforma')) {
-          const prazosStore = db.createObjectStore('prazos_plataforma', { keyPath: 'id', autoIncrement: true });
-          prazosStore.createIndex('clienteId', 'clienteId', { unique: false });
-          prazosStore.createIndex('data', 'data', { unique: false });
-          prazosStore.createIndex('statusAlerta', 'statusAlerta', { unique: false });
-        }
-        
-        if (!db.objectStoreNames.contains('lembretes_plataforma')) {
-          const lembretesStore = db.createObjectStore('lembretes_plataforma', { keyPath: 'id', autoIncrement: true });
-          lembretesStore.createIndex('clienteId', 'clienteId', { unique: false });
-        }
-        
-        if (!db.objectStoreNames.contains('alertas_plataforma')) {
-          const alertasStore = db.createObjectStore('alertas_plataforma', { keyPath: 'id', autoIncrement: true });
-          alertasStore.createIndex('clienteId', 'clienteId', { unique: false });
-          alertasStore.createIndex('prazoId', 'prazoId', { unique: false });
-          alertasStore.createIndex('status', 'status', { unique: false });
-          alertasStore.createIndex('dataEnvio', 'dataEnvio', { unique: false });
-        }
-        
-        if (!db.objectStoreNames.contains('config_plataforma')) {
-          const configStore = db.createObjectStore('config_plataforma', { keyPath: 'id', autoIncrement: true });
-          configStore.createIndex('chave', 'chave', { unique: true });
-        }
-        
-        if (!db.objectStoreNames.contains('usuarios_plataforma')) {
-          const usuariosStore = db.createObjectStore('usuarios_plataforma', { keyPath: 'id', autoIncrement: true });
-          usuariosStore.createIndex('tipo', 'tipo', { unique: false });
-        }
+        templates.forEach(templateName => {
+          if (!db.objectStoreNames.contains(templateName)) {
+            const store = db.createObjectStore(templateName, { keyPath: 'id', autoIncrement: true });
+            
+            // Adicionar índices básicos baseados no tipo de template
+            if (templateName === 'clientesplataforma') {
+              store.createIndex('cpf', 'cpf', { unique: true });
+              store.createIndex('status', 'status', { unique: false });
+            }
+            
+            if (templateName === 'projetosplataforma') {
+              store.createIndex('clienteId', 'clienteId', { unique: false });
+              store.createIndex('status', 'status', { unique: false });
+            }
+            
+            if (templateName === 'prazosplataforma') {
+              store.createIndex('clienteId', 'clienteId', { unique: false });
+              store.createIndex('data', 'data', { unique: false });
+              store.createIndex('statusAlerta', 'statusAlerta', { unique: false });
+            }
+            
+            if (templateName === 'configplataforma') {
+              store.createIndex('chave', 'chave', { unique: true });
+            }
+          }
+        });
         
         // Adicionar cliente demo padrão se não existir
         const transaction = event.target.transaction;
-        const clientesStore = transaction.objectStore('clientes_plataforma');
-        const configStore = transaction.objectStore('config_plataforma');
+        const clientesStore = transaction.objectStore('clientesplataforma');
+        const configStore = transaction.objectStore('configplataforma');
         
         const demoRequest = clientesStore.get(1);
         demoRequest.onsuccess = () => {
@@ -1732,8 +1715,8 @@ Acesse seu portal para mais detalhes: {link_portal}
   // Carregar configurações de alertas
   async function plataforma_carregarConfigAlertas() {
     try {
-      const transaction = plataforma.db.transaction(['config_plataforma'], 'readonly');
-      const store = transaction.objectStore('config_plataforma');
+      const transaction = plataforma.db.transaction(['configplataforma'], 'readonly');
+      const store = transaction.objectStore('configplataforma');
       const index = store.index('chave');
       const request = index.get('alertas_config');
       
@@ -1769,8 +1752,8 @@ Acesse seu portal para mais detalhes: {link_portal}
     plataforma.configAlertas.mensagemPadrao = mensagem;
     
     try {
-      const transaction = plataforma.db.transaction(['config_plataforma'], 'readwrite');
-      const store = transaction.objectStore('config_plataforma');
+      const transaction = plataforma.db.transaction(['configplataforma'], 'readwrite');
+      const store = transaction.objectStore('configplataforma');
       const index = store.index('chave');
       const request = index.get('alertas_config');
       
@@ -1808,8 +1791,8 @@ Acesse seu portal para mais detalhes: {link_portal}
     }
     
     try {
-      const transaction = plataforma.db.transaction(['clientes_plataforma'], 'readonly');
-      const store = transaction.objectStore('clientes_plataforma');
+      const transaction = plataforma.db.transaction(['clientesplataforma'], 'readonly');
+      const store = transaction.objectStore('clientesplataforma');
       const index = store.index('cpf');
       const request = index.get(cpf);
       
@@ -1831,8 +1814,8 @@ Acesse seu portal para mais detalhes: {link_portal}
         plataforma.currentUser.ultimoAcesso = new Date().toISOString();
         
         // Atualizar último acesso
-        const updateTransaction = plataforma.db.transaction(['clientes_plataforma'], 'readwrite');
-        const updateStore = updateTransaction.objectStore('clientes_plataforma');
+        const updateTransaction = plataforma.db.transaction(['clientesplataforma'], 'readwrite');
+        const updateStore = updateTransaction.objectStore('clientesplataforma');
         updateStore.put(plataforma.currentUser);
         
         plataforma_showClientPortal();
@@ -1896,8 +1879,8 @@ Acesse seu portal para mais detalhes: {link_portal}
     if (!plataforma.currentUser) return;
     
     try {
-      const transaction = plataforma.db.transaction(['projetos_plataforma'], 'readonly');
-      const store = transaction.objectStore('projetos_plataforma');
+      const transaction = plataforma.db.transaction(['projetosplataforma'], 'readonly');
+      const store = transaction.objectStore('projetosplataforma');
       const index = store.index('clienteId');
       const request = index.getAll(plataforma.currentUser.id);
       
@@ -1931,8 +1914,8 @@ Acesse seu portal para mais detalhes: {link_portal}
   // Carregar etapas do projeto
   async function plataforma_carregarEtapasProjeto(projetoId) {
     try {
-      const transaction = plataforma.db.transaction(['etapas_plataforma'], 'readonly');
-      const store = transaction.objectStore('etapas_plataforma');
+      const transaction = plataforma.db.transaction(['etapasplataforma'], 'readonly');
+      const store = transaction.objectStore('etapasplataforma');
       const index = store.index('projetoId');
       const request = index.getAll(projetoId);
       
@@ -1974,8 +1957,8 @@ Acesse seu portal para mais detalhes: {link_portal}
     if (!plataforma.currentUser) return;
     
     try {
-      const transaction = plataforma.db.transaction(['links_plataforma'], 'readonly');
-      const store = transaction.objectStore('links_plataforma');
+      const transaction = plataforma.db.transaction(['linksplataforma'], 'readonly');
+      const store = transaction.objectStore('linksplataforma');
       const index = store.index('clienteId');
       const request = index.getAll(plataforma.currentUser.id);
       
@@ -2016,8 +1999,8 @@ Acesse seu portal para mais detalhes: {link_portal}
     if (!plataforma.currentUser) return;
     
     try {
-      const transaction = plataforma.db.transaction(['orientacoes_plataforma'], 'readonly');
-      const store = transaction.objectStore('orientacoes_plataforma');
+      const transaction = plataforma.db.transaction(['orientacoesplataforma'], 'readonly');
+      const store = transaction.objectStore('orientacoesplataforma');
       const index = store.index('clienteId');
       const request = index.getAll(plataforma.currentUser.id);
       
@@ -2055,8 +2038,8 @@ Acesse seu portal para mais detalhes: {link_portal}
     if (!plataforma.currentUser) return;
     
     try {
-      const transaction = plataforma.db.transaction(['prazos_plataforma'], 'readonly');
-      const store = transaction.objectStore('prazos_plataforma');
+      const transaction = plataforma.db.transaction(['prazosplataforma'], 'readonly');
+      const store = transaction.objectStore('prazosplataforma');
       const index = store.index('clienteId');
       const request = index.getAll(plataforma.currentUser.id);
       
@@ -2115,8 +2098,8 @@ Acesse seu portal para mais detalhes: {link_portal}
     if (!plataforma.currentUser) return;
     
     try {
-      const transaction = plataforma.db.transaction(['lembretes_plataforma'], 'readonly');
-      const store = transaction.objectStore('lembretes_plataforma');
+      const transaction = plataforma.db.transaction(['lembretesplataforma'], 'readonly');
+      const store = transaction.objectStore('lembretesplataforma');
       const index = store.index('clienteId');
       const request = index.getAll(plataforma.currentUser.id);
       
@@ -2152,7 +2135,7 @@ Acesse seu portal para mais detalhes: {link_portal}
     }
   }
 
-  // ==================== ÁREA ADMINISTRATIVA ATUALIZADA ====================
+  // ==================== ÁREA ADMINISTRATIVA CORRIGIDA ====================
   document.getElementById('plataforma_admin_access').addEventListener('click', () => {
     document.getElementById('plataforma_admin_modal').style.display = 'flex';
   });
@@ -2213,8 +2196,8 @@ Acesse seu portal para mais detalhes: {link_portal}
   async function plataforma_admin_carregarDashboard() {
     try {
       // Contar clientes
-      const clientesTransaction = plataforma.db.transaction(['clientes_plataforma'], 'readonly');
-      const clientesStore = clientesTransaction.objectStore('clientes_plataforma');
+      const clientesTransaction = plataforma.db.transaction(['clientesplataforma'], 'readonly');
+      const clientesStore = clientesTransaction.objectStore('clientesplataforma');
       const clientesCount = await new Promise((resolve) => {
         const request = clientesStore.count();
         request.onsuccess = () => resolve(request.result);
@@ -2223,8 +2206,8 @@ Acesse seu portal para mais detalhes: {link_portal}
       document.getElementById('plataforma_admin_total_clientes').textContent = clientesCount;
       
       // Contar projetos
-      const projetosTransaction = plataforma.db.transaction(['projetos_plataforma'], 'readonly');
-      const projetosStore = projetosTransaction.objectStore('projetos_plataforma');
+      const projetosTransaction = plataforma.db.transaction(['projetosplataforma'], 'readonly');
+      const projetosStore = projetosTransaction.objectStore('projetosplataforma');
       const projetosCount = await new Promise((resolve) => {
         const request = projetosStore.count();
         request.onsuccess = () => resolve(request.result);
@@ -2233,8 +2216,8 @@ Acesse seu portal para mais detalhes: {link_portal}
       document.getElementById('plataforma_admin_total_projetos').textContent = projetosCount;
       
       // Contar alertas pendentes
-      const alertasTransaction = plataforma.db.transaction(['prazos_plataforma'], 'readonly');
-      const alertasStore = alertasTransaction.objectStore('prazos_plataforma');
+      const alertasTransaction = plataforma.db.transaction(['prazosplataforma'], 'readonly');
+      const alertasStore = alertasTransaction.objectStore('prazosplataforma');
       const alertasIndex = alertasStore.index('statusAlerta');
       const alertasCountRequest = alertasIndex.count('pendente');
       alertasCountRequest.onsuccess = () => {
@@ -2262,9 +2245,9 @@ Acesse seu portal para mais detalhes: {link_portal}
 
   async function plataforma_admin_carregarListaClientes() {
     try {
-      const transaction = plataforma.db.transaction(['clientes_plataforma', 'projetos_plataforma'], 'readonly');
-      const clientesStore = transaction.objectStore('clientes_plataforma');
-      const projetosStore = transaction.objectStore('projetos_plataforma');
+      const transaction = plataforma.db.transaction(['clientesplataforma', 'projetosplataforma'], 'readonly');
+      const clientesStore = transaction.objectStore('clientesplataforma');
+      const projetosStore = transaction.objectStore('projetosplataforma');
       
       const clientesRequest = clientesStore.getAll();
       
@@ -2322,8 +2305,8 @@ Acesse seu portal para mais detalhes: {link_portal}
 
   async function plataforma_admin_carregarClientesSelect() {
     try {
-      const transaction = plataforma.db.transaction(['clientes_plataforma'], 'readonly');
-      const store = transaction.objectStore('clientes_plataforma');
+      const transaction = plataforma.db.transaction(['clientesplataforma'], 'readonly');
+      const store = transaction.objectStore('clientesplataforma');
       const request = store.getAll();
       
       request.onsuccess = () => {
@@ -2366,8 +2349,8 @@ Acesse seu portal para mais detalhes: {link_portal}
     }
     
     try {
-      const transaction = plataforma.db.transaction(['clientes_plataforma'], 'readwrite');
-      const store = transaction.objectStore('clientes_plataforma');
+      const transaction = plataforma.db.transaction(['clientesplataforma'], 'readwrite');
+      const store = transaction.objectStore('clientesplataforma');
       
       const cliente = {
         nome,
@@ -2408,8 +2391,8 @@ Acesse seu portal para mais detalhes: {link_portal}
     if (!clienteId) return;
     
     try {
-      const transaction = plataforma.db.transaction(['projetos_plataforma'], 'readonly');
-      const store = transaction.objectStore('projetos_plataforma');
+      const transaction = plataforma.db.transaction(['projetosplataforma'], 'readonly');
+      const store = transaction.objectStore('projetosplataforma');
       const index = store.index('clienteId');
       const request = index.get(clienteId);
       
@@ -2448,8 +2431,8 @@ Acesse seu portal para mais detalhes: {link_portal}
     }
     
     try {
-      const transaction = plataforma.db.transaction(['projetos_plataforma'], 'readwrite');
-      const store = transaction.objectStore('projetos_plataforma');
+      const transaction = plataforma.db.transaction(['projetosplataforma'], 'readwrite');
+      const store = transaction.objectStore('projetosplataforma');
       const index = store.index('clienteId');
       const request = index.get(clienteId);
       
@@ -2493,8 +2476,8 @@ Acesse seu portal para mais detalhes: {link_portal}
 
   async function plataforma_admin_adicionarEtapa(projetoId, status) {
     try {
-      const transaction = plataforma.db.transaction(['etapas_plataforma'], 'readwrite');
-      const store = transaction.objectStore('etapas_plataforma');
+      const transaction = plataforma.db.transaction(['etapasplataforma'], 'readwrite');
+      const store = transaction.objectStore('etapasplataforma');
       
       const statusText = {
         'pendente': 'Projeto criado e aguardando início',
@@ -2517,7 +2500,7 @@ Acesse seu portal para mais detalhes: {link_portal}
   }
 
   async function plataforma_admin_carregarConteudoCliente() {
-    // Implementação básica - pode ser expandida
+    // Implementação básica
   }
 
   async function plataforma_admin_adicionarLink() {
@@ -2531,8 +2514,8 @@ Acesse seu portal para mais detalhes: {link_portal}
     }
     
     try {
-      const transaction = plataforma.db.transaction(['links_plataforma'], 'readwrite');
-      const store = transaction.objectStore('links_plataforma');
+      const transaction = plataforma.db.transaction(['linksplataforma'], 'readwrite');
+      const store = transaction.objectStore('linksplataforma');
       
       const link = {
         clienteId,
@@ -2564,8 +2547,8 @@ Acesse seu portal para mais detalhes: {link_portal}
     }
     
     try {
-      const transaction = plataforma.db.transaction(['orientacoes_plataforma'], 'readwrite');
-      const store = transaction.objectStore('orientacoes_plataforma');
+      const transaction = plataforma.db.transaction(['orientacoesplataforma'], 'readwrite');
+      const store = transaction.objectStore('orientacoesplataforma');
       
       const orientacao = {
         clienteId,
@@ -2596,8 +2579,8 @@ Acesse seu portal para mais detalhes: {link_portal}
     }
     
     try {
-      const transaction = plataforma.db.transaction(['prazos_plataforma'], 'readwrite');
-      const store = transaction.objectStore('prazos_plataforma');
+      const transaction = plataforma.db.transaction(['prazosplataforma'], 'readwrite');
+      const store = transaction.objectStore('prazosplataforma');
       
       const prazo = {
         clienteId,
@@ -2631,8 +2614,8 @@ Acesse seu portal para mais detalhes: {link_portal}
     }
     
     try {
-      const transaction = plataforma.db.transaction(['lembretes_plataforma'], 'readwrite');
-      const store = transaction.objectStore('lembretes_plataforma');
+      const transaction = plataforma.db.transaction(['lembretesplataforma'], 'readwrite');
+      const store = transaction.objectStore('lembretesplataforma');
       
       const lembrete = {
         clienteId,
@@ -2661,10 +2644,10 @@ Acesse seu portal para mais detalhes: {link_portal}
       const dataLimite = new Date(hoje);
       dataLimite.setDate(dataLimite.getDate() + diasAntecedencia);
       
-      const transaction = plataforma.db.transaction(['prazos_plataforma', 'clientes_plataforma', 'alertas_plataforma'], 'readwrite');
-      const prazosStore = transaction.objectStore('prazos_plataforma');
-      const clientesStore = transaction.objectStore('clientes_plataforma');
-      const alertasStore = transaction.objectStore('alertas_plataforma');
+      const transaction = plataforma.db.transaction(['prazosplataforma', 'clientesplataforma', 'alertasplataforma'], 'readwrite');
+      const prazosStore = transaction.objectStore('prazosplataforma');
+      const clientesStore = transaction.objectStore('clientesplataforma');
+      const alertasStore = transaction.objectStore('alertasplataforma');
       
       const prazosRequest = prazosStore.getAll();
       
@@ -2730,8 +2713,8 @@ Acesse seu portal para mais detalhes: {link_portal}
   // Carregar alertas pendentes
   async function plataforma_admin_carregarAlertas() {
     try {
-      const transaction = plataforma.db.transaction(['alertas_plataforma'], 'readonly');
-      const store = transaction.objectStore('alertas_plataforma');
+      const transaction = plataforma.db.transaction(['alertasplataforma'], 'readonly');
+      const store = transaction.objectStore('alertasplataforma');
       const index = store.index('status');
       const request = index.getAll('pendente');
       
@@ -2791,9 +2774,9 @@ Acesse seu portal para mais detalhes: {link_portal}
   // Enviar alerta específico
   async function plataforma_admin_enviarAlerta(alertaId) {
     try {
-      const transaction = plataforma.db.transaction(['alertas_plataforma', 'prazos_plataforma'], 'readwrite');
-      const alertasStore = transaction.objectStore('alertas_plataforma');
-      const prazosStore = transaction.objectStore('prazos_plataforma');
+      const transaction = plataforma.db.transaction(['alertasplataforma', 'prazosplataforma'], 'readwrite');
+      const alertasStore = transaction.objectStore('alertasplataforma');
+      const prazosStore = transaction.objectStore('prazosplataforma');
       
       const alertaRequest = alertasStore.get(alertaId);
       
@@ -2848,9 +2831,9 @@ Acesse seu portal para mais detalhes: {link_portal}
   // Enviar alerta para cliente específico
   async function plataforma_admin_enviarAlertaCliente(clienteId) {
     try {
-      const transaction = plataforma.db.transaction(['clientes_plataforma', 'prazos_plataforma'], 'readonly');
-      const clientesStore = transaction.objectStore('clientes_plataforma');
-      const prazosStore = transaction.objectStore('prazos_plataforma');
+      const transaction = plataforma.db.transaction(['clientesplataforma', 'prazosplataforma'], 'readonly');
+      const clientesStore = transaction.objectStore('clientesplataforma');
+      const prazosStore = transaction.objectStore('prazosplataforma');
       const prazosIndex = prazosStore.index('clienteId');
       
       const clienteRequest = clientesStore.get(clienteId);
@@ -2904,9 +2887,9 @@ Acesse seu portal para mais detalhes: {link_portal}
   // Marcar alerta como enviado
   async function plataforma_admin_marcarEnviado(alertaId) {
     try {
-      const transaction = plataforma.db.transaction(['alertas_plataforma', 'prazos_plataforma'], 'readwrite');
-      const alertasStore = transaction.objectStore('alertas_plataforma');
-      const prazosStore = transaction.objectStore('prazos_plataforma');
+      const transaction = plataforma.db.transaction(['alertasplataforma', 'prazosplataforma'], 'readwrite');
+      const alertasStore = transaction.objectStore('alertasplataforma');
+      const prazosStore = transaction.objectStore('prazosplataforma');
       
       const alertaRequest = alertasStore.get(alertaId);
       
@@ -2943,8 +2926,8 @@ Acesse seu portal para mais detalhes: {link_portal}
   // Atualizar badge de notificações
   async function plataforma_admin_atualizarBadgeNotificacoes() {
     try {
-      const transaction = plataforma.db.transaction(['alertas_plataforma'], 'readonly');
-      const store = transaction.objectStore('alertas_plataforma');
+      const transaction = plataforma.db.transaction(['alertasplataforma'], 'readonly');
+      const store = transaction.objectStore('alertasplataforma');
       const index = store.index('status');
       const request = index.count('pendente');
       
@@ -2978,7 +2961,7 @@ Acesse seu portal para mais detalhes: {link_portal}
     document.getElementById('plataforma_input_cpf').value = '';
   }
 
-  // NOVA FUNÇÃO: Fechar modal de login e voltar para a página principal
+  // Fechar modal de login e voltar para a página principal
   function plataforma_fecharLoginModal() {
     document.getElementById('plataforma_overlay').style.display = 'none';
     document.getElementById('plataforma_login_modal').style.display = 'none';
@@ -3019,7 +3002,7 @@ Acesse seu portal para mais detalhes: {link_portal}
 </script>
 
 <!-- ========================================================================= -->
-<!-- CÓDIGO NOVO ADICIONADO: CONFIGURAÇÃO SUPABASE & AUTENTICAÇÃO             -->
+<!-- CÓDIGO SUPABASE & AUTENTICAÇÃO (AJUSTADO PARA TEMPLATES SIMPLES)          -->
 <!-- ========================================================================= -->
 <script>
   // CONFIGURAÇÃO SUPABASE & AUTENTICAÇÃO
@@ -3112,7 +3095,7 @@ Acesse seu portal para mais detalhes: {link_portal}
 </script>
 
 <script>
-  // SISTEMA DE LOGIN SUPABASE PARA ADMINISTRADOR
+  // SISTEMA DE LOGIN SUPABASE PARA ADMINISTRADOR (AJUSTADO)
   const supabase_admin = {
     // Configuração (usando as mesmas credenciais já existentes)
     supabaseUrl: 'https://rjyxkouegrropsarrhje.supabase.co',
@@ -3148,8 +3131,8 @@ Acesse seu portal para mais detalhes: {link_portal}
               <div style="width: 80px; height: 80px; background: rgba(59, 130, 246, 0.2); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
                 <i class="fas fa-user-shield" style="font-size: 2rem; color: var(--primary);"></i>
               </div>
-              <h2 style="color: #fff; margin-bottom: 10px;">Acesso Administrador</h2>
-              <p style="color: rgba(255, 255, 255, 0.7);">Área restrita</p>
+              <h2 style="color: #fff; margin-bottom: 10px;">Admin Supabase</h2>
+              <p style="color: rgba(255, 255, 255, 0.7);">Autenticação segura via Supabase</p>
             </div>
             
             <div class="plataforma_input_group">
@@ -3165,7 +3148,7 @@ Acesse seu portal para mais detalhes: {link_portal}
             <div id="supabase_admin_error" style="color: #ef4444; font-size: 0.9rem; margin: 10px 0; display: none;"></div>
             
             <button class="plataforma_btn plataforma_btn_primary" style="width: 100%; margin-bottom: 15px;" onclick="supabase_admin.login()" id="supabase_login_btn">
-              <i class="fas fa-sign-in-alt"></i> Acessar Área
+              <i class="fas fa-sign-in-alt"></i> Entrar com Supabase
             </button>
             
             <button class="plataforma_btn plataforma_btn_secondary" style="width: 100%;" onclick="supabase_admin.closeModal()">
@@ -3527,9 +3510,8 @@ Acesse seu portal para mais detalhes: {link_portal}
 </script>
 <script>
 /**
- * 🚀 UNIVERSAL IDB SYNC - FIXED (ANTI-ZOMBIE DATA)
- * - Correção: Persistência de DeviceID (Evita auto-download após F5).
- * - Correção: Force Delete (Deleta do disco mesmo se não estiver no Cache).
+ * 🚀 UNIVERSAL IDB SYNC - CORRIGIDO PARA TEMPLATES SIMPLES
+ * Ajustado para usar os novos templates: clientesplataforma, projetosplataforma, etc.
  */
 (function () {
     // ==========================================================
@@ -3539,7 +3521,6 @@ Acesse seu portal para mais detalhes: {link_portal}
     const CANONICAL_DB = 'lg_crmDB';
     
     // FIX 1: Mantém a identidade da aba mesmo após refresh (SessionStorage)
-    // Isso impede que a aba baixe de volta um dado que ela mesma acabou de deletar
     let storedId = sessionStorage.getItem('sync_device_id');
     if (!storedId) {
         storedId = crypto.randomUUID();
@@ -3570,7 +3551,6 @@ Acesse seu portal para mais detalhes: {link_portal}
     }
 
     function generateSignature(value) {
-        // Garante que null/undefined sejam tratados iguais
         if (value === null || value === undefined) return 'null';
         return JSON.stringify(value);
     }
@@ -3652,9 +3632,12 @@ Acesse seu portal para mais detalhes: {link_portal}
         
         req.onsuccess = (e) => {
             const db = e.target.result;
-            const storeNames = Array.from(db.objectStoreNames);
-
-            storeNames.forEach(storeName => {
+            
+            // Filtrar apenas os stores da plataforma (terminando com "plataforma")
+            const allStoreNames = Array.from(db.objectStoreNames);
+            const platformStores = allStoreNames.filter(name => name.includes('plataforma'));
+            
+            platformStores.forEach(storeName => {
                 const tx = db.transaction([storeName], 'readonly');
                 const store = tx.objectStore(storeName);
                 
@@ -3688,7 +3671,7 @@ Acesse seu portal para mais detalhes: {link_portal}
                     });
 
                     if (changedRecords.length > 0) {
-                        console.log(`📤 Upload Batch: ${changedRecords.length} itens`);
+                        console.log(`📤 Upload Batch (${storeName}): ${changedRecords.length} itens`);
                         await client.from(SYNC_TABLE).upsert(changedRecords, { 
                             onConflict: 'user_id,db_name,store_name,record_key' 
                         });
@@ -3719,17 +3702,20 @@ Acesse seu portal para mais detalhes: {link_portal}
             const db = e.target.result;
             const localStores = Array.from(db.objectStoreNames);
             
-            const validRecords = data.filter(r => localStores.includes(r.store_name));
-            if (!validRecords.length) return;
+            // Filtrar apenas dados da plataforma
+            const platformRecords = data.filter(r => 
+                r.store_name.includes('plataforma') && localStores.includes(r.store_name)
+            );
+            
+            if (!platformRecords.length) return;
 
-            const tx = db.transaction([...new Set(validRecords.map(r => r.store_name))], 'readwrite');
+            const tx = db.transaction([...new Set(platformRecords.map(r => r.store_name))], 'readwrite');
             isReplicating = true;
 
             let writes = 0;
 
-            validRecords.forEach(r => {
+            platformRecords.forEach(r => {
                 // ANTI-ECHO: Se o dado veio deste mesmo DEVICE_ID, ignoramos.
-                // Como agora usamos sessionStorage, isso persiste após refresh.
                 if (r.device_id === DEVICE_ID) return;
 
                 const store = tx.objectStore(r.store_name);
@@ -3740,7 +3726,6 @@ Acesse seu portal para mais detalhes: {link_portal}
                 // LÓGICA DE DELETE (CORRIGIDA)
                 if (r.is_deleted) {
                     // FIX: Deleta incondicionalmente. Se não existir, não dá erro.
-                    // Antes verificávamos o cache, o que impedia deletes em sessões novas.
                     store.delete(key);
                     
                     if (syncCache.has(cacheKey)) {
@@ -3774,26 +3759,155 @@ Acesse seu portal para mais detalhes: {link_portal}
 
             tx.oncomplete = () => {
                 isReplicating = false;
-                if (writes > 0) console.log(`📥 Download Sync: ${writes} alterações aplicadas.`);
+                if (writes > 0) console.log(`📥 Download Sync Plataforma: ${writes} alterações aplicadas.`);
             };
             
-            tx.onerror = () => isReplicating = false;
+            tx.onerror = () => {
+                isReplicating = false;
+                console.error('Erro na transação de download');
+            };
         };
     }
 
     // ==========================================================
-    // 6. INICIALIZAÇÃO
+    // 6. VERIFICAÇÃO DE INTEGRIDADE DOS TEMPLATES
+    // ==========================================================
+    async function verifyPlatformTemplates() {
+        try {
+            const req = indexedDB.open(CANONICAL_DB);
+            
+            req.onsuccess = (e) => {
+                const db = e.target.result;
+                const allStores = Array.from(db.objectStoreNames);
+                
+                // Lista de templates obrigatórios da plataforma
+                const requiredTemplates = [
+                    'clientesplataforma',
+                    'projetosplataforma',
+                    'etapasplataforma',
+                    'linksplataforma',
+                    'orientacoesplataforma',
+                    'prazosplataforma',
+                    'lembretesplataforma',
+                    'alertasplataforma',
+                    'configplataforma',
+                    'usuariosplataforma'
+                ];
+                
+                const missingTemplates = requiredTemplates.filter(t => !allStores.includes(t));
+                
+                if (missingTemplates.length > 0) {
+                    console.warn('⚠️ Templates da plataforma ausentes:', missingTemplates);
+                    
+                    // Criar templates ausentes
+                    const transaction = db.transaction(missingTemplates, 'readwrite');
+                    
+                    missingTemplates.forEach(templateName => {
+                        if (!db.objectStoreNames.contains(templateName)) {
+                            const store = transaction.db.createObjectStore(templateName, { keyPath: 'id', autoIncrement: true });
+                            
+                            // Adicionar índices básicos
+                            if (templateName === 'clientesplataforma') {
+                                store.createIndex('cpf', 'cpf', { unique: true });
+                                store.createIndex('status', 'status', { unique: false });
+                            }
+                            
+                            if (templateName === 'projetosplataforma') {
+                                store.createIndex('clienteId', 'clienteId', { unique: false });
+                                store.createIndex('status', 'status', { unique: false });
+                            }
+                            
+                            console.log(`✅ Template criado: ${templateName}`);
+                        }
+                    });
+                } else {
+                    console.log('✅ Todos os templates da plataforma estão presentes');
+                }
+            };
+        } catch (error) {
+            console.error('Erro na verificação de templates:', error);
+        }
+    }
+
+    // ==========================================================
+    // 7. LIMPEZA DE DADOS ZUMBIS (ANTI-ZOMBIE)
+    // ==========================================================
+    async function cleanupZombieData() {
+        try {
+            const userId = await getUserId();
+            const client = getClient();
+            if (!userId || !client) return;
+
+            // Buscar registros marcados como deletados no Supabase
+            const { data, error } = await client
+                .from(SYNC_TABLE)
+                .select('*')
+                .eq('user_id', userId)
+                .eq('db_name', CANONICAL_DB)
+                .eq('is_deleted', true);
+
+            if (error || !data || !data.length) return;
+
+            const req = indexedDB.open(CANONICAL_DB);
+            req.onsuccess = (e) => {
+                const db = e.target.result;
+                const tx = db.transaction(
+                    [...new Set(data.map(r => r.store_name))], 
+                    'readwrite'
+                );
+
+                data.forEach(r => {
+                    if (!r.store_name.includes('plataforma')) return;
+                    
+                    try {
+                        const store = tx.objectStore(r.store_name);
+                        const key = !isNaN(r.record_key) ? Number(r.record_key) : r.record_key;
+                        
+                        // Tentar deletar (pode não existir mais, e está tudo bem)
+                        store.delete(key);
+                        
+                        const cacheKey = `${r.store_name}-${r.record_key}`;
+                        syncCache.delete(cacheKey);
+                    } catch (e) {
+                        // Silenciar erro - o dado pode já ter sido removido
+                    }
+                });
+
+                tx.oncomplete = () => {
+                    console.log('🧟 Limpeza de dados zumbis concluída');
+                };
+            };
+        } catch (error) {
+            console.warn('Aviso na limpeza de dados zumbis:', error);
+        }
+    }
+
+    // ==========================================================
+    // 8. INICIALIZAÇÃO COMPLETA
     // ==========================================================
     async function startService() {
         const userId = await getUserId();
-        if (!userId) return;
+        if (!userId) {
+            console.log('⏳ Aguardando autenticação para iniciar sync...');
+            return;
+        }
 
         console.log('✅ Serviço de Sync Iniciado para:', userId);
         const client = getClient();
 
+        // 1. Verificar integridade dos templates
+        await verifyPlatformTemplates();
+        
+        // 2. Limpar dados zumbis
+        await cleanupZombieData();
+        
+        // 3. Configurar listener em tempo real
         client.channel('global-sync-live')
             .on('postgres_changes', { 
-                event: '*', schema: 'public', table: SYNC_TABLE, filter: `user_id=eq.${userId}` 
+                event: '*', 
+                schema: 'public', 
+                table: SYNC_TABLE, 
+                filter: `user_id=eq.${userId}` 
             }, payload => {
                 // Só dispara download se o evento veio de OUTRO device
                 if (payload.new && payload.new.device_id !== DEVICE_ID) {
@@ -3802,10 +3916,11 @@ Acesse seu portal para mais detalhes: {link_portal}
             })
             .subscribe();
 
-        // Ordem estratégica: Carrega Cache Local -> Baixa Nuvem -> Inicia Loop
+        // 4. Ordem estratégica: Carrega Cache Local -> Baixa Nuvem -> Inicia Loop
         await smartUploadLoop(); 
-        setTimeout(smartDownloadLoop, 500); // Pequeno delay para garantir que o Upload populou o cache
+        setTimeout(smartDownloadLoop, 500);
 
+        // 5. Iniciar loop contínuo
         if (syncInterval) clearInterval(syncInterval);
         syncInterval = setInterval(async () => {
             await smartUploadLoop();
@@ -3813,14 +3928,716 @@ Acesse seu portal para mais detalhes: {link_portal}
         }, 10000);
     }
 
+    // ==========================================================
+    // 9. INICIALIZADOR PRINCIPAL
+    // ==========================================================
     waitForSupabase().then(client => {
+        // Monitorar mudanças de autenticação
         client.auth.onAuthStateChange((event, session) => {
-            if (event === 'SIGNED_IN' && session) startService();
+            console.log(`🔐 Auth State Change: ${event}`);
+            if (event === 'SIGNED_IN' && session) {
+                startService();
+            } else if (event === 'SIGNED_OUT') {
+                if (syncInterval) {
+                    clearInterval(syncInterval);
+                    syncInterval = null;
+                }
+                syncCache.clear();
+                console.log('🔒 Sync pausado (usuário desconectado)');
+            }
         });
-        getUserId().then(id => { if (id) startService(); });
+        
+        // Verificar se já está autenticado
+        getUserId().then(id => { 
+            if (id) {
+                console.log('👤 Usuário já autenticado, iniciando sync...');
+                startService();
+            }
+        });
     });
+
+    // ==========================================================
+    // 10. EXPORTAÇÃO PARA DEBUG (OPCIONAL)
+    // ==========================================================
+    window.plataformaSyncDebug = {
+        getCacheSize: () => syncCache.size,
+        getCacheKeys: () => Array.from(syncCache.keys()),
+        clearCache: () => syncCache.clear(),
+        getDeviceId: () => DEVICE_ID,
+        forceUpload: () => smartUploadLoop(),
+        forceDownload: () => smartDownloadLoop(),
+        verifyTemplates: () => verifyPlatformTemplates()
+    };
 
 })();
 </script>
+
+<!-- ========================================================================= -->
+<!-- SISTEMA DE MONITORAMENTO E DEBUG DA PLATAFORMA                           -->
+<!-- ========================================================================= -->
+<script>
+(function() {
+    // Sistema de monitoramento para garantir compatibilidade
+    const platformMonitor = {
+        init: function() {
+            console.log('🔍 Monitor da Plataforma iniciado');
+            this.checkExistingConflicts();
+            this.setupCompatibilityLayer();
+            this.startHealthCheck();
+        },
+        
+        // Verificar conflitos com outros sistemas
+        checkExistingConflicts: function() {
+            try {
+                const req = indexedDB.open('lg_crmDB');
+                req.onsuccess = (e) => {
+                    const db = e.target.result;
+                    const allStores = Array.from(db.objectStoreNames);
+                    
+                    // Separar stores por sistema
+                    const systemStores = {
+                        crm: allStores.filter(s => s.includes('crm') && !s.includes('plataforma')),
+                        forms: allStores.filter(s => s.includes('forms') && !s.includes('plataforma')),
+                        contrato: allStores.filter(s => s.includes('contrato') && !s.includes('plataforma')),
+                        plataforma: allStores.filter(s => s.includes('plataforma'))
+                    };
+                    
+                    console.log('📊 Análise de stores por sistema:', systemStores);
+                    
+                    // Verificar se a plataforma está isolada
+                    const platformOnly = systemStores.plataforma.every(store => 
+                        !store.includes('crm') && !store.includes('forms') && !store.includes('contrato')
+                    );
+                    
+                    if (!platformOnly) {
+                        console.warn('⚠️ Possível conflito: Stores da plataforma podem estar interferindo com outros sistemas');
+                    } else {
+                        console.log('✅ Plataforma isolada corretamente');
+                    }
+                };
+            } catch (error) {
+                console.error('Erro na verificação de conflitos:', error);
+            }
+        },
+        
+        // Camada de compatibilidade
+        setupCompatibilityLayer: function() {
+            // Interceptar abertura do banco para garantir templates
+            const originalOpen = indexedDB.open;
+            
+            indexedDB.open = function(name, version) {
+                if (name === 'lg_crmDB') {
+                    const request = originalOpen.call(this, name, version);
+                    
+                    request.onupgradeneeded = function(e) {
+                        // Chamar o onupgradeneeded original se existir
+                        if (typeof request._onupgradeneeded === 'function') {
+                            request._onupgradeneeded.call(request, e);
+                        }
+                        
+                        // Garantir templates da plataforma
+                        const db = e.target.result;
+                        const requiredTemplates = [
+                            'clientesplataforma',
+                            'projetosplataforma', 
+                            'etapasplataforma',
+                            'linksplataforma',
+                            'orientacoesplataforma',
+                            'prazosplataforma',
+                            'lembretesplataforma',
+                            'alertasplataforma',
+                            'configplataforma',
+                            'usuariosplataforma'
+                        ];
+                        
+                        requiredTemplates.forEach(templateName => {
+                            if (!db.objectStoreNames.contains(templateName)) {
+                                const store = db.createObjectStore(templateName, { keyPath: 'id', autoIncrement: true });
+                                console.log(`🛠️ Template garantido: ${templateName}`);
+                            }
+                        });
+                    };
+                    
+                    // Preservar listeners originais
+                    const originalOnUpgradeNeeded = request.onupgradeneeded;
+                    Object.defineProperty(request, 'onupgradeneeded', {
+                        get: function() { return originalOnUpgradeNeeded; },
+                        set: function(fn) { 
+                            request._onupgradeneeded = fn; 
+                            if (typeof fn === 'function') {
+                                originalOnUpgradeNeeded = fn;
+                            }
+                        }
+                    });
+                    
+                    return request;
+                }
+                return originalOpen.call(this, name, version);
+            };
+        },
+        
+        // Health check periódico
+        startHealthCheck: function() {
+            setInterval(() => {
+                this.performHealthCheck();
+            }, 30000); // A cada 30 segundos
+        },
+        
+        performHealthCheck: function() {
+            try {
+                const req = indexedDB.open('lg_crmDB');
+                req.onsuccess = (e) => {
+                    const db = e.target.result;
+                    const storeNames = Array.from(db.objectStoreNames);
+                    
+                    // Verificar se todos os templates obrigatórios existem
+                    const required = ['clientesplataforma', 'projetosplataforma', 'configplataforma'];
+                    const missing = required.filter(name => !storeNames.includes(name));
+                    
+                    if (missing.length === 0) {
+                        console.log('✅ Health Check: Plataforma OK');
+                    } else {
+                        console.warn(`⚠️ Health Check: Templates ausentes: ${missing.join(', ')}`);
+                        this.repairMissingTemplates(missing);
+                    }
+                };
+            } catch (error) {
+                console.error('❌ Health Check falhou:', error);
+            }
+        },
+        
+        // Reparar templates ausentes
+        repairMissingTemplates: function(missingTemplates) {
+            try {
+                const req = indexedDB.open('lg_crmDB');
+                
+                req.onsuccess = (e) => {
+                    const db = e.target.result;
+                    const version = db.version + 1;
+                    db.close();
+                    
+                    // Reabrir com nova versão para criar templates
+                    const upgradeReq = indexedDB.open('lg_crmDB', version);
+                    
+                    upgradeReq.onupgradeneeded = (e) => {
+                        const db = e.target.result;
+                        
+                        missingTemplates.forEach(templateName => {
+                            if (!db.objectStoreNames.contains(templateName)) {
+                                const store = db.createObjectStore(templateName, { keyPath: 'id', autoIncrement: true });
+                                
+                                // Adicionar índices apropriados
+                                if (templateName === 'clientesplataforma') {
+                                    store.createIndex('cpf', 'cpf', { unique: true });
+                                    store.createIndex('status', 'status', { unique: false });
+                                }
+                                
+                                if (templateName === 'projetosplataforma') {
+                                    store.createIndex('clienteId', 'clienteId', { unique: false });
+                                    store.createIndex('status', 'status', { unique: false });
+                                }
+                                
+                                console.log(`🔧 Template reparado: ${templateName}`);
+                            }
+                        });
+                    };
+                };
+            } catch (error) {
+                console.error('Erro ao reparar templates:', error);
+            }
+        }
+    };
+    
+    // Iniciar monitor quando o DOM estiver pronto
+    document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(() => {
+            platformMonitor.init();
+        }, 2000);
+    });
+})();
+</script>
+
+<!-- ========================================================================= -->
+<!-- CONFIGURAÇÃO DE BACKUP E RESTAURAÇÃO                                      -->
+<!-- ========================================================================= -->
+<script>
+(function() {
+    const platformBackup = {
+        // Criar backup dos dados da plataforma
+        createBackup: async function() {
+            try {
+                const backup = {
+                    timestamp: new Date().toISOString(),
+                    version: '1.0',
+                    data: {}
+                };
+                
+                const req = indexedDB.open('lg_crmDB');
+                
+                return new Promise((resolve, reject) => {
+                    req.onsuccess = async (e) => {
+                        const db = e.target.result;
+                        const storeNames = Array.from(db.objectStoreNames)
+                            .filter(name => name.includes('plataforma'));
+                        
+                        const transaction = db.transaction(storeNames, 'readonly');
+                        
+                        for (const storeName of storeNames) {
+                            const store = transaction.objectStore(storeName);
+                            const data = await new Promise(res => {
+                                const request = store.getAll();
+                                request.onsuccess = () => res(request.result);
+                                request.onerror = () => res([]);
+                            });
+                            
+                            backup.data[storeName] = data;
+                        }
+                        
+                        transaction.oncomplete = () => {
+                            const backupString = JSON.stringify(backup, null, 2);
+                            this.downloadBackup(backupString);
+                            resolve(backup);
+                        };
+                    };
+                    
+                    req.onerror = reject;
+                });
+            } catch (error) {
+                console.error('Erro ao criar backup:', error);
+                throw error;
+            }
+        },
+        
+        // Fazer download do backup
+        downloadBackup: function(backupString) {
+            const blob = new Blob([backupString], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `plataforma_backup_${new Date().toISOString().slice(0, 10)}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            alert('Backup criado com sucesso!');
+        },
+        
+        // Restaurar de backup
+        restoreBackup: async function(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                
+                reader.onload = async (e) => {
+                    try {
+                        const backup = JSON.parse(e.target.result);
+                        
+                        if (!backup.data || !backup.timestamp) {
+                            throw new Error('Formato de backup inválido');
+                        }
+                        
+                        if (!confirm(`Restaurar backup de ${new Date(backup.timestamp).toLocaleString()}?`)) {
+                            return;
+                        }
+                        
+                        const req = indexedDB.open('lg_crmDB');
+                        
+                        req.onsuccess = (e) => {
+                            const db = e.target.result;
+                            const version = db.version + 1;
+                            db.close();
+                            
+                            const upgradeReq = indexedDB.open('lg_crmDB', version);
+                            
+                            upgradeReq.onupgradeneeded = (e) => {
+                                const db = e.target.result;
+                                
+                                // Limpar dados existentes da plataforma
+                                Object.keys(backup.data).forEach(storeName => {
+                                    if (db.objectStoreNames.contains(storeName)) {
+                                        db.deleteObjectStore(storeName);
+                                    }
+                                    
+                                    const store = db.createObjectStore(storeName, { keyPath: 'id', autoIncrement: true });
+                                    
+                                    // Recriar índices
+                                    if (storeName === 'clientesplataforma') {
+                                        store.createIndex('cpf', 'cpf', { unique: true });
+                                        store.createIndex('status', 'status', { unique: false });
+                                    }
+                                    
+                                    if (storeName === 'projetosplataforma') {
+                                        store.createIndex('clienteId', 'clienteId', { unique: false });
+                                        store.createIndex('status', 'status', { unique: false });
+                                    }
+                                });
+                            };
+                            
+                            upgradeReq.onsuccess = (e) => {
+                                const db = e.target.result;
+                                const storeNames = Object.keys(backup.data);
+                                const transaction = db.transaction(storeNames, 'readwrite');
+                                
+                                let promises = [];
+                                
+                                storeNames.forEach(storeName => {
+                                    const store = transaction.objectStore(storeName);
+                                    const data = backup.data[storeName];
+                                    
+                                    data.forEach(item => {
+                                        const promise = new Promise((res, rej) => {
+                                            const request = store.add(item);
+                                            request.onsuccess = () => res();
+                                            request.onerror = rej;
+                                        });
+                                        promises.push(promise);
+                                    });
+                                });
+                                
+                                Promise.all(promises).then(() => {
+                                    alert('Backup restaurado com sucesso! Recarregue a página.');
+                                    resolve();
+                                }).catch(reject);
+                            };
+                        };
+                    } catch (error) {
+                        reject(error);
+                    }
+                };
+                
+                reader.onerror = reject;
+                reader.readAsText(file);
+            });
+        }
+    };
+    
+    // Adicionar funções de backup ao escopo global
+    window.plataformaBackup = platformBackup;
+})();
+</script>
+
+<!-- ========================================================================= -->
+<!-- INTERFACE DE ADMINISTRAÇÃO AVANÇADA                                       -->
+<!-- ========================================================================= -->
+<div id="plataforma_advanced_admin" style="display: none; position: fixed; bottom: 80px; right: 20px; z-index: 1000;">
+    <div style="background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 10px; padding: 15px; width: 300px; backdrop-filter: blur(10px);">
+        <h3 style="color: #fff; margin-bottom: 15px; font-size: 1rem;">
+            <i class="fas fa-tools"></i> Admin Avançado
+        </h3>
+        
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+            <button class="plataforma_btn plataforma_btn_secondary plataforma_btn_small" onclick="window.plataformaBackup.createBackup()">
+                <i class="fas fa-download"></i> Criar Backup
+            </button>
+            
+            <button class="plataforma_btn plataforma_btn_secondary plataforma_btn_small" onclick="document.getElementById('backupUpload').click()">
+                <i class="fas fa-upload"></i> Restaurar Backup
+            </button>
+            
+            <button class="plataforma_btn plataforma_btn_secondary plataforma_btn_small" onclick="window.plataformaSyncDebug.verifyTemplates()">
+                <i class="fas fa-check-circle"></i> Verificar Templates
+            </button>
+            
+            <button class="plataforma_btn plataforma_btn_warning plataforma_btn_small" onclick="plataforma_clearAllData()">
+                <i class="fas fa-trash"></i> Limpar Dados (Debug)
+            </button>
+        </div>
+        
+        <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1);">
+            <div style="color: rgba(255,255,255,0.7); font-size: 0.8rem; margin-bottom: 5px;">
+                Status Sync: <span id="syncStatus">Verificando...</span>
+            </div>
+            <div style="color: rgba(255,255,255,0.7); font-size: 0.8rem;">
+                Cache: <span id="cacheSize">0</span> itens
+            </div>
+        </div>
+    </div>
+</div>
+
+<input type="file" id="backupUpload" accept=".json" style="display: none;" 
+       onchange="window.plataformaBackup.restoreBackup(this.files[0])">
+
+<script>
+// Função para limpar dados (apenas para debug)
+function plataforma_clearAllData() {
+    if (!confirm('⚠️ ATENÇÃO: Isso apagará TODOS os dados da plataforma. Continuar?')) {
+        return;
+    }
+    
+    if (!confirm('CONFIRMAÇÃO FINAL: Tem certeza que deseja apagar todos os dados?')) {
+        return;
+    }
+    
+    try {
+        const req = indexedDB.open('lg_crmDB');
+        
+        req.onsuccess = (e) => {
+            const db = e.target.result;
+            const version = db.version + 1;
+            db.close();
+            
+            const upgradeReq = indexedDB.open('lg_crmDB', version);
+            
+            upgradeReq.onupgradeneeded = (e) => {
+                const db = e.target.result;
+                const storeNames = Array.from(db.objectStoreNames)
+                    .filter(name => name.includes('plataforma'));
+                
+                storeNames.forEach(storeName => {
+                    if (db.objectStoreNames.contains(storeName)) {
+                        db.deleteObjectStore(storeName);
+                    }
+                    
+                    // Recriar vazios
+                    const store = db.createObjectStore(storeName, { keyPath: 'id', autoIncrement: true });
+                    
+                    if (storeName === 'clientesplataforma') {
+                        store.createIndex('cpf', 'cpf', { unique: true });
+                        store.createIndex('status', 'status', { unique: false });
+                        
+                        // Adicionar cliente demo
+                        store.add({
+                            nome: 'Cliente Demonstração',
+                            email: 'demo@legacyplatform.com',
+                            cpf: '123.456.789-00',
+                            whatsapp: '5522999999999',
+                            status: 'ativo',
+                            dataCadastro: new Date().toISOString()
+                        });
+                    }
+                    
+                    if (storeName === 'configplataforma') {
+                        store.add({
+                            chave: 'alertas_config',
+                            valor: JSON.stringify({
+                                diasAntecedencia: 3,
+                                mensagemPadrao: `Olá {nome}! Este é um lembrete sobre o prazo: {titulo}\nVencimento: {data}\nAcesse seu portal para mais detalhes: {link_portal}`
+                            })
+                        });
+                    }
+                });
+                
+                alert('Dados da plataforma resetados com sucesso! Recarregue a página.');
+            };
+        };
+    } catch (error) {
+        console.error('Erro ao limpar dados:', error);
+        alert('Erro ao limpar dados: ' + error.message);
+    }
+}
+
+// Atualizar status da interface
+function updateAdvancedAdminUI() {
+    if (window.plataformaSyncDebug) {
+        document.getElementById('cacheSize').textContent = window.plataformaSyncDebug.getCacheSize();
+        document.getElementById('syncStatus').textContent = 'Ativo';
+        document.getElementById('syncStatus').style.color = '#10b981';
+    }
+}
+
+// Mostrar/ocultar admin avançado
+let advancedAdminVisible = false;
+document.addEventListener('keydown', function(e) {
+    // Ctrl+Alt+P para mostrar admin avançado
+    if (e.ctrlKey && e.altKey && e.key === 'p') {
+        advancedAdminVisible = !advancedAdminVisible;
+        document.getElementById('plataforma_advanced_admin').style.display = 
+            advancedAdminVisible ? 'block' : 'none';
+        
+        if (advancedAdminVisible) {
+            updateAdvancedAdminUI();
+            // Atualizar periodicamente
+            setInterval(updateAdvancedAdminUI, 5000);
+        }
+    }
+});
+
+// Configurar upload de backup
+document.getElementById('backupUpload').addEventListener('change', function(e) {
+    if (this.files.length > 0) {
+        this.value = ''; // Reset para permitir novo upload do mesmo arquivo
+    }
+});
+</script>
+
+<!-- ========================================================================= -->
+<!-- RELATÓRIO DE COMPATIBILIDADE                                              -->
+<!-- ========================================================================= -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(() => {
+        generateCompatibilityReport();
+    }, 3000);
+});
+
+function generateCompatibilityReport() {
+    try {
+        const req = indexedDB.open('lg_crmDB');
+        
+        req.onsuccess = (e) => {
+            const db = e.target.result;
+            const allStores = Array.from(db.objectStoreNames);
+            
+            const report = {
+                totalStores: allStores.length,
+                platformStores: allStores.filter(s => s.includes('plataforma')).length,
+                otherSystemStores: allStores.filter(s => !s.includes('plataforma')).length,
+                storesBySystem: {
+                    crm: allStores.filter(s => s.includes('crm') && !s.includes('plataforma')),
+                    forms: allStores.filter(s => s.includes('forms') && !s.includes('plataforma')),
+                    contrato: allStores.filter(s => s.includes('contrato') && !s.includes('plataforma')),
+                    plataforma: allStores.filter(s => s.includes('plataforma'))
+                },
+                compatibilityStatus: '✅ OK'
+            };
+            
+            // Verificar isolamento
+            const platformStores = report.storesBySystem.plataforma;
+            const hasConflict = platformStores.some(store => 
+                store.includes('crm') || store.includes('forms') || store.includes('contrato')
+            );
+            
+            if (hasConflict) {
+                report.compatibilityStatus = '⚠️ CONFLITO DETECTADO';
+            }
+            
+            console.group('📊 RELATÓRIO DE COMPATIBILIDADE - PLATAFORMA');
+            console.log('Status:', report.compatibilityStatus);
+            console.log('Total de Stores:', report.totalStores);
+            console.log('Stores da Plataforma:', report.platformStores);
+            console.log('Stores de Outros Sistemas:', report.otherSystemStores);
+            console.log('Detalhes por sistema:', report.storesBySystem);
+            console.groupEnd();
+            
+            // Se houver conflito, sugerir correção
+            if (hasConflict) {
+                console.warn('🚨 RECOMENDAÇÃO: Renomear stores da plataforma para usar sufixo "plataforma"');
+                console.warn('Exemplo: "clientes" -> "clientesplataforma"');
+            }
+        };
+    } catch (error) {
+        console.error('Erro ao gerar relatório:', error);
+    }
+}
+</script>
+
+<!-- ========================================================================= -->
+<!-- MIGRAÇÃO AUTOMÁTICA DE DADOS ANTIGOS                                     -->
+<!-- ========================================================================= -->
+<script>
+(function() {
+    // Migrar dados de stores antigos (_plataforma) para novos (plataforma)
+    async function migrateOldData() {
+        try {
+            const req = indexedDB.open('lg_crmDB');
+            
+            req.onsuccess = (e) => {
+                const db = e.target.result;
+                const oldStores = Array.from(db.objectStoreNames)
+                    .filter(name => name.includes('_plataforma'));
+                
+                if (oldStores.length === 0) {
+                    console.log('✅ Nenhum dado antigo para migrar');
+                    return;
+                }
+                
+                console.log(`🔄 Migrando ${oldStores.length} stores antigos...`);
+                
+                const newStoreNames = oldStores.map(old => 
+                    old.replace('_plataforma', 'plataforma')
+                );
+                
+                const transaction = db.transaction([...oldStores, ...newStoreNames], 'readwrite');
+                
+                oldStores.forEach((oldStoreName, index) => {
+                    const newStoreName = newStoreNames[index];
+                    const oldStore = transaction.objectStore(oldStoreName);
+                    const newStore = transaction.objectStore(newStoreName);
+                    
+                    const request = oldStore.getAll();
+                    
+                    request.onsuccess = async () => {
+                        const data = request.result;
+                        
+                        for (const item of data) {
+                            try {
+                                await new Promise((resolve, reject) => {
+                                    const addRequest = newStore.add(item);
+                                    addRequest.onsuccess = resolve;
+                                    addRequest.onerror = reject;
+                                });
+                            } catch (error) {
+                                console.warn(`Não foi possível migrar item de ${oldStoreName}:`, error);
+                            }
+                        }
+                        
+                        console.log(`✅ Migrado: ${oldStoreName} -> ${newStoreName} (${data.length} itens)`);
+                    };
+                });
+                
+                transaction.oncomplete = () => {
+                    console.log('✅ Migração concluída! Recomenda-se recarregar a página.');
+                };
+            };
+        } catch (error) {
+            console.error('Erro na migração:', error);
+        }
+    }
+    
+    // Executar migração automaticamente após carregamento
+    document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(migrateOldData, 5000);
+    });
+})();
+</script>
+
+<!-- ========================================================================= -->
+<!-- MENSAGEM DE STATUS DO SISTEMA                                             -->
+<!-- ========================================================================= -->
+<div id="system_status_message" style="display: none; position: fixed; bottom: 20px; left: 20px; background: rgba(15, 23, 42, 0.95); border-left: 4px solid var(--primary); padding: 12px 20px; border-radius: 8px; z-index: 9999; max-width: 400px; backdrop-filter: blur(10px);">
+    <div style="display: flex; align-items: center; gap: 10px;">
+        <i class="fas fa-info-circle" style="color: var(--primary);"></i>
+        <div>
+            <div style="font-weight: 600; color: #fff; margin-bottom: 5px;" id="status_title">Sistema Plataforma</div>
+            <div style="color: rgba(255,255,255,0.7); font-size: 0.9rem;" id="status_message">Carregando...</div>
+        </div>
+    </div>
+</div>
+
+<script>
+function showSystemStatus(title, message, type = 'info') {
+    const statusEl = document.getElementById('system_status_message');
+    const titleEl = document.getElementById('status_title');
+    const messageEl = document.getElementById('status_message');
+    const icon = statusEl.querySelector('i');
+    
+    // Configurar cores baseadas no tipo
+    const colors = {
+        info: 'var(--primary)',
+        success: 'var(--success)',
+        warning: 'var(--warning)',
+        error: 'var(--danger)'
+    };
+    
+    statusEl.style.borderLeftColor = colors[type] || colors.info;
+    icon.style.color = colors[type] || colors.info;
+    
+    // Atualizar conteúdo
+    titleEl.textContent = title;
+    messageEl.textContent = message;
+    
+    // Mostrar
+    statusEl.style.display = 'block';
+    
+    // Ocultar automaticamente após 5 segundos
+    setTimeout(() => {
+        statusEl.style.display = 'none';
+    }, 5000);
+}
+
+</script>
+
 </body>
 </html>
+
+
