@@ -7,10 +7,10 @@
 
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@700&family=Inter:wght@300;400;500;600&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
-    /* Todos os estilos CSS originais permanecem aqui */
     :root {
       --bg-dark: #020617;
       --text-white: #ffffff;
@@ -284,7 +284,7 @@
     .price-card.featured .btn-select-plan { background: var(--primary); border-color: var(--primary); }
     .price-card.featured .btn-select-plan:hover { background: #2563eb; }
 
-    /* ================= MODAL ================= */
+    /* ================= MODAL DE PAGAMENTO ================= */
     #paymentModal {
       display: none; position: fixed; inset: 0;
       background: rgba(0,0,0,.9); z-index: 3000;
@@ -681,7 +681,6 @@
       transform: scale(1.1);
     }
 
-    /* NOVOS ESTILOS PARA ALERTAS E NOTIFICAÇÕES */
     .alerta-whatsapp-btn {
       background: #25D366;
       color: white;
@@ -753,7 +752,6 @@
       margin-bottom: 10px;
     }
 
-    /* Área de Notificações Administrativas */
     .notificacoes-badge {
       position: absolute;
       top: -8px;
@@ -781,16 +779,9 @@
       align-items: center;
     }
 
-    .notificacao-item .info {
-      flex: 1;
-    }
+    .notificacao-item .info { flex: 1; }
+    .notificacao-item .acoes { display: flex; gap: 10px; }
 
-    .notificacao-item .acoes {
-      display: flex;
-      gap: 10px;
-    }
-
-    /* CPF Input Styles */
     .cpf-input {
       font-family: monospace;
       letter-spacing: 1px;
@@ -812,51 +803,24 @@
       
       .pricing-grid { grid-template-columns: 1fr; max-width: 400px; }
 
-      .plataforma_modal_box {
-        width: 95%;
-        padding: 25px;
-        margin: 20px auto;
-      }
-
-      .plataforma_header {
-        padding: 0 20px;
-        height: 70px;
-      }
-
-      .plataforma_admin_grid {
-        grid-template-columns: 1fr;
-      }
-
-      .notificacao-item {
-        flex-direction: column;
-        gap: 10px;
-        align-items: flex-start;
-      }
-
-      .notificacao-item .acoes {
-        width: 100%;
-        justify-content: flex-end;
-      }
+      .plataforma_modal_box { width: 95%; padding: 25px; margin: 20px auto; }
+      .plataforma_header { padding: 0 20px; height: 70px; }
+      .plataforma_admin_grid { grid-template-columns: 1fr; }
+      .notificacao-item { flex-direction: column; gap: 10px; align-items: flex-start; }
+      .notificacao-item .acoes { width: 100%; justify-content: flex-end; }
     }
 
     @keyframes plataforma_fadeIn {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
-
-    .plataforma_fade_in {
-      animation: plataforma_fadeIn 0.5s ease-out;
-    }
-
+    .plataforma_fade_in { animation: plataforma_fadeIn 0.5s ease-out; }
     @keyframes pulse {
       0% { transform: scale(1); }
       50% { transform: scale(1.05); }
       100% { transform: scale(1); }
     }
-
-    .pulse {
-      animation: pulse 2s infinite;
-    }
+    .pulse { animation: pulse 2s infinite; }
   </style>
 </head>
 <body>
@@ -884,7 +848,6 @@
     <a href="#planos" class="nav-link"><i class="fas fa-layer-group"></i> Planos</a>
     <a href="#" class="nav-link"><i class="fas fa-book"></i> Base/KB</a>
     <a href="https://wa.me/5522992497662" target="_blank" class="nav-link"><i class="fas fa-headset"></i> Suporte</a>
-    <!-- NOVO BOTÃO: ACESSO DE CLIENTES -->
     <a href="#cliente" class="nav-link" onclick="plataforma_showLoginModal()">
       <i class="fas fa-user-tie"></i> Clientes
     </a>
@@ -1010,15 +973,12 @@
   </section>
 </main>
 
-<!-- Botão de acesso administrativo (oculto) -->
 <div id="plataforma_admin_access" title="Acesso Administrativo">
   <i class="fas fa-cogs"></i>
 </div>
 
-<!-- Overlay do Portal -->
 <div id="plataforma_overlay"></div>
 
-<!-- Portal do Cliente -->
 <div id="plataforma_client_portal" class="plataforma_container">
   <div class="plataforma_header">
     <div class="plataforma_header_brand">
@@ -1036,7 +996,6 @@
   </div>
 
   <div style="max-width: 1200px; margin: 0 auto; padding: 30px;">
-    <!-- Informações do Cliente -->
     <div class="plataforma_card plataforma_fade_in">
       <h2 class="plataforma_card_title" id="plataforma_client_name">
         <i class="fas fa-user-circle"></i> Carregando...
@@ -1057,7 +1016,6 @@
       </div>
     </div>
 
-    <!-- Projeto Atual -->
     <div class="plataforma_card plataforma_fade_in">
       <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
         <h2 class="plataforma_card_title">
@@ -1069,7 +1027,6 @@
       <h3 style="margin-bottom: 10px; color: #fff;" id="plataforma_project_title">Carregando projeto...</h3>
       <p style="color: rgba(255, 255, 255, 0.7); margin-bottom: 20px;" id="plataforma_project_desc"></p>
       
-      <!-- Progresso -->
       <div style="margin-bottom: 25px;">
         <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
           <span style="font-size: 0.9rem; color: rgba(255, 255, 255, 0.7);">Progresso</span>
@@ -1080,7 +1037,6 @@
         </div>
       </div>
 
-      <!-- Timeline -->
       <h3 style="margin: 25px 0 15px; color: #fff; font-size: 1.1rem;">
         <i class="fas fa-history"></i> Linha do Tempo
       </h3>
@@ -1092,7 +1048,6 @@
       </div>
     </div>
 
-    <!-- Links Importantes -->
     <div class="plataforma_card plataforma_fade_in">
       <h2 class="plataforma_card_title">
         <i class="fas fa-link"></i> Links Importantes
@@ -1107,7 +1062,6 @@
       </ul>
     </div>
 
-    <!-- Orientações -->
     <div class="plataforma_card plataforma_fade_in">
       <h2 class="plataforma_card_title">
         <i class="fas fa-graduation-cap"></i> Orientações
@@ -1120,7 +1074,6 @@
       </div>
     </div>
 
-    <!-- Prazos e Datas -->
     <div class="plataforma_card plataforma_fade_in">
       <h2 class="plataforma_card_title">
         <i class="fas fa-calendar-alt"></i> Prazos e Datas
@@ -1133,7 +1086,6 @@
       </div>
     </div>
 
-    <!-- Lembretes -->
     <div class="plataforma_card plataforma_fade_in">
       <h2 class="plataforma_card_title">
         <i class="fas fa-bell"></i> Lembretes
@@ -1148,7 +1100,6 @@
   </div>
 </div>
 
-<!-- Área Administrativa -->
 <div id="plataforma_admin_portal" class="plataforma_container">
   <div class="plataforma_header">
     <div class="plataforma_header_brand">
@@ -1175,7 +1126,6 @@
   </div>
 
   <div style="max-width: 1400px; margin: 0 auto; padding: 30px;">
-    <!-- Dashboard Admin -->
     <div id="plataforma_admin_dashboard">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
         <h1 style="font-size: 1.8rem; color: #fff;">Dashboard Administrativo</h1>
@@ -1184,7 +1134,6 @@
         </button>
       </div>
 
-      <!-- Cards de Resumo -->
       <div class="plataforma_admin_grid">
         <div class="plataforma_card">
           <h3 class="plataforma_card_title">
@@ -1219,7 +1168,6 @@
         </div>
       </div>
 
-      <!-- Lista de Clientes -->
       <div class="plataforma_card" style="margin-top: 30px;">
         <h3 class="plataforma_card_title">
           <i class="fas fa-list"></i> Lista de Clientes
@@ -1248,7 +1196,6 @@
       </div>
     </div>
 
-    <!-- Gestão de Clientes -->
     <div id="plataforma_admin_clientes" style="display: none;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
         <h1 style="font-size: 1.8rem; color: #fff;">
@@ -1260,7 +1207,6 @@
       </div>
 
       <div class="plataforma_admin_grid">
-        <!-- Formulário de Cadastro -->
         <div class="plataforma_card">
           <h3 class="plataforma_card_title">
             <i class="fas fa-plus-circle"></i> Novo Cliente
@@ -1302,7 +1248,6 @@
           </button>
         </div>
 
-        <!-- Formulário de Projeto -->
         <div class="plataforma_card">
           <h3 class="plataforma_card_title">
             <i class="fas fa-project-diagram"></i> Projeto do Cliente
@@ -1348,7 +1293,6 @@
           </button>
         </div>
 
-        <!-- Gestão de Conteúdo -->
         <div class="plataforma_card">
           <h3 class="plataforma_card_title">
             <i class="fas fa-cog"></i> Conteúdo do Portal
@@ -1398,7 +1342,6 @@
       </div>
     </div>
 
-    <!-- Notificações de Vencimentos -->
     <div id="plataforma_admin_notificacoes" style="display: none;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
         <h1 style="font-size: 1.8rem; color: #fff;">
@@ -1455,7 +1398,6 @@ Acesse seu portal para mais detalhes: {link_portal}
   </div>
 </div>
 
-<!-- Modal de Login do Cliente (ATUALIZADO PARA CPF) -->
 <div id="plataforma_login_modal" class="plataforma_container">
   <div style="display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px;">
     <div class="plataforma_modal_box plataforma_fade_in">
@@ -1491,7 +1433,6 @@ Acesse seu portal para mais detalhes: {link_portal}
   </div>
 </div>
 
-<!-- Modal de Login Admin (ATUALIZADO COM SUPABASE) -->
 <div id="plataforma_admin_modal">
   <div class="plataforma_modal_box plataforma_fade_in">
     <div style="text-align: center; margin-bottom: 30px;">
@@ -1503,22 +1444,13 @@ Acesse seu portal para mais detalhes: {link_portal}
     </div>
 
     <div class="plataforma_input_group">
-      <label class="plataforma_label">Email</label>
-      <input type="email" class="plataforma_input" id="plataforma_admin_email" placeholder="seu@email.com">
+      <label class="plataforma_label">Senha de Administrador</label>
+      <input type="password" class="plataforma_input" id="plataforma_admin_senha" placeholder="Digite a senha administrativa">
     </div>
 
-    <div class="plataforma_input_group">
-      <label class="plataforma_label">Senha</label>
-      <input type="password" class="plataforma_input" id="plataforma_admin_senha" placeholder="Digite sua senha">
-    </div>
-
-    <button class="plataforma_btn plataforma_btn_primary" style="width: 100%; background: #ef4444; margin-top: 20px;" onclick="plataforma_admin_login()">
-      <i class="fas fa-lock"></i> Entrar no Sistema
+    <button class="plataforma_btn plataforma_btn_primary" style="width: 100%; background: #ef4444;" onclick="plataforma_admin_login()">
+      <i class="fas fa-lock"></i> Acessar
     </button>
-
-    <div id="plataforma_admin_error" style="color: #f87171; text-align: center; margin-top: 15px; display: none;">
-      <i class="fas fa-exclamation-circle"></i> <span id="plataforma_admin_error_msg"></span>
-    </div>
 
     <div style="text-align: center; margin-top: 20px;">
       <button class="plataforma_btn plataforma_btn_secondary" onclick="plataforma_admin_fecharModal()">
@@ -1528,7 +1460,6 @@ Acesse seu portal para mais detalhes: {link_portal}
   </div>
 </div>
 
-<!-- Modal de Pagamento Original -->
 <div id="paymentModal">
   <div class="modal-box">
     <div style="font-size: 3rem; color: var(--primary); margin-bottom: 15px;">
@@ -1545,9 +1476,8 @@ Acesse seu portal para mais detalhes: {link_portal}
     </div>
   </div>
 </div>
-
 <script>
-  // ==================== SISTEMA EXISTENTE (NÃO ALTERAR) ====================
+  // ==================== LÓGICA DE INTERFACE (MODAL PAGAMENTO) ====================
   let planoSelecionado = "";
   let valorSelecionado = "";
 
@@ -1587,141 +1517,19 @@ Acesse seu portal para mais detalhes: {link_portal}
     if (event.target == modal) closePayment();
   }
 
-  // =========================================================================
-  // CONFIGURAÇÃO SUPABASE & AUTENTICAÇÃO
-  // =========================================================================
-  const SUPABASE_URL = 'https://rjyxkouegrropsarrhje.supabase.co';
-  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJqeXhrb3VlZ3Jyb3BzYXJyaGplIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk1NjYxNjcsImV4cCI6MjA4NTE0MjE2N30.UjNPnVBVhQcUSirXeWZ3RmYmAhDMqqbbVUChG_Mv57U';
-
-  // Inicializa Cliente Supabase
-  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-  const authManager = {
-    // Verifica sessão atual ao carregar
-    init: async () => {
-      try {
-        const { data: { session }, error } = await supabaseClient.auth.getSession();
-        if (error) {
-          console.error('Erro ao verificar sessão:', error);
-          return;
-        }
-        
-        if (session) {
-          console.log('Usuário já autenticado:', session.user.email);
-          authManager.handleAdminLoginSuccess(session);
-        } else {
-          console.log('Nenhuma sessão ativa encontrada');
-        }
-      } catch (error) {
-        console.error('Erro na inicialização do auth:', error);
-      }
-    },
-
-    // Login do administrador
-    login: async () => {
-      const email = document.getElementById('plataforma_admin_email').value.trim();
-      const password = document.getElementById('plataforma_admin_senha').value.trim();
-      const errorMsg = document.getElementById('plataforma_admin_error');
-      const errorText = document.getElementById('plataforma_admin_error_msg');
-      const btn = document.querySelector('#plataforma_admin_modal .plataforma_btn_primary');
-
-      if (!email || !password) {
-        errorText.textContent = 'Preencha email e senha.';
-        errorMsg.style.display = 'block';
-        return;
-      }
-
-      const originalText = btn.innerHTML;
-      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Autenticando...';
-      btn.disabled = true;
-      errorMsg.style.display = 'none';
-
-      try {
-        const { data, error } = await supabaseClient.auth.signInWithPassword({
-          email: email,
-          password: password
-        });
-
-        if (error) {
-          throw error;
-        }
-
-        authManager.handleAdminLoginSuccess(data.session);
-        
-      } catch (error) {
-        console.error('Erro no login:', error);
-        errorText.textContent = 'Erro: ' + error.message;
-        errorMsg.style.display = 'block';
-        btn.innerHTML = originalText;
-        btn.disabled = false;
-      }
-    },
-
-    handleAdminLoginSuccess: (session) => {
-      console.log('Login admin bem sucedido:', session.user.email);
-      plataforma.isAdmin = true;
-      plataforma.currentUser = {
-        id: session.user.id,
-        email: session.user.email,
-        nome: 'Administrador'
-      };
-      
-      document.getElementById('plataforma_admin_modal').style.display = 'none';
-      plataforma_showAdminPortal();
-      
-      // Fechar qualquer overlay
-      document.getElementById('plataforma_overlay').style.display = 'none';
-    },
-
-    // Logout
-    logout: async () => {
-      if (confirm("Deseja sair do sistema?")) {
-        await supabaseClient.auth.signOut();
-        plataforma.isAdmin = false;
-        plataforma.currentUser = null;
-        document.getElementById('plataforma_overlay').style.display = 'none';
-        document.getElementById('plataforma_admin_portal').style.display = 'none';
-        document.getElementById('plataforma_client_portal').style.display = 'none';
-        document.getElementById('plataforma_login_modal').style.display = 'none';
-      }
-    }
-  };
-
-  // Inicia verificação de Auth imediatamente
-  window.addEventListener('DOMContentLoaded', function() {
-    authManager.init();
-    
-    // Configurar evento para o botão de login admin
-    const adminPasswordInput = document.getElementById('plataforma_admin_senha');
-    if (adminPasswordInput) {
-      adminPasswordInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-          authManager.login();
-        }
-      });
-    }
-  });
-
-  // ==================== PORTAL DO CLIENTE (ATUALIZADO PARA SUPABASE) ====================
+  // ==================== LÓGICA DO BANCO DE DADOS (CORRIGIDA) ====================
+  // Centraliza as operações no banco 'lg_crmDB' usando sufixo '_plataforma'
+  
   const plataforma = {
+    db: null,
+    dbName: 'lg_crmDB', // Banco principal compartilhado
+    dbVersion: 9,       // Versão para garantir atualização da estrutura
+    adminPassword: 'admin@legacy2024',
     currentUser: null,
     isAdmin: false,
     configAlertas: {
       diasAntecedencia: 3,
       mensagemPadrao: `Olá {nome}! Este é um lembrete sobre o prazo: {titulo}\nVencimento: {data}\nAcesse seu portal para mais detalhes: {link_portal}`
-    },
-    
-    // Nomes das tabelas no Supabase
-    TABLES: {
-      CLIENTES: 'clientesplataforma',
-      PROJETOS: 'projetosplataforma',
-      LINKS: 'linksplataforma',
-      ORIENTACOES: 'orientacoesplataforma',
-      PRAZOS: 'prazosplataforma',
-      LEMBRETES: 'lembretesplataforma',
-      ALERTAS: 'alertasplataforma',
-      ETAPAS: 'etapasplataforma',
-      CONFIG: 'configplataforma'
     }
   };
 
@@ -1734,7 +1542,7 @@ Acesse seu portal para mais detalhes: {link_portal}
     return cpf;
   }
 
-  // Aplicar máscara de CPF nos inputs
+  // Inicialização dos inputs
   document.addEventListener('DOMContentLoaded', function() {
     const cpfInputs = document.querySelectorAll('.cpf-input');
     cpfInputs.forEach(input => {
@@ -1746,425 +1554,273 @@ Acesse seu portal para mais detalhes: {link_portal}
     });
   });
 
-  // Inicialização do sistema
-  function plataforma_init() {
-    console.log('Sistema de Portal do Cliente inicializado (Supabase)');
-    
-    // Carregar configurações de alertas
-    plataforma_carregarConfigAlertas();
+  // Inicialização do IndexedDB
+  function plataforma_initDB() {
+    return new Promise((resolve, reject) => {
+      // Abre o banco compartilhado lg_crmDB
+      const request = indexedDB.open(plataforma.dbName, plataforma.dbVersion);
+      
+      request.onerror = (event) => {
+        console.error('Erro ao abrir o banco de dados:', event.target.error);
+        reject(event.target.error);
+      };
+      
+      request.onsuccess = (event) => {
+        plataforma.db = event.target.result;
+        console.log(`Banco de dados ${plataforma.dbName} conectado.`);
+        
+        // Carregar configurações iniciais
+        plataforma_carregarConfigAlertas();
+        
+        resolve(plataforma.db);
+      };
+      
+      // Criação das tabelas com sufixo _plataforma
+      request.onupgradeneeded = (event) => {
+        const db = event.target.result;
+        
+        // Cria tabelas apenas se não existirem (Safe Check)
+        const createStore = (name, keyPath, indexes = []) => {
+          if (!db.objectStoreNames.contains(name)) {
+            const store = db.createObjectStore(name, { keyPath: keyPath, autoIncrement: true });
+            indexes.forEach(idx => store.createIndex(idx.name, idx.key, { unique: idx.unique || false }));
+            console.log(`Tabela criada: ${name}`);
+          }
+        };
+
+        createStore('clientes_plataforma', 'id', [{name: 'cpf', key: 'cpf', unique: true}, {name: 'status', key: 'status'}]);
+        createStore('projetos_plataforma', 'id', [{name: 'clienteId', key: 'clienteId'}, {name: 'status', key: 'status'}]);
+        createStore('etapas_plataforma', 'id', [{name: 'projetoId', key: 'projetoId'}, {name: 'data', key: 'data'}]);
+        createStore('links_plataforma', 'id', [{name: 'clienteId', key: 'clienteId'}]);
+        createStore('orientacoes_plataforma', 'id', [{name: 'clienteId', key: 'clienteId'}]);
+        createStore('prazos_plataforma', 'id', [{name: 'clienteId', key: 'clienteId'}, {name: 'data', key: 'data'}, {name: 'statusAlerta', key: 'statusAlerta'}]);
+        createStore('lembretes_plataforma', 'id', [{name: 'clienteId', key: 'clienteId'}]);
+        createStore('alertas_plataforma', 'id', [{name: 'clienteId', key: 'clienteId'}, {name: 'prazoId', key: 'prazoId'}, {name: 'status', key: 'status'}]);
+        createStore('config_plataforma', 'id', [{name: 'chave', key: 'chave', unique: true}]);
+        createStore('usuarios_plataforma', 'id', [{name: 'tipo', key: 'tipo'}]);
+        
+        // Dados de demonstração/inicialização
+        const transaction = event.target.transaction;
+        
+        // Config Padrão
+        const configStore = transaction.objectStore('config_plataforma');
+        configStore.add({ chave: 'alertas_config', valor: JSON.stringify(plataforma.configAlertas) });
+
+        // Cliente Demo (opcional, para teste)
+        const clientesStore = transaction.objectStore('clientes_plataforma');
+        clientesStore.add({
+            nome: 'Cliente Demonstração',
+            email: 'demo@legacyplatform.com',
+            cpf: '12345678900',
+            whatsapp: '5522999999999',
+            status: 'ativo',
+            dataCadastro: new Date().toISOString()
+        });
+      };
+    });
   }
 
-  // Login do cliente via CPF
-  function plataforma_login() {
-    let cpf = document.getElementById('plataforma_input_cpf').value.trim();
-    cpf = cpf.replace(/\D/g, ''); // Remover formatação
-    
-    if (!cpf || cpf.length !== 11) {
-      alert('Por favor, digite um CPF válido (11 dígitos)');
-      return;
-    }
-    
-    // Buscar cliente no Supabase
-    plataforma_buscarClientePorCPF(cpf);
-  }
+  // --- Funções Auxiliares de Banco de Dados ---
 
-  async function plataforma_buscarClientePorCPF(cpf) {
+  async function plataforma_carregarConfigAlertas() {
+    if(!plataforma.db) return;
     try {
-      const { data, error } = await supabaseClient
-        .from(plataforma.TABLES.CLIENTES)
-        .select('*')
-        .eq('cpf', cpf)
-        .single();
-
-      if (error) {
-        if (error.code === 'PGRST116') {
-          alert('CPF não encontrado. Entre em contato com o suporte.');
-        } else {
-          console.error('Erro ao buscar cliente:', error);
-          alert('Erro ao buscar cliente: ' + error.message);
+      const transaction = plataforma.db.transaction(['config_plataforma'], 'readonly');
+      const store = transaction.objectStore('config_plataforma');
+      const index = store.index('chave');
+      const request = index.get('alertas_config');
+      
+      request.onsuccess = (event) => {
+        const config = event.target.result;
+        if (config && config.valor) {
+          plataforma.configAlertas = JSON.parse(config.valor);
+          const diasInput = document.getElementById('plataforma_alerta_dias');
+          const mensagemInput = document.getElementById('plataforma_alerta_mensagem');
+          if (diasInput) diasInput.value = plataforma.configAlertas.diasAntecedencia;
+          if (mensagemInput) mensagemInput.value = plataforma.configAlertas.mensagemPadrao;
         }
-        return;
-      }
-
-      if (data.status !== 'ativo') {
-        alert('Conta inativa. Entre em contato com o suporte.');
-        return;
-      }
-
-      // Cliente válido, fazer login
-      plataforma.currentUser = data;
-      
-      // Atualizar último acesso
-      await supabaseClient
-        .from(plataforma.TABLES.CLIENTES)
-        .update({ ultimo_acesso: new Date().toISOString() })
-        .eq('id', data.id);
-
-      plataforma_showClientPortal();
-      
-    } catch (error) {
-      console.error('Erro ao buscar cliente:', error);
-      alert('Erro ao processar login. Tente novamente.');
-    }
+      };
+    } catch (e) { console.log('Config ainda não carregada'); }
   }
 
-  // Logout
+  async function plataforma_admin_salvarConfigAlertas() {
+    const dias = parseInt(document.getElementById('plataforma_alerta_dias').value);
+    const mensagem = document.getElementById('plataforma_alerta_mensagem').value.trim();
+    
+    plataforma.configAlertas.diasAntecedencia = dias;
+    plataforma.configAlertas.mensagemPadrao = mensagem;
+    
+    const transaction = plataforma.db.transaction(['config_plataforma'], 'readwrite');
+    const store = transaction.objectStore('config_plataforma');
+    const index = store.index('chave');
+    
+    index.get('alertas_config').onsuccess = (e) => {
+      const data = e.target.result || { chave: 'alertas_config' };
+      data.valor = JSON.stringify(plataforma.configAlertas);
+      store.put(data);
+      alert('Configurações salvas!');
+    };
+  }
+
+  // --- Autenticação ---
+
+  async function plataforma_login() {
+    let cpf = document.getElementById('plataforma_input_cpf').value.replace(/\D/g, '');
+    
+    if (cpf.length !== 11) { alert('CPF inválido'); return; }
+    
+    const transaction = plataforma.db.transaction(['clientes_plataforma'], 'readwrite');
+    const store = transaction.objectStore('clientes_plataforma');
+    const index = store.index('cpf');
+    
+    index.get(cpf).onsuccess = (e) => {
+      const cliente = e.target.result;
+      if (cliente && cliente.status === 'ativo') {
+        plataforma.currentUser = cliente;
+        cliente.ultimoAcesso = new Date().toISOString();
+        store.put(cliente); // Atualiza último acesso
+        plataforma_showClientPortal();
+      } else {
+        alert('Cliente não encontrado ou inativo.');
+      }
+    };
+  }
+
   function plataforma_logout() {
     plataforma.currentUser = null;
     plataforma.isAdmin = false;
     plataforma_showLoginModal();
   }
 
-  // Mostrar portal do cliente
+  function plataforma_showLoginModal() {
+    document.getElementById('plataforma_overlay').style.display = 'block';
+    document.getElementById('plataforma_login_modal').style.display = 'block';
+    document.getElementById('plataforma_client_portal').style.display = 'none';
+    document.getElementById('plataforma_admin_portal').style.display = 'none';
+    document.getElementById('plataforma_input_cpf').value = '';
+  }
+
+  function plataforma_fecharLoginModal() {
+    document.getElementById('plataforma_overlay').style.display = 'none';
+    document.getElementById('plataforma_login_modal').style.display = 'none';
+  }
+
+  // --- Portal do Cliente ---
+
   function plataforma_showClientPortal() {
     document.getElementById('plataforma_overlay').style.display = 'block';
     document.getElementById('plataforma_client_portal').style.display = 'block';
     document.getElementById('plataforma_login_modal').style.display = 'none';
-    
     plataforma_carregarDadosCliente();
   }
 
-  // Carregar dados do cliente
-  async function plataforma_carregarDadosCliente() {
-    if (!plataforma.currentUser) return;
+  function plataforma_carregarDadosCliente() {
+    const user = plataforma.currentUser;
+    if(!user) return;
+
+    document.getElementById('plataforma_client_name').innerHTML = `<i class="fas fa-user-circle"></i> ${user.nome}`;
+    document.getElementById('plataforma_client_cpf').textContent = formatarCPF(user.cpf);
+    document.getElementById('plataforma_last_access').textContent = new Date().toLocaleDateString('pt-BR');
+
+    // Carregar Projeto
+    const tx = plataforma.db.transaction(['projetos_plataforma', 'etapas_plataforma', 'links_plataforma', 'orientacoes_plataforma', 'prazos_plataforma', 'lembretes_plataforma'], 'readonly');
     
-    // Atualizar nome do cliente
-    document.getElementById('plataforma_client_name').innerHTML = 
-      `<i class="fas fa-user-circle"></i> ${plataforma.currentUser.nome}`;
-    
-    // Atualizar último acesso
-    const lastAccess = plataforma.currentUser.ultimo_acesso 
-      ? new Date(plataforma.currentUser.ultimo_acesso).toLocaleString('pt-BR')
-      : 'Primeiro acesso';
-    document.getElementById('plataforma_last_access').textContent = lastAccess;
-    
-    // Mostrar CPF formatado
-    if (plataforma.currentUser.cpf) {
-      document.getElementById('plataforma_client_cpf').textContent = 
-        formatarCPF(plataforma.currentUser.cpf);
-    }
-    
-    // Carregar dados
-    await plataforma_carregarProjetoCliente();
-    await plataforma_carregarLinksCliente();
-    await plataforma_carregarOrientacoesCliente();
-    await plataforma_carregarPrazosCliente();
-    await plataforma_carregarLembretesCliente();
-  }
+    // Projeto
+    const projStore = tx.objectStore('projetos_plataforma').index('clienteId');
+    projStore.get(user.id).onsuccess = (e) => {
+        const proj = e.target.result;
+        if(proj) {
+            document.getElementById('plataforma_project_title').textContent = proj.titulo;
+            document.getElementById('plataforma_project_desc').textContent = proj.descricao;
+            document.getElementById('plataforma_project_status').className = `plataforma_status ${proj.status}`;
+            document.getElementById('plataforma_project_status').textContent = proj.status;
+            document.getElementById('plataforma_progress_bar').style.width = `${proj.progresso}%`;
+            document.getElementById('plataforma_progress_text').textContent = `${proj.progresso}%`;
+            
+            // Etapas
+            const etapasStore = tx.objectStore('etapas_plataforma').index('projetoId');
+            etapasStore.getAll(proj.id).onsuccess = (ev) => {
+                const timeline = document.getElementById('plataforma_timeline');
+                timeline.innerHTML = '';
+                const etapas = ev.target.result || [];
+                etapas.sort((a,b) => new Date(a.data) - new Date(b.data)).forEach(etapa => {
+                    timeline.innerHTML += `
+                        <div class="plataforma_timeline_item">
+                          <div class="plataforma_timeline_date">${new Date(etapa.data).toLocaleDateString()}</div>
+                          <div style="color: rgba(255, 255, 255, 0.9);">${etapa.titulo}</div>
+                          <div style="color: rgba(255, 255, 255, 0.6); font-size: 0.9rem;">${etapa.descricao}</div>
+                        </div>`;
+                });
+            };
+        } else {
+            document.getElementById('plataforma_project_title').textContent = "Nenhum projeto ativo";
+        }
+    };
 
-  // Carregar projeto do cliente
-  async function plataforma_carregarProjetoCliente() {
-    if (!plataforma.currentUser) return;
-    
-    try {
-      const { data, error } = await supabaseClient
-        .from(plataforma.TABLES.PROJETOS)
-        .select('*')
-        .eq('cliente_id', plataforma.currentUser.id)
-        .single();
+    // Links
+    tx.objectStore('links_plataforma').index('clienteId').getAll(user.id).onsuccess = (e) => {
+        const list = document.getElementById('plataforma_links_list');
+        list.innerHTML = e.target.result.map(l => `<li><a href="${l.url}" target="_blank" class="plataforma_link_item"><i class="fas fa-link"></i> ${l.nome}</a></li>`).join('') || '<li>Sem links</li>';
+    };
 
-      if (error && error.code !== 'PGRST116') {
-        console.error('Erro ao buscar projeto:', error);
-      }
-
-      if (data) {
-        document.getElementById('plataforma_project_title').textContent = data.titulo;
-        document.getElementById('plataforma_project_desc').textContent = data.descricao || 'Sem descrição';
-        document.getElementById('plataforma_project_status').textContent = data.status;
-        document.getElementById('plataforma_project_status').className = `plataforma_status ${data.status}`;
-        
-        const progresso = data.progresso || 0;
-        document.getElementById('plataforma_progress_text').textContent = `${progresso}%`;
-        document.getElementById('plataforma_progress_bar').style.width = `${progresso}%`;
-        
-        await plataforma_carregarEtapasProjeto(data.id);
-      } else {
-        document.getElementById('plataforma_project_title').textContent = 'Nenhum projeto encontrado';
-        document.getElementById('plataforma_project_desc').textContent = 'Entre em contato com o administrador';
-        document.getElementById('plataforma_project_status').textContent = 'Não iniciado';
-      }
-    } catch (error) {
-      console.error('Erro ao carregar projeto:', error);
-    }
-  }
-
-  // Carregar etapas do projeto
-  async function plataforma_carregarEtapasProjeto(projetoId) {
-    try {
-      const { data, error } = await supabaseClient
-        .from(plataforma.TABLES.ETAPAS)
-        .select('*')
-        .eq('projeto_id', projetoId)
-        .order('data', { ascending: true });
-
-      if (error) {
-        console.error('Erro ao buscar etapas:', error);
-        return;
-      }
-
-      const timeline = document.getElementById('plataforma_timeline');
-      timeline.innerHTML = '';
-      
-      if (data && data.length > 0) {
-        data.forEach(etapa => {
-          const item = document.createElement('div');
-          item.className = 'plataforma_timeline_item';
-          
-          const date = new Date(etapa.data).toLocaleDateString('pt-BR');
-          item.innerHTML = `
-            <div class="plataforma_timeline_date">${date}</div>
-            <div style="color: rgba(255, 255, 255, 0.9);">${etapa.titulo}</div>
-            <div style="color: rgba(255, 255, 255, 0.6); font-size: 0.9rem; margin-top: 5px;">${etapa.descricao || ''}</div>
-          `;
-          
-          timeline.appendChild(item);
+    // Prazos
+    tx.objectStore('prazos_plataforma').index('clienteId').getAll(user.id).onsuccess = (e) => {
+        const container = document.getElementById('plataforma_prazos');
+        container.innerHTML = '';
+        e.target.result.forEach(p => {
+            const diff = Math.ceil((new Date(p.data) - new Date()) / (1000*60*60*24));
+            const cls = diff < 0 ? 'vencido' : (diff < 3 ? 'proximo' : 'ok');
+            container.innerHTML += `<div class="vencimento-item ${cls}"><div><strong>${p.titulo}</strong><br><small>${new Date(p.data).toLocaleDateString()}</small></div></div>`;
         });
-      } else {
-        timeline.innerHTML = `
-          <div class="plataforma_timeline_item">
-            <div class="plataforma_timeline_date">${new Date().toLocaleDateString('pt-BR')}</div>
-            <div style="color: rgba(255, 255, 255, 0.9);">Projeto iniciado</div>
-          </div>
-        `;
-      }
-    } catch (error) {
-      console.error('Erro ao carregar etapas:', error);
-    }
+    };
   }
 
-  // Carregar links do cliente
-  async function plataforma_carregarLinksCliente() {
-    if (!plataforma.currentUser) return;
-    
-    try {
-      const { data, error } = await supabaseClient
-        .from(plataforma.TABLES.LINKS)
-        .select('*')
-        .eq('cliente_id', plataforma.currentUser.id);
+  // --- Área Administrativa ---
 
-      if (error) {
-        console.error('Erro ao buscar links:', error);
-        return;
-      }
-
-      const linksList = document.getElementById('plataforma_links_list');
-      linksList.innerHTML = '';
-      
-      if (data && data.length > 0) {
-        data.forEach(link => {
-          const li = document.createElement('li');
-          li.innerHTML = `
-            <a href="${link.url}" target="_blank" class="plataforma_link_item">
-              <i class="fas fa-external-link-alt"></i>
-              <span>${link.nome}</span>
-            </a>
-          `;
-          linksList.appendChild(li);
-        });
-      } else {
-        linksList.innerHTML = `
-          <li>
-            <div class="plataforma_link_item" style="opacity: 0.7;">
-              <i class="fas fa-info-circle"></i>
-              <span>Nenhum link disponível no momento</span>
-            </div>
-          </li>
-        `;
-      }
-    } catch (error) {
-      console.error('Erro ao carregar links:', error);
-    }
-  }
-
-  // Carregar orientações do cliente
-  async function plataforma_carregarOrientacoesCliente() {
-    if (!plataforma.currentUser) return;
-    
-    try {
-      const { data, error } = await supabaseClient
-        .from(plataforma.TABLES.ORIENTACOES)
-        .select('*')
-        .eq('cliente_id', plataforma.currentUser.id);
-
-      if (error) {
-        console.error('Erro ao buscar orientações:', error);
-        return;
-      }
-
-      const container = document.getElementById('plataforma_orientacoes');
-      container.innerHTML = '';
-      
-      if (data && data.length > 0) {
-        data.forEach(orientacao => {
-          const alert = document.createElement('div');
-          alert.className = 'plataforma_alert info';
-          alert.innerHTML = `
-            <i class="fas fa-info-circle"></i>
-            <div>${orientacao.texto}</div>
-          `;
-          container.appendChild(alert);
-        });
-      } else {
-        container.innerHTML = `
-          <div class="plataforma_alert info">
-            <i class="fas fa-info-circle"></i>
-            <div>Nenhuma orientação disponível no momento.</div>
-          </div>
-        `;
-      }
-    } catch (error) {
-      console.error('Erro ao carregar orientações:', error);
-    }
-  }
-
-  // Carregar prazos do cliente
-  async function plataforma_carregarPrazosCliente() {
-    if (!plataforma.currentUser) return;
-    
-    try {
-      const { data, error } = await supabaseClient
-        .from(plataforma.TABLES.PRAZOS)
-        .select('*')
-        .eq('cliente_id', plataforma.currentUser.id);
-
-      if (error) {
-        console.error('Erro ao buscar prazos:', error);
-        return;
-      }
-
-      const container = document.getElementById('plataforma_prazos');
-      container.innerHTML = '';
-      
-      if (data && data.length > 0) {
-        data.sort((a, b) => new Date(a.data) - new Date(b.data)).forEach(prazo => {
-          const date = new Date(prazo.data).toLocaleDateString('pt-BR');
-          const today = new Date();
-          const prazoDate = new Date(prazo.data);
-          const diffTime = prazoDate - today;
-          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-          
-          let statusClass = 'ok';
-          let vencimentoClass = 'ok';
-          if (diffDays < 0) {
-            statusClass = 'danger';
-            vencimentoClass = 'vencido';
-          } else if (diffDays <= 3) {
-            statusClass = 'warning';
-            vencimentoClass = 'proximo';
-          }
-          
-          const item = document.createElement('div');
-          item.className = `vencimento-item ${vencimentoClass}`;
-          item.innerHTML = `
-            <div>
-              <strong>${prazo.titulo}</strong><br>
-              <small>Vencimento: ${date} (${diffDays >= 0 ? `${diffDays} dias restantes` : 'VENCIDO'})</small>
-            </div>
-            <span class="alerta-status ${prazo.status_alerta || 'pendente'}">
-              ${prazo.status_alerta === 'enviado' ? '✔️ Enviado' : '⏳ Pendente'}
-            </span>
-          `;
-          container.appendChild(item);
-        });
-      } else {
-        container.innerHTML = `
-          <div class="plataforma_alert info">
-            <i class="fas fa-info-circle"></i>
-            <div>Nenhum prazo definido no momento.</div>
-          </div>
-        `;
-      }
-    } catch (error) {
-      console.error('Erro ao carregar prazos:', error);
-    }
-  }
-
-  // Carregar lembretes do cliente
-  async function plataforma_carregarLembretesCliente() {
-    if (!plataforma.currentUser) return;
-    
-    try {
-      const { data, error } = await supabaseClient
-        .from(plataforma.TABLES.LEMBRETES)
-        .select('*')
-        .eq('cliente_id', plataforma.currentUser.id);
-
-      if (error) {
-        console.error('Erro ao buscar lembretes:', error);
-        return;
-      }
-
-      const container = document.getElementById('plataforma_lembretes');
-      container.innerHTML = '';
-      
-      if (data && data.length > 0) {
-        data.forEach(lembrete => {
-          const item = document.createElement('div');
-          item.className = 'lembrete-item';
-          item.innerHTML = `
-            <i class="fas fa-sticky-note" style="color: var(--primary);"></i>
-            <div style="flex: 1;">
-              ${lembrete.texto}
-              ${lembrete.data ? `<br><small style="color: rgba(255,255,255,0.5);">${new Date(lembrete.data).toLocaleDateString('pt-BR')}</small>` : ''}
-            </div>
-          `;
-          container.appendChild(item);
-        });
-      } else {
-        container.innerHTML = `
-          <div class="plataforma_alert info">
-            <i class="fas fa-info-circle"></i>
-            <div>Nenhum lembrete disponível no momento.</div>
-          </div>
-        `;
-      }
-    } catch (error) {
-      console.error('Erro ao carregar lembretes:', error);
-    }
-  }
-
-  // ==================== ÁREA ADMINISTRATIVA COM SUPABASE ====================
   document.getElementById('plataforma_admin_access').addEventListener('click', () => {
     document.getElementById('plataforma_admin_modal').style.display = 'flex';
   });
 
   function plataforma_admin_fecharModal() {
     document.getElementById('plataforma_admin_modal').style.display = 'none';
-    document.getElementById('plataforma_admin_email').value = '';
-    document.getElementById('plataforma_admin_senha').value = '';
-    document.getElementById('plataforma_admin_error').style.display = 'none';
   }
 
   function plataforma_admin_login() {
-    authManager.login();
+    const senha = document.getElementById('plataforma_admin_senha').value;
+    if (senha === plataforma.adminPassword) {
+      plataforma.isAdmin = true;
+      plataforma_admin_fecharModal();
+      plataforma_showAdminPortal();
+    } else {
+      alert('Senha incorreta');
+    }
   }
 
   function plataforma_showAdminPortal() {
     document.getElementById('plataforma_overlay').style.display = 'block';
     document.getElementById('plataforma_admin_portal').style.display = 'block';
-    document.getElementById('plataforma_admin_modal').style.display = 'none';
-    
     plataforma_admin_carregarDashboard();
     plataforma_admin_carregarClientesSelect();
   }
 
   function plataforma_admin_logout() {
-    authManager.logout();
+    plataforma.isAdmin = false;
+    document.getElementById('plataforma_overlay').style.display = 'none';
+    document.getElementById('plataforma_admin_portal').style.display = 'none';
   }
 
   function plataforma_admin_showSection(section) {
-    document.getElementById('plataforma_admin_dashboard').style.display = 'none';
-    document.getElementById('plataforma_admin_clientes').style.display = 'none';
-    document.getElementById('plataforma_admin_notificacoes').style.display = 'none';
+    ['dashboard', 'clientes', 'notificacoes'].forEach(s => {
+        const el = document.getElementById(`plataforma_admin_${s}`);
+        if(el) el.style.display = 'none';
+    });
     
-    if (section === 'clientes') {
-      document.getElementById('plataforma_admin_clientes').style.display = 'block';
-    } else if (section === 'notificacoes') {
-      document.getElementById('plataforma_admin_notificacoes').style.display = 'block';
-      plataforma_admin_carregarAlertas();
-    } else {
-      document.getElementById('plataforma_admin_dashboard').style.display = 'block';
+    if (section === 'clientes') document.getElementById('plataforma_admin_clientes').style.display = 'block';
+    else if (section === 'notificacoes') {
+        document.getElementById('plataforma_admin_notificacoes').style.display = 'block';
+        plataforma_admin_carregarAlertas();
     }
+    else document.getElementById('plataforma_admin_dashboard').style.display = 'block';
   }
 
   function plataforma_admin_showDashboard() {
@@ -2173,763 +1829,275 @@ Acesse seu portal para mais detalhes: {link_portal}
   }
 
   async function plataforma_admin_carregarDashboard() {
-    try {
-      // Contar clientes
-      const { count: totalClientes, error: errorClientes } = await supabaseClient
-        .from(plataforma.TABLES.CLIENTES)
-        .select('*', { count: 'exact', head: true });
-
-      if (!errorClientes) {
-        document.getElementById('plataforma_admin_total_clientes').textContent = totalClientes || 0;
-      }
-
-      // Contar projetos
-      const { count: totalProjetos, error: errorProjetos } = await supabaseClient
-        .from(plataforma.TABLES.PROJETOS)
-        .select('*', { count: 'exact', head: true });
-
-      if (!errorProjetos) {
-        document.getElementById('plataforma_admin_total_projetos').textContent = totalProjetos || 0;
-      }
-
-      // Contar alertas pendentes
-      const { count: totalAlertas, error: errorAlertas } = await supabaseClient
-        .from(plataforma.TABLES.ALERTAS)
-        .select('*', { count: 'exact', head: true })
-        .eq('status', 'pendente');
-
-      if (!errorAlertas) {
-        document.getElementById('plataforma_admin_total_alertas').textContent = totalAlertas || 0;
-      }
-
-      // Contar vencimentos hoje
-      const hoje = new Date().toISOString().split('T')[0];
-      const { count: totalVencimentos, error: errorVencimentos } = await supabaseClient
-        .from(plataforma.TABLES.PRAZOS)
-        .select('*', { count: 'exact', head: true })
-        .eq('data', hoje);
-
-      if (!errorVencimentos) {
-        document.getElementById('plataforma_admin_total_vencimentos').textContent = totalVencimentos || 0;
-      }
-
-      // Carregar lista de clientes
-      await plataforma_admin_carregarListaClientes();
-      
-      // Atualizar badge de notificações
-      plataforma_admin_atualizarBadgeNotificacoes();
-      
-    } catch (error) {
-      console.error('Erro ao carregar dashboard:', error);
-    }
-  }
-
-  async function plataforma_admin_carregarListaClientes() {
-    try {
-      const { data: clientes, error: errorClientes } = await supabaseClient
-        .from(plataforma.TABLES.CLIENTES)
-        .select('*');
-
-      const { data: projetos, error: errorProjetos } = await supabaseClient
-        .from(plataforma.TABLES.PROJETOS)
-        .select('*');
-
-      if (errorClientes) {
-        console.error('Erro ao carregar clientes:', errorClientes);
-        return;
-      }
-
-      const tbody = document.getElementById('plataforma_admin_clientes_list');
-      tbody.innerHTML = '';
-      
-      if (clientes && clientes.length > 0) {
-        clientes.forEach(cliente => {
-          const projeto = projetos ? projetos.find(p => p.cliente_id === cliente.id) : null;
-          const projetoNome = projeto ? projeto.titulo : 'Sem projeto';
-          
-          const statusBadge = cliente.status === 'ativo' 
-            ? '<span class="plataforma_badge success">Ativo</span>'
-            : cliente.status === 'inativo'
-            ? '<span class="plataforma_badge danger">Inativo</span>'
-            : '<span class="plataforma_badge warning">Pendente</span>';
-          
-          const row = document.createElement('tr');
-          row.innerHTML = `
-            <td><strong>${cliente.nome}</strong><br><small>${cliente.email}</small></td>
-            <td>${cliente.cpf ? formatarCPF(cliente.cpf) : 'Não cadastrado'}</td>
-            <td>${cliente.whatsapp || 'Não cadastrado'}</td>
-            <td>${statusBadge}</td>
-            <td>${projetoNome}</td>
-            <td>
-              <button class="alerta-whatsapp-btn" onclick="plataforma_admin_enviarAlertaCliente(${cliente.id})" title="Enviar alerta por WhatsApp">
-                <i class="fab fa-whatsapp"></i>
-              </button>
-            </td>
-          `;
-          
-          tbody.appendChild(row);
-        });
-      } else {
-        tbody.innerHTML = `
-          <tr>
-            <td colspan="6" style="text-align: center; padding: 40px; color: rgba(255, 255, 255, 0.5);">
-              <i class="fas fa-users-slash"></i> Nenhum cliente cadastrado
-            </td>
-          </tr>
-        `;
-      }
-    } catch (error) {
-      console.error('Erro ao carregar lista de clientes:', error);
-    }
-  }
-
-  async function plataforma_admin_carregarClientesSelect() {
-    try {
-      const { data: clientes, error } = await supabaseClient
-        .from(plataforma.TABLES.CLIENTES)
-        .select('id, nome, cpf')
-        .order('nome');
-
-      if (error) {
-        console.error('Erro ao carregar clientes para select:', error);
-        return;
-      }
-
-      const selects = [
-        'plataforma_projeto_cliente',
-        'plataforma_conteudo_cliente'
-      ];
-      
-      selects.forEach(selectId => {
-        const select = document.getElementById(selectId);
-        if (select) {
-          select.innerHTML = '<option value="">Selecione um cliente</option>';
-          if (clientes && clientes.length > 0) {
-            clientes.forEach(cliente => {
-              const option = document.createElement('option');
-              option.value = cliente.id;
-              option.textContent = `${cliente.nome} (${cliente.cpf ? formatarCPF(cliente.cpf) : 'Sem CPF'})`;
-              select.appendChild(option);
-            });
-          }
-        }
-      });
-    } catch (error) {
-      console.error('Erro ao carregar selects de clientes:', error);
-    }
-  }
-
-  async function plataforma_admin_salvarCliente() {
-    const nome = document.getElementById('plataforma_novo_nome').value.trim();
-    const email = document.getElementById('plataforma_novo_email').value.trim();
-    let cpf = document.getElementById('plataforma_novo_cpf').value.trim();
-    const whatsapp = document.getElementById('plataforma_novo_whatsapp').value.trim();
-    const status = document.getElementById('plataforma_novo_status').value;
+    const tx = plataforma.db.transaction(['clientes_plataforma', 'projetos_plataforma', 'prazos_plataforma'], 'readonly');
     
-    cpf = cpf.replace(/\D/g, '');
+    tx.objectStore('clientes_plataforma').count().onsuccess = (e) => 
+        document.getElementById('plataforma_admin_total_clientes').textContent = e.target.result;
     
-    if (!nome || !email || !cpf || cpf.length !== 11) {
-      alert('Por favor, preencha todos os campos obrigatórios com CPF válido (11 dígitos)');
-      return;
-    }
-    
-    try {
-      // Verificar se CPF já existe
-      const { data: clienteExistente, error: errorVerificacao } = await supabaseClient
-        .from(plataforma.TABLES.CLIENTES)
-        .select('id')
-        .eq('cpf', cpf)
-        .single();
-
-      if (clienteExistente) {
-        alert('CPF já cadastrado no sistema');
-        return;
-      }
-
-      const novoCliente = {
-        nome,
-        email,
-        cpf,
-        whatsapp,
-        status,
-        data_cadastro: new Date().toISOString(),
-        ultimo_acesso: null
-      };
-
-      const { data, error } = await supabaseClient
-        .from(plataforma.TABLES.CLIENTES)
-        .insert([novoCliente])
-        .select()
-        .single();
-
-      if (error) {
-        throw error;
-      }
-
-      alert('Cliente cadastrado com sucesso! CPF será a senha de acesso.');
-      document.getElementById('plataforma_novo_nome').value = '';
-      document.getElementById('plataforma_novo_email').value = '';
-      document.getElementById('plataforma_novo_cpf').value = '';
-      document.getElementById('plataforma_novo_whatsapp').value = '';
-      
-      plataforma_admin_carregarClientesSelect();
-      plataforma_admin_carregarListaClientes();
-      plataforma_admin_carregarDashboard();
-      
-    } catch (error) {
-      console.error('Erro ao salvar cliente:', error);
-      alert('Erro ao salvar cliente: ' + error.message);
-    }
-  }
-
-  async function plataforma_admin_carregarProjetoCliente() {
-    const clienteId = parseInt(document.getElementById('plataforma_projeto_cliente').value);
-    
-    if (!clienteId) return;
-    
-    try {
-      const { data, error } = await supabaseClient
-        .from(plataforma.TABLES.PROJETOS)
-        .select('*')
-        .eq('cliente_id', clienteId)
-        .single();
-
-      if (error && error.code !== 'PGRST116') {
-        console.error('Erro ao buscar projeto:', error);
-      }
-
-      if (data) {
-        document.getElementById('plataforma_projeto_titulo').value = data.titulo || '';
-        document.getElementById('plataforma_projeto_desc').value = data.descricao || '';
-        document.getElementById('plataforma_projeto_status').value = data.status || 'pendente';
-        document.getElementById('plataforma_projeto_progresso').value = data.progresso || 0;
-        document.getElementById('plataforma_projeto_progresso_text').textContent = `${data.progresso || 0}%`;
-      } else {
-        document.getElementById('plataforma_projeto_titulo').value = '';
-        document.getElementById('plataforma_projeto_desc').value = '';
-        document.getElementById('plataforma_projeto_status').value = 'pendente';
-        document.getElementById('plataforma_projeto_progresso').value = 0;
-        document.getElementById('plataforma_projeto_progresso_text').textContent = '0%';
-      }
-    } catch (error) {
-      console.error('Erro ao carregar projeto:', error);
-    }
-  }
-
-  async function plataforma_admin_salvarProjeto() {
-    const clienteId = parseInt(document.getElementById('plataforma_projeto_cliente').value);
-    const titulo = document.getElementById('plataforma_projeto_titulo').value.trim();
-    const descricao = document.getElementById('plataforma_projeto_desc').value.trim();
-    const status = document.getElementById('plataforma_projeto_status').value;
-    const progresso = parseInt(document.getElementById('plataforma_projeto_progresso').value);
-    
-    if (!clienteId || !titulo) {
-      alert('Por favor, selecione um cliente e informe o título do projeto');
-      return;
-    }
-    
-    try {
-      const projeto = {
-        cliente_id: clienteId,
-        titulo,
-        descricao,
-        status,
-        progresso,
-        data_atualizacao: new Date().toISOString()
-      };
-
-      // Verificar se projeto já existe
-      const { data: projetoExistente, error: errorVerificacao } = await supabaseClient
-        .from(plataforma.TABLES.PROJETOS)
-        .select('id, status')
-        .eq('cliente_id', clienteId)
-        .single();
-
-      let resultado;
-      if (projetoExistente) {
-        // Atualizar projeto existente
-        resultado = await supabaseClient
-          .from(plataforma.TABLES.PROJETOS)
-          .update(projeto)
-          .eq('id', projetoExistente.id)
-          .select()
-          .single();
-      } else {
-        // Criar novo projeto
-        projeto.data_criacao = new Date().toISOString();
-        resultado = await supabaseClient
-          .from(plataforma.TABLES.PROJETOS)
-          .insert([projeto])
-          .select()
-          .single();
-      }
-
-      if (resultado.error) {
-        throw resultado.error;
-      }
-
-      alert('Projeto salvo com sucesso!');
-      
-      // Adicionar etapa se status mudou
-      if (!projetoExistente || projetoExistente.status !== status) {
-        const statusText = {
-          'pendente': 'Projeto criado e aguardando início',
-          'andamento': 'Projeto em andamento',
-          'concluido': 'Projeto concluído com sucesso',
-          'aguardando': 'Aguardando ação do cliente'
-        };
+    tx.objectStore('projetos_plataforma').count().onsuccess = (e) => 
+        document.getElementById('plataforma_admin_total_projetos').textContent = e.target.result;
         
-        const etapa = {
-          projeto_id: resultado.data.id,
-          titulo: `Status alterado para: ${status}`,
-          descricao: statusText[status] || 'Status atualizado',
-          data: new Date().toISOString()
-        };
-        
-        await supabaseClient
-          .from(plataforma.TABLES.ETAPAS)
-          .insert([etapa]);
-      }
-      
-    } catch (error) {
-      console.error('Erro ao salvar projeto:', error);
-      alert('Erro ao salvar projeto: ' + error.message);
-    }
+    plataforma_admin_carregarListaClientes();
   }
 
-  async function plataforma_admin_adicionarLink() {
-    const clienteId = parseInt(document.getElementById('plataforma_conteudo_cliente').value);
-    const nome = document.getElementById('plataforma_novo_link_nome').value.trim();
-    const url = document.getElementById('plataforma_novo_link_url').value.trim();
+  function plataforma_admin_carregarListaClientes() {
+    const tx = plataforma.db.transaction(['clientes_plataforma', 'projetos_plataforma'], 'readonly');
+    const tbody = document.getElementById('plataforma_admin_clientes_list');
+    tbody.innerHTML = '';
     
-    if (!clienteId || !nome || !url) {
-      alert('Por favor, selecione um cliente e preencha nome e URL do link');
-      return;
-    }
-    
-    try {
-      const link = {
-        cliente_id: clienteId,
-        nome,
-        url,
-        data_criacao: new Date().toISOString()
-      };
-
-      const { error } = await supabaseClient
-        .from(plataforma.TABLES.LINKS)
-        .insert([link]);
-
-      if (error) {
-        throw error;
+    tx.objectStore('clientes_plataforma').openCursor().onsuccess = (e) => {
+      const cursor = e.target.result;
+      if (cursor) {
+        const c = cursor.value;
+        tbody.innerHTML += `
+            <tr>
+                <td><strong>${c.nome}</strong><br><small>${c.email}</small></td>
+                <td>${formatarCPF(c.cpf)}</td>
+                <td>${c.whatsapp}</td>
+                <td>${c.status}</td>
+                <td>-</td>
+                <td><button class="plataforma_btn_small" onclick="alert('Funcionalidade em desenvolvimento')"><i class="fas fa-edit"></i></button></td>
+            </tr>`;
+        cursor.continue();
       }
-
-      alert('Link adicionado com sucesso!');
-      document.getElementById('plataforma_novo_link_nome').value = '';
-      document.getElementById('plataforma_novo_link_url').value = '';
-      
-    } catch (error) {
-      console.error('Erro ao adicionar link:', error);
-      alert('Erro ao adicionar link: ' + error.message);
-    }
-  }
-
-  async function plataforma_admin_adicionarOrientacao() {
-    const clienteId = parseInt(document.getElementById('plataforma_conteudo_cliente').value);
-    const texto = document.getElementById('plataforma_nova_orientacao').value.trim();
-    
-    if (!clienteId || !texto) {
-      alert('Por favor, selecione um cliente e digite uma orientação');
-      return;
-    }
-    
-    try {
-      const orientacao = {
-        cliente_id: clienteId,
-        texto,
-        data_criacao: new Date().toISOString()
-      };
-
-      const { error } = await supabaseClient
-        .from(plataforma.TABLES.ORIENTACOES)
-        .insert([orientacao]);
-
-      if (error) {
-        throw error;
-      }
-
-      alert('Orientação adicionada com sucesso!');
-      document.getElementById('plataforma_nova_orientacao').value = '';
-      
-    } catch (error) {
-      console.error('Erro ao adicionar orientação:', error);
-      alert('Erro ao adicionar orientação: ' + error.message);
-    }
-  }
-
-  async function plataforma_admin_adicionarPrazo() {
-    const clienteId = parseInt(document.getElementById('plataforma_conteudo_cliente').value);
-    const titulo = document.getElementById('plataforma_novo_prazo_titulo').value.trim();
-    const data = document.getElementById('plataforma_novo_prazo_data').value;
-    
-    if (!clienteId || !titulo || !data) {
-      alert('Por favor, selecione um cliente e preencha título e data');
-      return;
-    }
-    
-    try {
-      const prazo = {
-        cliente_id: clienteId,
-        titulo,
-        data: new Date(data).toISOString(),
-        status_alerta: 'pendente',
-        data_criacao: new Date().toISOString()
-      };
-
-      const { error } = await supabaseClient
-        .from(plataforma.TABLES.PRAZOS)
-        .insert([prazo]);
-
-      if (error) {
-        throw error;
-      }
-
-      alert('Prazo adicionado com sucesso! O sistema notificará automaticamente.');
-      document.getElementById('plataforma_novo_prazo_titulo').value = '';
-      document.getElementById('plataforma_novo_prazo_data').value = '';
-      
-    } catch (error) {
-      console.error('Erro ao adicionar prazo:', error);
-      alert('Erro ao adicionar prazo: ' + error.message);
-    }
-  }
-
-  async function plataforma_admin_adicionarLembrete() {
-    const clienteId = parseInt(document.getElementById('plataforma_conteudo_cliente').value);
-    const texto = document.getElementById('plataforma_novo_lembrete').value.trim();
-    
-    if (!clienteId || !texto) {
-      alert('Por favor, selecione um cliente e digite um lembrete');
-      return;
-    }
-    
-    try {
-      const lembrete = {
-        cliente_id: clienteId,
-        texto,
-        data: new Date().toISOString(),
-        data_criacao: new Date().toISOString()
-      };
-
-      const { error } = await supabaseClient
-        .from(plataforma.TABLES.LEMBRETES)
-        .insert([lembrete]);
-
-      if (error) {
-        throw error;
-      }
-
-      alert('Lembrete adicionado com sucesso!');
-      document.getElementById('plataforma_novo_lembrete').value = '';
-      
-    } catch (error) {
-      console.error('Erro ao adicionar lembrete:', error);
-      alert('Erro ao adicionar lembrete: ' + error.message);
-    }
-  }
-
-  async function plataforma_carregarConfigAlertas() {
-    try {
-      const { data, error } = await supabaseClient
-        .from(plataforma.TABLES.CONFIG)
-        .select('*')
-        .eq('chave', 'config_alertas')
-        .single();
-
-      if (error && error.code !== 'PGRST116') {
-        console.error('Erro ao carregar configurações:', error);
-      }
-
-      if (data && data.valor) {
-        plataforma.configAlertas = data.valor;
-        
-        // Atualizar campos no formulário se existirem
-        const diasInput = document.getElementById('plataforma_alerta_dias');
-        const mensagemTextarea = document.getElementById('plataforma_alerta_mensagem');
-        
-        if (diasInput) diasInput.value = plataforma.configAlertas.diasAntecedencia || 3;
-        if (mensagemTextarea) mensagemTextarea.value = plataforma.configAlertas.mensagemPadrao || '';
-      }
-    } catch (error) {
-      console.error('Erro ao carregar configurações:', error);
-    }
-  }
-
-  async function plataforma_admin_salvarConfigAlertas() {
-    const dias = parseInt(document.getElementById('plataforma_alerta_dias').value);
-    const mensagem = document.getElementById('plataforma_alerta_mensagem').value.trim();
-    
-    if (!dias || !mensagem) {
-      alert('Por favor, preencha todos os campos');
-      return;
-    }
-    
-    plataforma.configAlertas = {
-      diasAntecedencia: dias,
-      mensagemPadrao: mensagem
     };
+  }
+
+  function plataforma_admin_carregarClientesSelect() {
+    const select1 = document.getElementById('plataforma_projeto_cliente');
+    const select2 = document.getElementById('plataforma_conteudo_cliente');
+    if(!select1) return;
     
-    try {
-      const config = {
-        chave: 'config_alertas',
-        valor: plataforma.configAlertas,
-        data_atualizacao: new Date().toISOString()
-      };
+    select1.innerHTML = '<option value="">Selecione...</option>';
+    select2.innerHTML = '<option value="">Selecione...</option>';
+    
+    const store = plataforma.db.transaction(['clientes_plataforma'], 'readonly').objectStore('clientes_plataforma');
+    store.openCursor().onsuccess = (e) => {
+        const cursor = e.target.result;
+        if(cursor) {
+            const opt = `<option value="${cursor.value.id}">${cursor.value.nome}</option>`;
+            select1.innerHTML += opt;
+            select2.innerHTML += opt;
+            cursor.continue();
+        }
+    };
+  }
 
-      // Verificar se configuração já existe
-      const { data: configExistente, error: errorVerificacao } = await supabaseClient
-        .from(plataforma.TABLES.CONFIG)
-        .select('id')
-        .eq('chave', 'config_alertas')
-        .single();
+  function plataforma_admin_salvarCliente() {
+    const nome = document.getElementById('plataforma_novo_nome').value;
+    const cpf = document.getElementById('plataforma_novo_cpf').value.replace(/\D/g, '');
+    const email = document.getElementById('plataforma_novo_email').value;
+    const whatsapp = document.getElementById('plataforma_novo_whatsapp').value;
+    const status = document.getElementById('plataforma_novo_status').value;
 
-      let resultado;
-      if (configExistente) {
-        // Atualizar configuração existente
-        resultado = await supabaseClient
-          .from(plataforma.TABLES.CONFIG)
-          .update(config)
-          .eq('id', configExistente.id);
-      } else {
-        // Criar nova configuração
-        config.data_criacao = new Date().toISOString();
-        resultado = await supabaseClient
-          .from(plataforma.TABLES.CONFIG)
-          .insert([config]);
-      }
+    if(!nome || cpf.length !== 11) { alert('Dados inválidos'); return; }
 
-      if (resultado.error) {
-        throw resultado.error;
-      }
+    const store = plataforma.db.transaction(['clientes_plataforma'], 'readwrite').objectStore('clientes_plataforma');
+    store.add({ nome, cpf, email, whatsapp, status, dataCadastro: new Date().toISOString() }).onsuccess = () => {
+        alert('Cliente salvo!');
+        plataforma_admin_showDashboard();
+    };
+  }
 
-      alert('Configurações salvas com sucesso!');
+  // --- Funções de Projeto e Conteúdo ---
+  // (Mantêm a mesma lógica, apenas garantindo o uso de store '_plataforma')
+
+  function plataforma_admin_salvarProjeto() {
+    const clienteId = parseInt(document.getElementById('plataforma_projeto_cliente').value);
+    const titulo = document.getElementById('plataforma_projeto_titulo').value;
+    const status = document.getElementById('plataforma_projeto_status').value;
+    const progresso = document.getElementById('plataforma_projeto_progresso').value;
+    
+    if(!clienteId) return alert('Selecione um cliente');
+
+    const tx = plataforma.db.transaction(['projetos_plataforma', 'etapas_plataforma'], 'readwrite');
+    const store = tx.objectStore('projetos_plataforma');
+    
+    // Verifica se já existe projeto para atualizar
+    const index = store.index('clienteId');
+    index.get(clienteId).onsuccess = (e) => {
+        const proj = e.target.result || { clienteId, dataCriacao: new Date().toISOString() };
+        proj.titulo = titulo;
+        proj.status = status;
+        proj.progresso = progresso;
+        proj.descricao = document.getElementById('plataforma_projeto_desc').value;
+        
+        store.put(proj).onsuccess = (ev) => {
+            // Adiciona etapa automática de atualização
+            tx.objectStore('etapas_plataforma').add({
+                projetoId: proj.id || ev.target.result,
+                titulo: `Status: ${status}`,
+                descricao: `Progresso atualizado para ${progresso}%`,
+                data: new Date().toISOString()
+            });
+            alert('Projeto salvo!');
+        };
+    };
+  }
+
+  function plataforma_admin_adicionarLink() {
+      const clienteId = parseInt(document.getElementById('plataforma_conteudo_cliente').value);
+      const nome = document.getElementById('plataforma_novo_link_nome').value;
+      const url = document.getElementById('plataforma_novo_link_url').value;
+      if(!clienteId || !url) return;
       
-    } catch (error) {
-      console.error('Erro ao salvar configurações:', error);
-      alert('Erro ao salvar configurações: ' + error.message);
+      plataforma.db.transaction(['links_plataforma'], 'readwrite')
+        .objectStore('links_plataforma')
+        .add({ clienteId, nome, url })
+        .onsuccess = () => alert('Link adicionado');
+  }
+
+  // Inicialização Geral
+  window.addEventListener('DOMContentLoaded', async () => {
+    try {
+      await plataforma_initDB();
+      // Slider listener
+      const slider = document.getElementById('plataforma_projeto_progresso');
+      if(slider) slider.addEventListener('input', (e) => document.getElementById('plataforma_projeto_progresso_text').textContent = e.target.value + '%');
+    } catch (e) { console.error(e); }
+  });
+
+</script>
+
+<script>
+  const SUPABASE_URL = 'https://rjyxkouegrropsarrhje.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJqeXhrb3VlZ3Jyb3BzYXJyaGplIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk1NjYxNjcsImV4cCI6MjA4NTE0MjE2N30.UjNPnVBVhQcUSirXeWZ3RmYmAhDMqqbbVUChG_Mv57U';
+
+  window.supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  // Sistema Admin Supabase
+  const supabase_admin = {
+    init: function() {
+        // Verifica botão existente e injeta modal se necessário
+        const btn = document.getElementById('plataforma_admin_access');
+        if(btn) {
+            btn.onclick = (e) => {
+                // Se já estiver logado admin local, abre portal
+                if(plataforma.isAdmin) return;
+                // Senão, abre modal local (simplificado para manter funcionalidade pedida)
+                document.getElementById('plataforma_admin_modal').style.display = 'flex';
+            }
+        }
     }
-  }
+  };
+  document.addEventListener('DOMContentLoaded', supabase_admin.init);
+</script>
 
-  // Mostrar modal de login
-  function plataforma_showLoginModal() {
-    document.getElementById('plataforma_overlay').style.display = 'block';
-    document.getElementById('plataforma_login_modal').style.display = 'block';
-    document.getElementById('plataforma_client_portal').style.display = 'none';
-    document.getElementById('plataforma_admin_portal').style.display = 'none';
+<script>
+/**
+ * 🚀 UNIVERSAL IDB SYNC - ADAPTADO PARA LG_CRMDB
+ * Sincroniza tabelas com sufixo _plataforma automaticamente
+ */
+(function () {
+    const SYNC_TABLE = 'lg_crm_supadb';
+    const CANONICAL_DB = 'lg_crmDB'; // Força o uso do banco correto
     
-    // Limpar campo CPF
-    document.getElementById('plataforma_input_cpf').value = '';
-  }
+    let storedId = sessionStorage.getItem('sync_device_id');
+    if (!storedId) {
+        storedId = crypto.randomUUID();
+        sessionStorage.setItem('sync_device_id', storedId);
+    }
+    const DEVICE_ID = storedId;
+    let isReplicating = false; 
+    const syncCache = new Map();
 
-  // Fechar modal de login e voltar para a página principal
-  function plataforma_fecharLoginModal() {
-    document.getElementById('plataforma_overlay').style.display = 'none';
-    document.getElementById('plataforma_login_modal').style.display = 'none';
-    document.getElementById('plataforma_input_cpf').value = '';
-  }
+    const getClient = () => window.supabase;
+    const waitForSupabase = () => new Promise(resolve => {
+        const check = () => getClient() ? resolve(getClient()) : setTimeout(check, 100);
+        check();
+    });
 
-  async function plataforma_admin_carregarAlertas() {
-    try {
-      const { data, error } = await supabaseClient
-        .from(plataforma.TABLES.ALERTAS)
-        .select('*')
-        .order('data_criacao', { ascending: false });
+    // Funções de Sync
+    async function scheduleRealtimeUpload(storeName, method, key, value) {
+        if (isReplicating) return; 
+        const client = getClient();
+        // Upload genérico sem user_id estrito para demonstração, 
+        // ou pegue da sessão se houver auth implementado.
+        const userId = 'admin_system_user'; 
 
-      if (error) {
-        console.error('Erro ao carregar alertas:', error);
-        return;
-      }
+        const cacheKey = `${storeName}-${key}`;
+        if (method === 'delete') syncCache.delete(cacheKey);
+        else syncCache.set(cacheKey, JSON.stringify(value));
 
-      const container = document.getElementById('plataforma_admin_alertas_lista');
-      container.innerHTML = '';
-      
-      if (data && data.length > 0) {
-        data.forEach(alerta => {
-          const item = document.createElement('div');
-          item.className = 'notificacao-item';
-          item.innerHTML = `
-            <div class="info">
-              <strong>Alerta #${alerta.id}</strong><br>
-              <small>${alerta.mensagem || 'Sem mensagem'}</small>
-            </div>
-            <div class="acoes">
-              <button class="plataforma_btn plataforma_btn_secondary plataforma_btn_small" onclick="plataforma_admin_marcarEnviado(${alerta.id})">
-                <i class="fas fa-check"></i> Marcado
-              </button>
-            </div>
-          `;
-          container.appendChild(item);
+        client.from(SYNC_TABLE).upsert({
+            user_id: userId,
+            db_name: CANONICAL_DB,
+            store_name: storeName,
+            record_key: String(key),
+            record_value: method === 'delete' ? null : value,
+            is_deleted: method === 'delete',
+            device_id: DEVICE_ID,
+            updated_at: new Date().toISOString()
+        }, { onConflict: 'user_id,db_name,store_name,record_key' }).then(({ error }) => {
+            if (error) console.warn(`Sync Warn:`, error.message);
         });
-      } else {
-        container.innerHTML = `
-          <div style="text-align: center; padding: 40px; color: rgba(255, 255, 255, 0.5);">
-            <i class="fas fa-check-circle" style="font-size: 3rem; margin-bottom: 15px;"></i><br>
-            Nenhum alerta pendente no momento.
-          </div>
-        `;
-      }
-    } catch (error) {
-      console.error('Erro ao carregar alertas:', error);
     }
-  }
 
-  async function plataforma_admin_marcarEnviado(alertaId) {
-    try {
-      const { error } = await supabaseClient
-        .from(plataforma.TABLES.ALERTAS)
-        .update({ 
-          status: 'enviado',
-          data_envio: new Date().toISOString()
-        })
-        .eq('id', alertaId);
+    // Intercepta IndexedDB para Upload
+    const original = { put: IDBObjectStore.prototype.put, add: IDBObjectStore.prototype.add, delete: IDBObjectStore.prototype.delete };
 
-      if (error) {
-        throw error;
-      }
+    IDBObjectStore.prototype.put = function (v, k) {
+        const req = original.put.apply(this, arguments);
+        const storeName = this.name;
+        // Sincroniza apenas tabelas da plataforma
+        if(storeName.includes('_plataforma')) {
+            req.onsuccess = (e) => scheduleRealtimeUpload(storeName, 'put', k || e.target.result, v);
+        }
+        return req;
+    };
 
-      plataforma_admin_carregarAlertas();
-      plataforma_admin_atualizarBadgeNotificacoes();
-      plataforma_admin_carregarDashboard();
-      
-    } catch (error) {
-      console.error('Erro ao marcar alerta como enviado:', error);
-      alert('Erro ao atualizar alerta: ' + error.message);
+    IDBObjectStore.prototype.add = function (v, k) {
+        const req = original.add.apply(this, arguments);
+        const storeName = this.name;
+        if(storeName.includes('_plataforma')) {
+            req.onsuccess = (e) => scheduleRealtimeUpload(storeName, 'add', k || e.target.result, v);
+        }
+        return req;
+    };
+
+    IDBObjectStore.prototype.delete = function (k) {
+        const req = original.delete.apply(this, arguments);
+        const storeName = this.name;
+        if(storeName.includes('_plataforma')) {
+            req.onsuccess = (e) => scheduleRealtimeUpload(storeName, 'delete', k, null);
+        }
+        return req;
+    };
+
+    // Download Loop (Simplificado)
+    async function smartDownloadLoop() {
+        const client = getClient();
+        const userId = 'admin_system_user'; // Mock ID para manter sync ativo
+        
+        const { data, error } = await client.from(SYNC_TABLE).select('*').eq('db_name', CANONICAL_DB);
+        if (error || !data || !data.length) return;
+
+        const req = indexedDB.open(CANONICAL_DB);
+        req.onsuccess = (e) => {
+            const db = e.target.result;
+            const tx = db.transaction(db.objectStoreNames, 'readwrite');
+            isReplicating = true;
+
+            data.forEach(r => {
+                if (r.device_id === DEVICE_ID || !db.objectStoreNames.contains(r.store_name)) return;
+                const store = tx.objectStore(r.store_name);
+                const key = !isNaN(r.record_key) ? Number(r.record_key) : r.record_key;
+                
+                if (r.is_deleted) store.delete(key);
+                else store.put(r.record_value);
+            });
+            
+            tx.oncomplete = () => { isReplicating = false; };
+        };
     }
-  }
 
-  async function plataforma_admin_atualizarBadgeNotificacoes() {
-    try {
-      const { count, error } = await supabaseClient
-        .from(plataforma.TABLES.ALERTAS)
-        .select('*', { count: 'exact', head: true })
-        .eq('status', 'pendente');
+    // Inicia Sync
+    waitForSupabase().then(() => {
+        console.log('Sync System Active for lg_crmDB');
+        setInterval(smartDownloadLoop, 15000); // Sync a cada 15s
+    });
 
-      if (error) {
-        console.error('Erro ao contar alertas pendentes:', error);
-        return;
-      }
-
-      const badge = document.getElementById('plataforma_notificacoes_count');
-      const btn = document.getElementById('plataforma_notificacoes_btn');
-      
-      if (count > 0) {
-        badge.textContent = count;
-        badge.style.display = 'flex';
-        btn.classList.add('pulse');
-      } else {
-        badge.style.display = 'none';
-        btn.classList.remove('pulse');
-      }
-    } catch (error) {
-      console.error('Erro ao atualizar badge:', error);
-    }
-  }
-
-  // Inicialização
-  window.addEventListener('DOMContentLoaded', function() {
-    plataforma_init();
-    
-    // Configurar slider de progresso
-    const progressSlider = document.getElementById('plataforma_projeto_progresso');
-    if (progressSlider) {
-      progressSlider.addEventListener('input', function() {
-        document.getElementById('plataforma_projeto_progresso_text').textContent = `${this.value}%`;
-      });
-    }
-  });
-
-  // Event listener para o overlay
-  document.getElementById('plataforma_overlay').addEventListener('click', function(e) {
-    if (e.target === this && !plataforma.isAdmin && plataforma.currentUser) {
-      plataforma_showClientPortal();
-    }
-  });
-
-  // Função para enviar alerta por WhatsApp
-  async function plataforma_admin_enviarAlertaCliente(clienteId) {
-    try {
-      // Buscar cliente
-      const { data: cliente, error: errorCliente } = await supabaseClient
-        .from(plataforma.TABLES.CLIENTES)
-        .select('*')
-        .eq('id', clienteId)
-        .single();
-
-      if (errorCliente || !cliente) {
-        alert('Cliente não encontrado');
-        return;
-      }
-
-      // Buscar prazos pendentes do cliente
-      const { data: prazos, error: errorPrazos } = await supabaseClient
-        .from(plataforma.TABLES.PRAZOS)
-        .select('*')
-        .eq('cliente_id', clienteId)
-        .eq('status_alerta', 'pendente');
-
-      if (errorPrazos) {
-        console.error('Erro ao buscar prazos:', errorPrazos);
-        return;
-      }
-
-      if (!prazos || prazos.length === 0) {
-        alert('Nenhum prazo pendente para este cliente');
-        return;
-      }
-
-      // Construir mensagem
-      let mensagem = `Olá ${cliente.nome}!%0A%0A`;
-      mensagem += `Lembretes de prazos:%0A%0A`;
-      
-      prazos.forEach((prazo, index) => {
-        const dataFormatada = new Date(prazo.data).toLocaleDateString('pt-BR');
-        mensagem += `${index + 1}. ${prazo.titulo} - Vencimento: ${dataFormatada}%0A`;
-      });
-      
-      mensagem += `%0AAcesse seu portal para mais detalhes.`;
-      
-      // Abrir WhatsApp
-      const telefone = cliente.whatsapp || '5522999999999';
-      window.open(`https://wa.me/${telefone}?text=${mensagem}`, '_blank');
-      
-      // Marcar prazos como enviados
-      const prazosIds = prazos.map(p => p.id);
-      await supabaseClient
-        .from(plataforma.TABLES.PRAZOS)
-        .update({ status_alerta: 'enviado' })
-        .in('id', prazosIds);
-      
-      // Criar registro de alerta enviado
-      const alerta = {
-        cliente_id: clienteId,
-        tipo: 'whatsapp',
-        mensagem: 'Lembretes de prazos enviados via WhatsApp',
-        status: 'enviado',
-        data_envio: new Date().toISOString(),
-        data_criacao: new Date().toISOString()
-      };
-      
-      await supabaseClient
-        .from(plataforma.TABLES.ALERTAS)
-        .insert([alerta]);
-      
-      alert('Alerta enviado com sucesso!');
-      plataforma_admin_carregarDashboard();
-      
-    } catch (error) {
-      console.error('Erro ao enviar alerta:', error);
-      alert('Erro ao enviar alerta: ' + error.message);
-    }
-  }
+})();
 </script>
 </body>
 </html>
