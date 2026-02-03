@@ -1588,282 +1588,6 @@ Acesse seu portal para mais detalhes: {link_portal}
   }
 
   // =========================================================================
-  // INDEXEDDB - SISTEMA lg_crmDB PARA PLATAFORMA
-  // =========================================================================
-  const INDEXEDDB_NAME = 'lg_crmDB';
-  const INDEXEDDB_VERSION = 9;
-  
-  // Estrutura das tabelas para a plataforma
-  const TABLES_PLATAFORMA = {
-    CLIENTES: 'clientesplataforma',
-    PROJETOS: 'projetosplataforma',
-    LINKS: 'linksplataforma',
-    ORIENTACOES: 'orientacoesplataforma',
-    PRAZOS: 'prazosplataforma',
-    LEMBRETES: 'lembretesplataforma',
-    ALERTAS: 'alertasplataforma',
-    ETAPAS: 'etapasplataforma',
-    CONFIG: 'configplataforma',
-    ADMIN: 'adminplataforma' // Para login administrativo local
-  };
-
-  // Gerenciador do IndexedDB
-  const dbManager = {
-    db: null,
-    
-    // Inicializar o banco de dados
-    init: function() {
-      return new Promise((resolve, reject) => {
-        if (this.db) {
-          resolve(this.db);
-          return;
-        }
-        
-        const request = indexedDB.open(INDEXEDDB_NAME, INDEXEDDB_VERSION);
-        
-        request.onerror = (event) => {
-          console.error('Erro ao abrir IndexedDB:', event.target.error);
-          reject(event.target.error);
-        };
-        
-        request.onsuccess = (event) => {
-          this.db = event.target.result;
-          console.log('IndexedDB conectado com sucesso');
-          resolve(this.db);
-        };
-        
-        request.onupgradeneeded = (event) => {
-          const db = event.target.result;
-          console.log('Criando/atualizando estrutura do IndexedDB para plataforma');
-          
-          // Tabela de Clientes
-          if (!db.objectStoreNames.contains(TABLES_PLATAFORMA.CLIENTES)) {
-            const clientesStore = db.createObjectStore(TABLES_PLATAFORMA.CLIENTES, { keyPath: 'id', autoIncrement: true });
-            clientesStore.createIndex('cpf', 'cpf', { unique: true });
-            clientesStore.createIndex('email', 'email', { unique: true });
-            clientesStore.createIndex('status', 'status', { unique: false });
-            console.log('Tabela clientesplataforma criada');
-          }
-          
-          // Tabela de Projetos
-          if (!db.objectStoreNames.contains(TABLES_PLATAFORMA.PROJETOS)) {
-            const projetosStore = db.createObjectStore(TABLES_PLATAFORMA.PROJETOS, { keyPath: 'id', autoIncrement: true });
-            projetosStore.createIndex('cliente_id', 'cliente_id', { unique: false });
-            projetosStore.createIndex('status', 'status', { unique: false });
-            console.log('Tabela projetosplataforma criada');
-          }
-          
-          // Tabela de Links
-          if (!db.objectStoreNames.contains(TABLES_PLATAFORMA.LINKS)) {
-            const linksStore = db.createObjectStore(TABLES_PLATAFORMA.LINKS, { keyPath: 'id', autoIncrement: true });
-            linksStore.createIndex('cliente_id', 'cliente_id', { unique: false });
-            console.log('Tabela linksplataforma criada');
-          }
-          
-          // Tabela de Orientações
-          if (!db.objectStoreNames.contains(TABLES_PLATAFORMA.ORIENTACOES)) {
-            const orientacoesStore = db.createObjectStore(TABLES_PLATAFORMA.ORIENTACOES, { keyPath: 'id', autoIncrement: true });
-            orientacoesStore.createIndex('cliente_id', 'cliente_id', { unique: false });
-            console.log('Tabela orientacoesplataforma criada');
-          }
-          
-          // Tabela de Prazos
-          if (!db.objectStoreNames.contains(TABLES_PLATAFORMA.PRAZOS)) {
-            const prazosStore = db.createObjectStore(TABLES_PLATAFORMA.PRAZOS, { keyPath: 'id', autoIncrement: true });
-            prazosStore.createIndex('cliente_id', 'cliente_id', { unique: false });
-            prazosStore.createIndex('data', 'data', { unique: false });
-            prazosStore.createIndex('status_alerta', 'status_alerta', { unique: false });
-            console.log('Tabela prazosplataforma criada');
-          }
-          
-          // Tabela de Lembretes
-          if (!db.objectStoreNames.contains(TABLES_PLATAFORMA.LEMBRETES)) {
-            const lembretesStore = db.createObjectStore(TABLES_PLATAFORMA.LEMBRETES, { keyPath: 'id', autoIncrement: true });
-            lembretesStore.createIndex('cliente_id', 'cliente_id', { unique: false });
-            console.log('Tabela lembretesplataforma criada');
-          }
-          
-          // Tabela de Alertas
-          if (!db.objectStoreNames.contains(TABLES_PLATAFORMA.ALERTAS)) {
-            const alertasStore = db.createObjectStore(TABLES_PLATAFORMA.ALERTAS, { keyPath: 'id', autoIncrement: true });
-            alertasStore.createIndex('cliente_id', 'cliente_id', { unique: false });
-            alertasStore.createIndex('status', 'status', { unique: false });
-            console.log('Tabela alertasplataforma criada');
-          }
-          
-          // Tabela de Etapas
-          if (!db.objectStoreNames.contains(TABLES_PLATAFORMA.ETAPAS)) {
-            const etapasStore = db.createObjectStore(TABLES_PLATAFORMA.ETAPAS, { keyPath: 'id', autoIncrement: true });
-            etapasStore.createIndex('projeto_id', 'projeto_id', { unique: false });
-            console.log('Tabela etapasplataforma criada');
-          }
-          
-          // Tabela de Configurações
-          if (!db.objectStoreNames.contains(TABLES_PLATAFORMA.CONFIG)) {
-            const configStore = db.createObjectStore(TABLES_PLATAFORMA.CONFIG, { keyPath: 'chave' });
-            console.log('Tabela configplataforma criada');
-            
-            // Configurações padrão
-            const defaultConfig = {
-              chave: 'config_alertas',
-              valor: {
-                diasAntecedencia: 3,
-                mensagemPadrao: `Olá {nome}! Este é um lembrete sobre o prazo: {titulo}\nVencimento: {data}\nAcesse seu portal para mais detalhes: {link_portal}`
-              },
-              data_criacao: new Date().toISOString(),
-              data_atualizacao: new Date().toISOString()
-            };
-            
-            const addRequest = configStore.add(defaultConfig);
-            addRequest.onsuccess = () => console.log('Configuração padrão adicionada');
-          }
-          
-          // Tabela de Administradores
-          if (!db.objectStoreNames.contains(TABLES_PLATAFORMA.ADMIN)) {
-            const adminStore = db.createObjectStore(TABLES_PLATAFORMA.ADMIN, { keyPath: 'id', autoIncrement: true });
-            adminStore.createIndex('email', 'email', { unique: true });
-            console.log('Tabela adminplataforma criada');
-            
-            // Administrador padrão (senha: admin123)
-            const defaultAdmin = {
-              email: 'admin@legacy.com',
-              senha: 'admin123', // Em produção, usar hash
-              nome: 'Administrador',
-              nivel: 'super',
-              data_criacao: new Date().toISOString(),
-              ultimo_acesso: null
-            };
-            
-            const addRequest = adminStore.add(defaultAdmin);
-            addRequest.onsuccess = () => console.log('Administrador padrão adicionado');
-          }
-        };
-      });
-    },
-    
-    // Métodos genéricos para CRUD
-    getAll: function(tableName) {
-      return new Promise((resolve, reject) => {
-        this.init().then(() => {
-          const transaction = this.db.transaction([tableName], 'readonly');
-          const store = transaction.objectStore(tableName);
-          const request = store.getAll();
-          
-          request.onsuccess = () => resolve(request.result);
-          request.onerror = (event) => reject(event.target.error);
-        }).catch(reject);
-      });
-    },
-    
-    getById: function(tableName, id) {
-      return new Promise((resolve, reject) => {
-        this.init().then(() => {
-          const transaction = this.db.transaction([tableName], 'readonly');
-          const store = transaction.objectStore(tableName);
-          const request = store.get(id);
-          
-          request.onsuccess = () => resolve(request.result);
-          request.onerror = (event) => reject(event.target.error);
-        }).catch(reject);
-      });
-    },
-    
-    getByIndex: function(tableName, indexName, value) {
-      return new Promise((resolve, reject) => {
-        this.init().then(() => {
-          const transaction = this.db.transaction([tableName], 'readonly');
-          const store = transaction.objectStore(tableName);
-          const index = store.index(indexName);
-          const request = index.get(value);
-          
-          request.onsuccess = () => resolve(request.result);
-          request.onerror = (event) => reject(event.target.error);
-        }).catch(reject);
-      });
-    },
-    
-    getAllByIndex: function(tableName, indexName, value) {
-      return new Promise((resolve, reject) => {
-        this.init().then(() => {
-          const transaction = this.db.transaction([tableName], 'readonly');
-          const store = transaction.objectStore(tableName);
-          const index = store.index(indexName);
-          const request = index.getAll(value);
-          
-          request.onsuccess = () => resolve(request.result);
-          request.onerror = (event) => reject(event.target.error);
-        }).catch(reject);
-      });
-    },
-    
-    add: function(tableName, data) {
-      return new Promise((resolve, reject) => {
-        this.init().then(() => {
-          const transaction = this.db.transaction([tableName], 'readwrite');
-          const store = transaction.objectStore(tableName);
-          const request = store.add(data);
-          
-          request.onsuccess = () => resolve(request.result);
-          request.onerror = (event) => reject(event.target.error);
-        }).catch(reject);
-      });
-    },
-    
-    update: function(tableName, id, data) {
-      return new Promise((resolve, reject) => {
-        this.init().then(() => {
-          const transaction = this.db.transaction([tableName], 'readwrite');
-          const store = transaction.objectStore(tableName);
-          const request = store.put({ ...data, id });
-          
-          request.onsuccess = () => resolve(request.result);
-          request.onerror = (event) => reject(event.target.error);
-        }).catch(reject);
-      });
-    },
-    
-    delete: function(tableName, id) {
-      return new Promise((resolve, reject) => {
-        this.init().then(() => {
-          const transaction = this.db.transaction([tableName], 'readwrite');
-          const store = transaction.objectStore(tableName);
-          const request = store.delete(id);
-          
-          request.onsuccess = () => resolve(true);
-          request.onerror = (event) => reject(event.target.error);
-        }).catch(reject);
-      });
-    },
-    
-    count: function(tableName) {
-      return new Promise((resolve, reject) => {
-        this.init().then(() => {
-          const transaction = this.db.transaction([tableName], 'readonly');
-          const store = transaction.objectStore(tableName);
-          const request = store.count();
-          
-          request.onsuccess = () => resolve(request.result);
-          request.onerror = (event) => reject(event.target.error);
-        }).catch(reject);
-      });
-    },
-    
-    countByIndex: function(tableName, indexName, value) {
-      return new Promise((resolve, reject) => {
-        this.init().then(() => {
-          const transaction = this.db.transaction([tableName], 'readonly');
-          const store = transaction.objectStore(tableName);
-          const index = store.index(indexName);
-          const request = index.count(value);
-          
-          request.onsuccess = () => resolve(request.result);
-          request.onerror = (event) => reject(event.target.error);
-        }).catch(reject);
-      });
-    }
-  };
-
-  // =========================================================================
   // CONFIGURAÇÃO SUPABASE & AUTENTICAÇÃO
   // =========================================================================
   const SUPABASE_URL = 'https://rjyxkouegrropsarrhje.supabase.co';
@@ -1965,13 +1689,6 @@ Acesse seu portal para mais detalhes: {link_portal}
 
   // Inicia verificação de Auth imediatamente
   window.addEventListener('DOMContentLoaded', function() {
-    // Inicializa o IndexedDB
-    dbManager.init().then(() => {
-      console.log('IndexedDB inicializado para plataforma');
-    }).catch(error => {
-      console.error('Erro ao inicializar IndexedDB:', error);
-    });
-    
     authManager.init();
     
     // Configurar evento para o botão de login admin
@@ -1985,7 +1702,7 @@ Acesse seu portal para mais detalhes: {link_portal}
     }
   });
 
-  // ==================== PORTAL DO CLIENTE (ATUALIZADO PARA INDEXEDDB) ====================
+  // ==================== PORTAL DO CLIENTE (ATUALIZADO PARA SUPABASE) ====================
   const plataforma = {
     currentUser: null,
     isAdmin: false,
@@ -1994,8 +1711,18 @@ Acesse seu portal para mais detalhes: {link_portal}
       mensagemPadrao: `Olá {nome}! Este é um lembrete sobre o prazo: {titulo}\nVencimento: {data}\nAcesse seu portal para mais detalhes: {link_portal}`
     },
     
-    // Usar as tabelas do IndexedDB
-    TABLES: TABLES_PLATAFORMA
+    // Nomes das tabelas no Supabase
+    TABLES: {
+      CLIENTES: 'clientesplataforma',
+      PROJETOS: 'projetosplataforma',
+      LINKS: 'linksplataforma',
+      ORIENTACOES: 'orientacoesplataforma',
+      PRAZOS: 'prazosplataforma',
+      LEMBRETES: 'lembretesplataforma',
+      ALERTAS: 'alertasplataforma',
+      ETAPAS: 'etapasplataforma',
+      CONFIG: 'configplataforma'
+    }
   };
 
   // Máscara para CPF
@@ -2021,7 +1748,7 @@ Acesse seu portal para mais detalhes: {link_portal}
 
   // Inicialização do sistema
   function plataforma_init() {
-    console.log('Sistema de Portal do Cliente inicializado (IndexedDB)');
+    console.log('Sistema de Portal do Cliente inicializado (Supabase)');
     
     // Carregar configurações de alertas
     plataforma_carregarConfigAlertas();
@@ -2037,30 +1764,41 @@ Acesse seu portal para mais detalhes: {link_portal}
       return;
     }
     
-    // Buscar cliente no IndexedDB
+    // Buscar cliente no Supabase
     plataforma_buscarClientePorCPF(cpf);
   }
 
   async function plataforma_buscarClientePorCPF(cpf) {
     try {
-      const cliente = await dbManager.getByIndex(plataforma.TABLES.CLIENTES, 'cpf', cpf);
+      const { data, error } = await supabaseClient
+        .from(plataforma.TABLES.CLIENTES)
+        .select('*')
+        .eq('cpf', cpf)
+        .single();
 
-      if (!cliente) {
-        alert('CPF não encontrado. Entre em contato com o suporte.');
+      if (error) {
+        if (error.code === 'PGRST116') {
+          alert('CPF não encontrado. Entre em contato com o suporte.');
+        } else {
+          console.error('Erro ao buscar cliente:', error);
+          alert('Erro ao buscar cliente: ' + error.message);
+        }
         return;
       }
 
-      if (cliente.status !== 'ativo') {
+      if (data.status !== 'ativo') {
         alert('Conta inativa. Entre em contato com o suporte.');
         return;
       }
 
       // Cliente válido, fazer login
-      plataforma.currentUser = cliente;
+      plataforma.currentUser = data;
       
       // Atualizar último acesso
-      cliente.ultimo_acesso = new Date().toISOString();
-      await dbManager.update(plataforma.TABLES.CLIENTES, cliente.id, cliente);
+      await supabaseClient
+        .from(plataforma.TABLES.CLIENTES)
+        .update({ ultimo_acesso: new Date().toISOString() })
+        .eq('id', data.id);
 
       plataforma_showClientPortal();
       
@@ -2119,20 +1857,27 @@ Acesse seu portal para mais detalhes: {link_portal}
     if (!plataforma.currentUser) return;
     
     try {
-      const projetos = await dbManager.getAllByIndex(plataforma.TABLES.PROJETOS, 'cliente_id', plataforma.currentUser.id);
-      const projeto = projetos && projetos.length > 0 ? projetos[0] : null;
+      const { data, error } = await supabaseClient
+        .from(plataforma.TABLES.PROJETOS)
+        .select('*')
+        .eq('cliente_id', plataforma.currentUser.id)
+        .single();
 
-      if (projeto) {
-        document.getElementById('plataforma_project_title').textContent = projeto.titulo;
-        document.getElementById('plataforma_project_desc').textContent = projeto.descricao || 'Sem descrição';
-        document.getElementById('plataforma_project_status').textContent = projeto.status;
-        document.getElementById('plataforma_project_status').className = `plataforma_status ${projeto.status}`;
+      if (error && error.code !== 'PGRST116') {
+        console.error('Erro ao buscar projeto:', error);
+      }
+
+      if (data) {
+        document.getElementById('plataforma_project_title').textContent = data.titulo;
+        document.getElementById('plataforma_project_desc').textContent = data.descricao || 'Sem descrição';
+        document.getElementById('plataforma_project_status').textContent = data.status;
+        document.getElementById('plataforma_project_status').className = `plataforma_status ${data.status}`;
         
-        const progresso = projeto.progresso || 0;
+        const progresso = data.progresso || 0;
         document.getElementById('plataforma_progress_text').textContent = `${progresso}%`;
         document.getElementById('plataforma_progress_bar').style.width = `${progresso}%`;
         
-        await plataforma_carregarEtapasProjeto(projeto.id);
+        await plataforma_carregarEtapasProjeto(data.id);
       } else {
         document.getElementById('plataforma_project_title').textContent = 'Nenhum projeto encontrado';
         document.getElementById('plataforma_project_desc').textContent = 'Entre em contato com o administrador';
@@ -2146,16 +1891,22 @@ Acesse seu portal para mais detalhes: {link_portal}
   // Carregar etapas do projeto
   async function plataforma_carregarEtapasProjeto(projetoId) {
     try {
-      const etapas = await dbManager.getAllByIndex(plataforma.TABLES.ETAPAS, 'projeto_id', projetoId);
+      const { data, error } = await supabaseClient
+        .from(plataforma.TABLES.ETAPAS)
+        .select('*')
+        .eq('projeto_id', projetoId)
+        .order('data', { ascending: true });
+
+      if (error) {
+        console.error('Erro ao buscar etapas:', error);
+        return;
+      }
 
       const timeline = document.getElementById('plataforma_timeline');
       timeline.innerHTML = '';
       
-      if (etapas && etapas.length > 0) {
-        // Ordenar por data
-        etapas.sort((a, b) => new Date(a.data) - new Date(b.data));
-        
-        etapas.forEach(etapa => {
+      if (data && data.length > 0) {
+        data.forEach(etapa => {
           const item = document.createElement('div');
           item.className = 'plataforma_timeline_item';
           
@@ -2186,13 +1937,21 @@ Acesse seu portal para mais detalhes: {link_portal}
     if (!plataforma.currentUser) return;
     
     try {
-      const links = await dbManager.getAllByIndex(plataforma.TABLES.LINKS, 'cliente_id', plataforma.currentUser.id);
+      const { data, error } = await supabaseClient
+        .from(plataforma.TABLES.LINKS)
+        .select('*')
+        .eq('cliente_id', plataforma.currentUser.id);
+
+      if (error) {
+        console.error('Erro ao buscar links:', error);
+        return;
+      }
 
       const linksList = document.getElementById('plataforma_links_list');
       linksList.innerHTML = '';
       
-      if (links && links.length > 0) {
-        links.forEach(link => {
+      if (data && data.length > 0) {
+        data.forEach(link => {
           const li = document.createElement('li');
           li.innerHTML = `
             <a href="${link.url}" target="_blank" class="plataforma_link_item">
@@ -2222,13 +1981,21 @@ Acesse seu portal para mais detalhes: {link_portal}
     if (!plataforma.currentUser) return;
     
     try {
-      const orientacoes = await dbManager.getAllByIndex(plataforma.TABLES.ORIENTACOES, 'cliente_id', plataforma.currentUser.id);
+      const { data, error } = await supabaseClient
+        .from(plataforma.TABLES.ORIENTACOES)
+        .select('*')
+        .eq('cliente_id', plataforma.currentUser.id);
+
+      if (error) {
+        console.error('Erro ao buscar orientações:', error);
+        return;
+      }
 
       const container = document.getElementById('plataforma_orientacoes');
       container.innerHTML = '';
       
-      if (orientacoes && orientacoes.length > 0) {
-        orientacoes.forEach(orientacao => {
+      if (data && data.length > 0) {
+        data.forEach(orientacao => {
           const alert = document.createElement('div');
           alert.className = 'plataforma_alert info';
           alert.innerHTML = `
@@ -2255,13 +2022,21 @@ Acesse seu portal para mais detalhes: {link_portal}
     if (!plataforma.currentUser) return;
     
     try {
-      const prazos = await dbManager.getAllByIndex(plataforma.TABLES.PRAZOS, 'cliente_id', plataforma.currentUser.id);
+      const { data, error } = await supabaseClient
+        .from(plataforma.TABLES.PRAZOS)
+        .select('*')
+        .eq('cliente_id', plataforma.currentUser.id);
+
+      if (error) {
+        console.error('Erro ao buscar prazos:', error);
+        return;
+      }
 
       const container = document.getElementById('plataforma_prazos');
       container.innerHTML = '';
       
-      if (prazos && prazos.length > 0) {
-        prazos.sort((a, b) => new Date(a.data) - new Date(b.data)).forEach(prazo => {
+      if (data && data.length > 0) {
+        data.sort((a, b) => new Date(a.data) - new Date(b.data)).forEach(prazo => {
           const date = new Date(prazo.data).toLocaleDateString('pt-BR');
           const today = new Date();
           const prazoDate = new Date(prazo.data);
@@ -2309,13 +2084,21 @@ Acesse seu portal para mais detalhes: {link_portal}
     if (!plataforma.currentUser) return;
     
     try {
-      const lembretes = await dbManager.getAllByIndex(plataforma.TABLES.LEMBRETES, 'cliente_id', plataforma.currentUser.id);
+      const { data, error } = await supabaseClient
+        .from(plataforma.TABLES.LEMBRETES)
+        .select('*')
+        .eq('cliente_id', plataforma.currentUser.id);
+
+      if (error) {
+        console.error('Erro ao buscar lembretes:', error);
+        return;
+      }
 
       const container = document.getElementById('plataforma_lembretes');
       container.innerHTML = '';
       
-      if (lembretes && lembretes.length > 0) {
-        lembretes.forEach(lembrete => {
+      if (data && data.length > 0) {
+        data.forEach(lembrete => {
           const item = document.createElement('div');
           item.className = 'lembrete-item';
           item.innerHTML = `
@@ -2340,7 +2123,7 @@ Acesse seu portal para mais detalhes: {link_portal}
     }
   }
 
-  // ==================== ÁREA ADMINISTRATIVA COM INDEXEDDB ====================
+  // ==================== ÁREA ADMINISTRATIVA COM SUPABASE ====================
   document.getElementById('plataforma_admin_access').addEventListener('click', () => {
     document.getElementById('plataforma_admin_modal').style.display = 'flex';
   });
@@ -2392,21 +2175,43 @@ Acesse seu portal para mais detalhes: {link_portal}
   async function plataforma_admin_carregarDashboard() {
     try {
       // Contar clientes
-      const totalClientes = await dbManager.count(plataforma.TABLES.CLIENTES);
-      document.getElementById('plataforma_admin_total_clientes').textContent = totalClientes || 0;
+      const { count: totalClientes, error: errorClientes } = await supabaseClient
+        .from(plataforma.TABLES.CLIENTES)
+        .select('*', { count: 'exact', head: true });
+
+      if (!errorClientes) {
+        document.getElementById('plataforma_admin_total_clientes').textContent = totalClientes || 0;
+      }
 
       // Contar projetos
-      const totalProjetos = await dbManager.count(plataforma.TABLES.PROJETOS);
-      document.getElementById('plataforma_admin_total_projetos').textContent = totalProjetos || 0;
+      const { count: totalProjetos, error: errorProjetos } = await supabaseClient
+        .from(plataforma.TABLES.PROJETOS)
+        .select('*', { count: 'exact', head: true });
+
+      if (!errorProjetos) {
+        document.getElementById('plataforma_admin_total_projetos').textContent = totalProjetos || 0;
+      }
 
       // Contar alertas pendentes
-      const totalAlertas = await dbManager.countByIndex(plataforma.TABLES.ALERTAS, 'status', 'pendente');
-      document.getElementById('plataforma_admin_total_alertas').textContent = totalAlertas || 0;
+      const { count: totalAlertas, error: errorAlertas } = await supabaseClient
+        .from(plataforma.TABLES.ALERTAS)
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'pendente');
+
+      if (!errorAlertas) {
+        document.getElementById('plataforma_admin_total_alertas').textContent = totalAlertas || 0;
+      }
 
       // Contar vencimentos hoje
       const hoje = new Date().toISOString().split('T')[0];
-      const prazosHoje = await dbManager.getAllByIndex(plataforma.TABLES.PRAZOS, 'data', hoje);
-      document.getElementById('plataforma_admin_total_vencimentos').textContent = prazosHoje ? prazosHoje.length : 0;
+      const { count: totalVencimentos, error: errorVencimentos } = await supabaseClient
+        .from(plataforma.TABLES.PRAZOS)
+        .select('*', { count: 'exact', head: true })
+        .eq('data', hoje);
+
+      if (!errorVencimentos) {
+        document.getElementById('plataforma_admin_total_vencimentos').textContent = totalVencimentos || 0;
+      }
 
       // Carregar lista de clientes
       await plataforma_admin_carregarListaClientes();
@@ -2421,8 +2226,18 @@ Acesse seu portal para mais detalhes: {link_portal}
 
   async function plataforma_admin_carregarListaClientes() {
     try {
-      const clientes = await dbManager.getAll(plataforma.TABLES.CLIENTES);
-      const projetos = await dbManager.getAll(plataforma.TABLES.PROJETOS);
+      const { data: clientes, error: errorClientes } = await supabaseClient
+        .from(plataforma.TABLES.CLIENTES)
+        .select('*');
+
+      const { data: projetos, error: errorProjetos } = await supabaseClient
+        .from(plataforma.TABLES.PROJETOS)
+        .select('*');
+
+      if (errorClientes) {
+        console.error('Erro ao carregar clientes:', errorClientes);
+        return;
+      }
 
       const tbody = document.getElementById('plataforma_admin_clientes_list');
       tbody.innerHTML = '';
@@ -2470,7 +2285,15 @@ Acesse seu portal para mais detalhes: {link_portal}
 
   async function plataforma_admin_carregarClientesSelect() {
     try {
-      const clientes = await dbManager.getAll(plataforma.TABLES.CLIENTES);
+      const { data: clientes, error } = await supabaseClient
+        .from(plataforma.TABLES.CLIENTES)
+        .select('id, nome, cpf')
+        .order('nome');
+
+      if (error) {
+        console.error('Erro ao carregar clientes para select:', error);
+        return;
+      }
 
       const selects = [
         'plataforma_projeto_cliente',
@@ -2512,7 +2335,11 @@ Acesse seu portal para mais detalhes: {link_portal}
     
     try {
       // Verificar se CPF já existe
-      const clienteExistente = await dbManager.getByIndex(plataforma.TABLES.CLIENTES, 'cpf', cpf);
+      const { data: clienteExistente, error: errorVerificacao } = await supabaseClient
+        .from(plataforma.TABLES.CLIENTES)
+        .select('id')
+        .eq('cpf', cpf)
+        .single();
 
       if (clienteExistente) {
         alert('CPF já cadastrado no sistema');
@@ -2529,7 +2356,15 @@ Acesse seu portal para mais detalhes: {link_portal}
         ultimo_acesso: null
       };
 
-      await dbManager.add(plataforma.TABLES.CLIENTES, novoCliente);
+      const { data, error } = await supabaseClient
+        .from(plataforma.TABLES.CLIENTES)
+        .insert([novoCliente])
+        .select()
+        .single();
+
+      if (error) {
+        throw error;
+      }
 
       alert('Cliente cadastrado com sucesso! CPF será a senha de acesso.');
       document.getElementById('plataforma_novo_nome').value = '';
@@ -2553,15 +2388,22 @@ Acesse seu portal para mais detalhes: {link_portal}
     if (!clienteId) return;
     
     try {
-      const projetos = await dbManager.getAllByIndex(plataforma.TABLES.PROJETOS, 'cliente_id', clienteId);
-      const projeto = projetos && projetos.length > 0 ? projetos[0] : null;
+      const { data, error } = await supabaseClient
+        .from(plataforma.TABLES.PROJETOS)
+        .select('*')
+        .eq('cliente_id', clienteId)
+        .single();
 
-      if (projeto) {
-        document.getElementById('plataforma_projeto_titulo').value = projeto.titulo || '';
-        document.getElementById('plataforma_projeto_desc').value = projeto.descricao || '';
-        document.getElementById('plataforma_projeto_status').value = projeto.status || 'pendente';
-        document.getElementById('plataforma_projeto_progresso').value = projeto.progresso || 0;
-        document.getElementById('plataforma_projeto_progresso_text').textContent = `${projeto.progresso || 0}%`;
+      if (error && error.code !== 'PGRST116') {
+        console.error('Erro ao buscar projeto:', error);
+      }
+
+      if (data) {
+        document.getElementById('plataforma_projeto_titulo').value = data.titulo || '';
+        document.getElementById('plataforma_projeto_desc').value = data.descricao || '';
+        document.getElementById('plataforma_projeto_status').value = data.status || 'pendente';
+        document.getElementById('plataforma_projeto_progresso').value = data.progresso || 0;
+        document.getElementById('plataforma_projeto_progresso_text').textContent = `${data.progresso || 0}%`;
       } else {
         document.getElementById('plataforma_projeto_titulo').value = '';
         document.getElementById('plataforma_projeto_desc').value = '';
@@ -2597,18 +2439,33 @@ Acesse seu portal para mais detalhes: {link_portal}
       };
 
       // Verificar se projeto já existe
-      const projetos = await dbManager.getAllByIndex(plataforma.TABLES.PROJETOS, 'cliente_id', clienteId);
-      const projetoExistente = projetos && projetos.length > 0 ? projetos[0] : null;
+      const { data: projetoExistente, error: errorVerificacao } = await supabaseClient
+        .from(plataforma.TABLES.PROJETOS)
+        .select('id, status')
+        .eq('cliente_id', clienteId)
+        .single();
 
+      let resultado;
       if (projetoExistente) {
         // Atualizar projeto existente
-        projeto.id = projetoExistente.id;
-        projeto.data_criacao = projetoExistente.data_criacao;
-        await dbManager.update(plataforma.TABLES.PROJETOS, projetoExistente.id, projeto);
+        resultado = await supabaseClient
+          .from(plataforma.TABLES.PROJETOS)
+          .update(projeto)
+          .eq('id', projetoExistente.id)
+          .select()
+          .single();
       } else {
         // Criar novo projeto
         projeto.data_criacao = new Date().toISOString();
-        await dbManager.add(plataforma.TABLES.PROJETOS, projeto);
+        resultado = await supabaseClient
+          .from(plataforma.TABLES.PROJETOS)
+          .insert([projeto])
+          .select()
+          .single();
+      }
+
+      if (resultado.error) {
+        throw resultado.error;
       }
 
       alert('Projeto salvo com sucesso!');
@@ -2622,20 +2479,16 @@ Acesse seu portal para mais detalhes: {link_portal}
           'aguardando': 'Aguardando ação do cliente'
         };
         
-        // Buscar ID do projeto salvo
-        const projetosAtualizados = await dbManager.getAllByIndex(plataforma.TABLES.PROJETOS, 'cliente_id', clienteId);
-        const projetoSalvo = projetosAtualizados && projetosAtualizados.length > 0 ? projetosAtualizados[0] : null;
+        const etapa = {
+          projeto_id: resultado.data.id,
+          titulo: `Status alterado para: ${status}`,
+          descricao: statusText[status] || 'Status atualizado',
+          data: new Date().toISOString()
+        };
         
-        if (projetoSalvo) {
-          const etapa = {
-            projeto_id: projetoSalvo.id,
-            titulo: `Status alterado para: ${status}`,
-            descricao: statusText[status] || 'Status atualizado',
-            data: new Date().toISOString()
-          };
-          
-          await dbManager.add(plataforma.TABLES.ETAPAS, etapa);
-        }
+        await supabaseClient
+          .from(plataforma.TABLES.ETAPAS)
+          .insert([etapa]);
       }
       
     } catch (error) {
@@ -2662,7 +2515,13 @@ Acesse seu portal para mais detalhes: {link_portal}
         data_criacao: new Date().toISOString()
       };
 
-      await dbManager.add(plataforma.TABLES.LINKS, link);
+      const { error } = await supabaseClient
+        .from(plataforma.TABLES.LINKS)
+        .insert([link]);
+
+      if (error) {
+        throw error;
+      }
 
       alert('Link adicionado com sucesso!');
       document.getElementById('plataforma_novo_link_nome').value = '';
@@ -2690,7 +2549,13 @@ Acesse seu portal para mais detalhes: {link_portal}
         data_criacao: new Date().toISOString()
       };
 
-      await dbManager.add(plataforma.TABLES.ORIENTACOES, orientacao);
+      const { error } = await supabaseClient
+        .from(plataforma.TABLES.ORIENTACOES)
+        .insert([orientacao]);
+
+      if (error) {
+        throw error;
+      }
 
       alert('Orientação adicionada com sucesso!');
       document.getElementById('plataforma_nova_orientacao').value = '';
@@ -2720,7 +2585,13 @@ Acesse seu portal para mais detalhes: {link_portal}
         data_criacao: new Date().toISOString()
       };
 
-      await dbManager.add(plataforma.TABLES.PRAZOS, prazo);
+      const { error } = await supabaseClient
+        .from(plataforma.TABLES.PRAZOS)
+        .insert([prazo]);
+
+      if (error) {
+        throw error;
+      }
 
       alert('Prazo adicionado com sucesso! O sistema notificará automaticamente.');
       document.getElementById('plataforma_novo_prazo_titulo').value = '';
@@ -2749,7 +2620,13 @@ Acesse seu portal para mais detalhes: {link_portal}
         data_criacao: new Date().toISOString()
       };
 
-      await dbManager.add(plataforma.TABLES.LEMBRETES, lembrete);
+      const { error } = await supabaseClient
+        .from(plataforma.TABLES.LEMBRETES)
+        .insert([lembrete]);
+
+      if (error) {
+        throw error;
+      }
 
       alert('Lembrete adicionado com sucesso!');
       document.getElementById('plataforma_novo_lembrete').value = '';
@@ -2762,10 +2639,18 @@ Acesse seu portal para mais detalhes: {link_portal}
 
   async function plataforma_carregarConfigAlertas() {
     try {
-      const config = await dbManager.getById(plataforma.TABLES.CONFIG, 'config_alertas');
+      const { data, error } = await supabaseClient
+        .from(plataforma.TABLES.CONFIG)
+        .select('*')
+        .eq('chave', 'config_alertas')
+        .single();
 
-      if (config && config.valor) {
-        plataforma.configAlertas = config.valor;
+      if (error && error.code !== 'PGRST116') {
+        console.error('Erro ao carregar configurações:', error);
+      }
+
+      if (data && data.valor) {
+        plataforma.configAlertas = data.valor;
         
         // Atualizar campos no formulário se existirem
         const diasInput = document.getElementById('plataforma_alerta_dias');
@@ -2801,16 +2686,29 @@ Acesse seu portal para mais detalhes: {link_portal}
       };
 
       // Verificar se configuração já existe
-      const configExistente = await dbManager.getById(plataforma.TABLES.CONFIG, 'config_alertas');
+      const { data: configExistente, error: errorVerificacao } = await supabaseClient
+        .from(plataforma.TABLES.CONFIG)
+        .select('id')
+        .eq('chave', 'config_alertas')
+        .single();
 
+      let resultado;
       if (configExistente) {
         // Atualizar configuração existente
-        config.data_criacao = configExistente.data_criacao;
-        await dbManager.update(plataforma.TABLES.CONFIG, 'config_alertas', config);
+        resultado = await supabaseClient
+          .from(plataforma.TABLES.CONFIG)
+          .update(config)
+          .eq('id', configExistente.id);
       } else {
         // Criar nova configuração
         config.data_criacao = new Date().toISOString();
-        await dbManager.add(plataforma.TABLES.CONFIG, config);
+        resultado = await supabaseClient
+          .from(plataforma.TABLES.CONFIG)
+          .insert([config]);
+      }
+
+      if (resultado.error) {
+        throw resultado.error;
       }
 
       alert('Configurações salvas com sucesso!');
@@ -2841,15 +2739,21 @@ Acesse seu portal para mais detalhes: {link_portal}
 
   async function plataforma_admin_carregarAlertas() {
     try {
-      const alertas = await dbManager.getAll(plataforma.TABLES.ALERTAS);
+      const { data, error } = await supabaseClient
+        .from(plataforma.TABLES.ALERTAS)
+        .select('*')
+        .order('data_criacao', { ascending: false });
+
+      if (error) {
+        console.error('Erro ao carregar alertas:', error);
+        return;
+      }
 
       const container = document.getElementById('plataforma_admin_alertas_lista');
       container.innerHTML = '';
       
-      if (alertas && alertas.length > 0) {
-        alertas.sort((a, b) => new Date(b.data_criacao) - new Date(a.data_criacao));
-        
-        alertas.forEach(alerta => {
+      if (data && data.length > 0) {
+        data.forEach(alerta => {
           const item = document.createElement('div');
           item.className = 'notificacao-item';
           item.innerHTML = `
@@ -2880,12 +2784,16 @@ Acesse seu portal para mais detalhes: {link_portal}
 
   async function plataforma_admin_marcarEnviado(alertaId) {
     try {
-      const alerta = await dbManager.getById(plataforma.TABLES.ALERTAS, alertaId);
-      
-      if (alerta) {
-        alerta.status = 'enviado';
-        alerta.data_envio = new Date().toISOString();
-        await dbManager.update(plataforma.TABLES.ALERTAS, alertaId, alerta);
+      const { error } = await supabaseClient
+        .from(plataforma.TABLES.ALERTAS)
+        .update({ 
+          status: 'enviado',
+          data_envio: new Date().toISOString()
+        })
+        .eq('id', alertaId);
+
+      if (error) {
+        throw error;
       }
 
       plataforma_admin_carregarAlertas();
@@ -2900,13 +2808,21 @@ Acesse seu portal para mais detalhes: {link_portal}
 
   async function plataforma_admin_atualizarBadgeNotificacoes() {
     try {
-      const totalAlertas = await dbManager.countByIndex(plataforma.TABLES.ALERTAS, 'status', 'pendente');
+      const { count, error } = await supabaseClient
+        .from(plataforma.TABLES.ALERTAS)
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'pendente');
+
+      if (error) {
+        console.error('Erro ao contar alertas pendentes:', error);
+        return;
+      }
 
       const badge = document.getElementById('plataforma_notificacoes_count');
       const btn = document.getElementById('plataforma_notificacoes_btn');
       
-      if (totalAlertas > 0) {
-        badge.textContent = totalAlertas;
+      if (count > 0) {
+        badge.textContent = count;
         badge.style.display = 'flex';
         btn.classList.add('pulse');
       } else {
@@ -2942,18 +2858,30 @@ Acesse seu portal para mais detalhes: {link_portal}
   async function plataforma_admin_enviarAlertaCliente(clienteId) {
     try {
       // Buscar cliente
-      const cliente = await dbManager.getById(plataforma.TABLES.CLIENTES, clienteId);
+      const { data: cliente, error: errorCliente } = await supabaseClient
+        .from(plataforma.TABLES.CLIENTES)
+        .select('*')
+        .eq('id', clienteId)
+        .single();
 
-      if (!cliente) {
+      if (errorCliente || !cliente) {
         alert('Cliente não encontrado');
         return;
       }
 
       // Buscar prazos pendentes do cliente
-      const prazos = await dbManager.getAllByIndex(plataforma.TABLES.PRAZOS, 'cliente_id', clienteId);
-      const prazosPendentes = prazos ? prazos.filter(p => p.status_alerta === 'pendente') : [];
+      const { data: prazos, error: errorPrazos } = await supabaseClient
+        .from(plataforma.TABLES.PRAZOS)
+        .select('*')
+        .eq('cliente_id', clienteId)
+        .eq('status_alerta', 'pendente');
 
-      if (!prazosPendentes || prazosPendentes.length === 0) {
+      if (errorPrazos) {
+        console.error('Erro ao buscar prazos:', errorPrazos);
+        return;
+      }
+
+      if (!prazos || prazos.length === 0) {
         alert('Nenhum prazo pendente para este cliente');
         return;
       }
@@ -2962,7 +2890,7 @@ Acesse seu portal para mais detalhes: {link_portal}
       let mensagem = `Olá ${cliente.nome}!%0A%0A`;
       mensagem += `Lembretes de prazos:%0A%0A`;
       
-      prazosPendentes.forEach((prazo, index) => {
+      prazos.forEach((prazo, index) => {
         const dataFormatada = new Date(prazo.data).toLocaleDateString('pt-BR');
         mensagem += `${index + 1}. ${prazo.titulo} - Vencimento: ${dataFormatada}%0A`;
       });
@@ -2974,10 +2902,11 @@ Acesse seu portal para mais detalhes: {link_portal}
       window.open(`https://wa.me/${telefone}?text=${mensagem}`, '_blank');
       
       // Marcar prazos como enviados
-      for (const prazo of prazosPendentes) {
-        prazo.status_alerta = 'enviado';
-        await dbManager.update(plataforma.TABLES.PRAZOS, prazo.id, prazo);
-      }
+      const prazosIds = prazos.map(p => p.id);
+      await supabaseClient
+        .from(plataforma.TABLES.PRAZOS)
+        .update({ status_alerta: 'enviado' })
+        .in('id', prazosIds);
       
       // Criar registro de alerta enviado
       const alerta = {
@@ -2989,7 +2918,9 @@ Acesse seu portal para mais detalhes: {link_portal}
         data_criacao: new Date().toISOString()
       };
       
-      await dbManager.add(plataforma.TABLES.ALERTAS, alerta);
+      await supabaseClient
+        .from(plataforma.TABLES.ALERTAS)
+        .insert([alerta]);
       
       alert('Alerta enviado com sucesso!');
       plataforma_admin_carregarDashboard();
@@ -2999,302 +2930,6 @@ Acesse seu portal para mais detalhes: {link_portal}
       alert('Erro ao enviar alerta: ' + error.message);
     }
   }
-</<script>
-/**
- * 🚀 UNIVERSAL IDB SYNC - FIXED (ANTI-ZOMBIE DATA)
- * - Correção: Persistência de DeviceID (Evita auto-download após F5).
- * - Correção: Force Delete (Deleta do disco mesmo se não estiver no Cache).
- */
-(function () {
-    // ==========================================================
-    // 1. CONFIGURAÇÕES & CONSTANTES
-    // ==========================================================
-    const SYNC_TABLE = 'lg_crm_supadb';
-    const CANONICAL_DB = 'lg_crmDB';
-    
-    // FIX 1: Mantém a identidade da aba mesmo após refresh (SessionStorage)
-    // Isso impede que a aba baixe de volta um dado que ela mesma acabou de deletar
-    let storedId = sessionStorage.getItem('sync_device_id');
-    if (!storedId) {
-        storedId = crypto.randomUUID();
-        sessionStorage.setItem('sync_device_id', storedId);
-    }
-    const DEVICE_ID = storedId;
-    
-    let isReplicating = false; 
-    let syncInterval = null;
-
-    // 🧠 CACHE INTELIGENTE
-    const syncCache = new Map();
-
-    // ==========================================================
-    // 2. UTILITÁRIOS
-    // ==========================================================
-    const getClient = () => window.supabaseClient || window.supabase;
-
-    const waitForSupabase = () => new Promise(resolve => {
-        const check = () => getClient() ? resolve(getClient()) : setTimeout(check, 100);
-        check();
-    });
-
-    async function getUserId() {
-        const client = await waitForSupabase();
-        const { data } = await client.auth.getSession();
-        return data?.session?.user?.id || null;
-    }
-
-    function generateSignature(value) {
-        // Garante que null/undefined sejam tratados iguais
-        if (value === null || value === undefined) return 'null';
-        return JSON.stringify(value);
-    }
-
-    // ==========================================================
-    // 3. INTERCEPTAÇÃO REAL-TIME (IndexDB -> Supabase)
-    // ==========================================================
-    const original = {
-        put: IDBObjectStore.prototype.put,
-        add: IDBObjectStore.prototype.add,
-        delete: IDBObjectStore.prototype.delete
-    };
-
-    async function scheduleRealtimeUpload(storeName, method, key, value) {
-        if (isReplicating) return; 
-
-        const client = getClient();
-        const userId = await getUserId();
-        if (!client || !userId) return;
-
-        const cacheKey = `${storeName}-${key}`;
-        
-        // Atualiza cache local imediatamente
-        if (method === 'delete') {
-            syncCache.delete(cacheKey);
-        } else {
-            syncCache.set(cacheKey, generateSignature(value));
-        }
-
-        // Envia para Supabase
-        // FIX: Tratamento de erro silencioso para evitar travar a UI
-        client.from(SYNC_TABLE).upsert({
-            user_id: userId,
-            db_name: CANONICAL_DB,
-            store_name: storeName,
-            record_key: String(key),
-            record_value: method === 'delete' ? null : value,
-            is_deleted: method === 'delete',
-            device_id: DEVICE_ID,
-            updated_at: new Date().toISOString()
-        }, { onConflict: 'user_id,db_name,store_name,record_key' })
-        .then(({ error }) => {
-            if (error) console.warn(`⚠️ Sync Upload Falhou:`, error.message);
-        });
-    }
-
-    IDBObjectStore.prototype.put = function (v, k) {
-        const req = original.put.apply(this, arguments);
-        const storeName = this.name;
-        req.onsuccess = (e) => scheduleRealtimeUpload(storeName, 'put', k || e.target.result, v);
-        return req;
-    };
-
-    IDBObjectStore.prototype.add = function (v, k) {
-        const req = original.add.apply(this, arguments);
-        const storeName = this.name;
-        req.onsuccess = (e) => scheduleRealtimeUpload(storeName, 'add', k || e.target.result, v);
-        return req;
-    };
-
-    IDBObjectStore.prototype.delete = function (k) {
-        const req = original.delete.apply(this, arguments);
-        const storeName = this.name;
-        req.onsuccess = (e) => scheduleRealtimeUpload(storeName, 'delete', k, null);
-        return req;
-    };
-
-    console.log('🪤 Sistema de Sync Híbrido Ativado (v2 Anti-Zombie)');
-
-    // ==========================================================
-    // 4. SMART UPLOAD LOOP (PC -> CLOUD)
-    // ==========================================================
-    async function smartUploadLoop() {
-        const userId = await getUserId();
-        const client = getClient();
-        if (!userId || !client) return;
-
-        const req = indexedDB.open(CANONICAL_DB);
-        
-        req.onsuccess = (e) => {
-            const db = e.target.result;
-            const storeNames = Array.from(db.objectStoreNames);
-
-            storeNames.forEach(storeName => {
-                const tx = db.transaction([storeName], 'readonly');
-                const store = tx.objectStore(storeName);
-                
-                Promise.all([
-                    new Promise(r => store.getAll().onsuccess = (ev) => r(ev.target.result)),
-                    new Promise(r => store.getAllKeys().onsuccess = (ev) => r(ev.target.result))
-                ]).then(async ([records, keys]) => {
-                    if (!records.length) return;
-
-                    const changedRecords = [];
-
-                    records.forEach((item, index) => {
-                        const key = String(keys[index]);
-                        const cacheKey = `${storeName}-${key}`;
-                        const currentSig = generateSignature(item);
-
-                        // Só sobe se mudou em relação ao que sabemos
-                        if (syncCache.get(cacheKey) !== currentSig) {
-                            changedRecords.push({
-                                user_id: userId,
-                                db_name: CANONICAL_DB,
-                                store_name: storeName,
-                                record_key: key,
-                                record_value: item,
-                                is_deleted: false,
-                                device_id: DEVICE_ID,
-                                updated_at: new Date().toISOString()
-                            });
-                            syncCache.set(cacheKey, currentSig);
-                        }
-                    });
-
-                    if (changedRecords.length > 0) {
-                        console.log(`📤 Upload Batch: ${changedRecords.length} itens`);
-                        await client.from(SYNC_TABLE).upsert(changedRecords, { 
-                            onConflict: 'user_id,db_name,store_name,record_key' 
-                        });
-                    }
-                });
-            });
-        };
-    }
-
-    // ==========================================================
-    // 5. SMART DOWNLOAD LOOP (CLOUD -> PC)
-    // ==========================================================
-    async function smartDownloadLoop() {
-        const userId = await getUserId();
-        const client = getClient();
-        if (!userId || !client) return;
-
-        const { data, error } = await client
-            .from(SYNC_TABLE)
-            .select('*')
-            .eq('user_id', userId)
-            .eq('db_name', CANONICAL_DB);
-
-        if (error || !data || !data.length) return;
-
-        const req = indexedDB.open(CANONICAL_DB);
-        req.onsuccess = (e) => {
-            const db = e.target.result;
-            const localStores = Array.from(db.objectStoreNames);
-            
-            const validRecords = data.filter(r => localStores.includes(r.store_name));
-            if (!validRecords.length) return;
-
-            const tx = db.transaction([...new Set(validRecords.map(r => r.store_name))], 'readwrite');
-            isReplicating = true;
-
-            let writes = 0;
-
-            validRecords.forEach(r => {
-                // ANTI-ECHO: Se o dado veio deste mesmo DEVICE_ID, ignoramos.
-                // Como agora usamos sessionStorage, isso persiste após refresh.
-                if (r.device_id === DEVICE_ID) return;
-
-                const store = tx.objectStore(r.store_name);
-                // Converte chave numérica se necessário
-                const key = !isNaN(r.record_key) ? Number(r.record_key) : r.record_key;
-                const cacheKey = `${r.store_name}-${r.record_key}`;
-                
-                // LÓGICA DE DELETE (CORRIGIDA)
-                if (r.is_deleted) {
-                    // FIX: Deleta incondicionalmente. Se não existir, não dá erro.
-                    // Antes verificávamos o cache, o que impedia deletes em sessões novas.
-                    store.delete(key);
-                    
-                    if (syncCache.has(cacheKey)) {
-                        syncCache.delete(cacheKey);
-                        writes++;
-                    }
-                    return;
-                }
-
-                // LÓGICA DE UPDATE/INSERT
-                const incomingSig = generateSignature(r.record_value);
-                const localSig = syncCache.get(cacheKey);
-
-                if (incomingSig === localSig) {
-                    return; 
-                }
-
-                // Atualiza IDB
-                const val = r.record_value;
-                if (store.keyPath && val && typeof val === 'object') {
-                    // Se a store usa keyPath inline, injetamos a chave se necessário
-                    if (!val[store.keyPath]) val[store.keyPath] = key;
-                    store.put(val);
-                } else {
-                    store.put(val, key);
-                }
-                
-                syncCache.set(cacheKey, incomingSig);
-                writes++;
-            });
-
-            tx.oncomplete = () => {
-                isReplicating = false;
-                if (writes > 0) console.log(`📥 Download Sync: ${writes} alterações aplicadas.`);
-            };
-            
-            tx.onerror = () => isReplicating = false;
-        };
-    }
-
-    // ==========================================================
-    // 6. INICIALIZAÇÃO
-    // ==========================================================
-    async function startService() {
-        const userId = await getUserId();
-        if (!userId) return;
-
-        console.log('✅ Serviço de Sync Iniciado para:', userId);
-        const client = getClient();
-
-        client.channel('global-sync-live')
-            .on('postgres_changes', { 
-                event: '*', schema: 'public', table: SYNC_TABLE, filter: `user_id=eq.${userId}` 
-            }, payload => {
-                // Só dispara download se o evento veio de OUTRO device
-                if (payload.new && payload.new.device_id !== DEVICE_ID) {
-                    smartDownloadLoop();
-                }
-            })
-            .subscribe();
-
-        // Ordem estratégica: Carrega Cache Local -> Baixa Nuvem -> Inicia Loop
-        await smartUploadLoop(); 
-        setTimeout(smartDownloadLoop, 500); // Pequeno delay para garantir que o Upload populou o cache
-
-        if (syncInterval) clearInterval(syncInterval);
-        syncInterval = setInterval(async () => {
-            await smartUploadLoop();
-            await smartDownloadLoop();
-        }, 10000);
-    }
-
-    waitForSupabase().then(client => {
-        client.auth.onAuthStateChange((event, session) => {
-            if (event === 'SIGNED_IN' && session) startService();
-        });
-        getUserId().then(id => { if (id) startService(); });
-    });
-
-})();
 </script>
 </body>
 </html>
