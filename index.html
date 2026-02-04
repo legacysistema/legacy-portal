@@ -579,6 +579,7 @@
 
         // Inicializa Cliente Supabase
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        window.supabaseClient = supabaseClient;       
 
         // --- 2. CONFIGURAÇÃO INDEXEDDB ---
         const DB_NAME = 'lg_crmDB';
@@ -586,7 +587,7 @@
         let db;
 
         function initDB() {
-            const request = indexedDB.open(DB_NAME, 2);
+            const request = indexedDB.open(DB_NAME, 7);
 
             request.onerror = (event) => console.error("Erro DB:", event.target.error);
 
@@ -723,7 +724,7 @@
                 if (cursor) {
                     const data = cursor.value;
                     
-                    // Formatar Status Badge
+                    // Formatar Status BadgeindexedDB.open(DB_NAME, 7);
                     let statusClass = 'status-dev';
                     if(data.status === 'Concluído') statusClass = 'status-ok';
                     if(data.status === 'Em Análise') statusClass = 'status-analise';
@@ -983,8 +984,7 @@
     // ==========================================================
     // 2. UTILITÁRIOS
     // ==========================================================
-    const getClient = () => window.supabaseClient || window.supabase;
-
+    const getClient = () => window.supabaseClient 
     const waitForSupabase = () => new Promise(resolve => {
         const check = () => getClient() ? resolve(getClient()) : setTimeout(check, 100);
         check();
@@ -1238,14 +1238,14 @@
             await smartUploadLoop();
             await smartDownloadLoop();
         }, 10000);
-    }
+    }supabaseClient
 
-    waitForSupabase().then(client => {
-        client.auth.onAuthStateChange((event, session) => {
-            if (event === 'SIGNED_IN' && session) startService();
-        });
-        getUserId().then(id => { if (id) startService(); });
-    });
+  supabaseClient.auth.onAuthStateChange((event, session) => {
+    if (event === 'SIGNED_IN' && session) {
+        startService();
+    }
+});
+
 
 })();
 </script>
