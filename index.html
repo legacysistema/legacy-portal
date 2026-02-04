@@ -1,2024 +1,1034 @@
-old<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Legacy Platform — Enterprise Edition</title>
-
-  <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@700&family=Inter:wght@300;400;500;600&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-  
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <style>
-    :root {
-      --bg-dark: #020617;
-      --text-white: #ffffff;
-      --glass-bg: rgba(255, 255, 255, 0.08);
-      --glass-border: rgba(255, 255, 255, 0.15);
-      --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-      --primary: #3b82f6;
-      --success: #10b981;
-      --warning: #f59e0b;
-      --danger: #ef4444;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    html { scroll-behavior: smooth; }
-
-    body {
-      font-family: 'Poppins', 'Inter', sans-serif;
-      background: var(--bg-dark);
-      color: var(--text-white);
-      min-height: 100vh;
-      overflow-x: hidden;
-      position: relative;
-    }
-
-    /* ================= HEADER ================= */
-    header {
-      height: 90px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 48px;
-      background: rgba(2, 6, 23, 0.85);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid rgba(255,255,255,0.1);
-      position: fixed;
-      top: 0;
-      width: 100%;
-      z-index: 1000;
-      transition: all 0.3s ease;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 18px;
-      flex-shrink: 0;
-    }
-
-    .brand-text strong {
-      font-family: 'Roboto Condensed', sans-serif;
-      font-size: 22px;
-      color: #fff;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-
-    .brand-text span {
-      font-size: 11px;
-      letter-spacing: 3px;
-      color: var(--primary);
-      display: block;
-    }
-
-    /* Navegação Topo */
-    .header-nav {
-      display: flex;
-      gap: 30px;
-      overflow-x: auto;
-      scrollbar-width: none;
-    }
-    .header-nav::-webkit-scrollbar { display: none; }
-
-    .nav-link {
-      color: rgba(255,255,255,0.7);
-      text-decoration: none;
-      font-size: 14px;
-      font-weight: 500;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      transition: 0.3s;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding-bottom: 5px;
-      border-bottom: 2px solid transparent;
-      white-space: nowrap;
-    }
-
-    .nav-link:hover, .nav-link.active {
-      color: #fff;
-      border-bottom-color: var(--primary);
-    }
-
-    .header-spacer { width: 50px; }
-
-    /* ================= MAIN STRUTUCTURE ================= */
-    main {
-      padding-top: 110px;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      position: relative;
-      padding-bottom: 100px;
-    }
-
-    /* Blobs de Fundo */
-    .background-blobs {
-      position: absolute;
-      top: 0; left: 0; width: 100%; height: 100%;
-      z-index: 0; pointer-events: none; overflow: hidden;
-      position: fixed;
-    }
-
-    .blob {
-      position: absolute; border-radius: 50%;
-      filter: blur(80px); opacity: 0.6;
-    }
-    .blob-1 {
-      width: 500px; height: 500px; background: #ff007a;
-      top: 20%; left: 20%; animation: float 6s ease-in-out infinite;
-    }
-    .blob-2 {
-      width: 400px; height: 400px; background: #3b82f6;
-      bottom: 10%; right: 20%; animation: float 8s ease-in-out infinite reverse;
-    }
-
-    @keyframes float {
-      0% { transform: translate(0, 0); }
-      50% { transform: translate(30px, -30px); }
-      100% { transform: translate(0, 0); }
-    }
-
-    /* ================= GLASS CARDS (DASHBOARD) ================= */
-    .glass-slider-container {
-      position: relative; z-index: 10;
-      display: flex; gap: 30px; padding: 20px;
-      width: 100%; max-width: 1200px;
-      justify-content: center; 
-      flex-wrap: wrap;
-      margin-bottom: 80px;
-    }
-
-    .glass-card {
-      width: 300px; height: 420px;
-      background: var(--glass-bg);
-      backdrop-filter: blur(15px);
-      -webkit-backdrop-filter: blur(15px);
-      border: 1px solid var(--glass-border);
-      border-radius: 20px;
-      padding: 30px;
-      display: flex; flex-direction: column;
-      align-items: center; text-align: center;
-      box-shadow: var(--glass-shadow);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      color: #fff;
-      flex-shrink: 0;
-    }
-    .glass-card:hover {
-      transform: translateY(-10px);
-      background: rgba(255, 255, 255, 0.12);
-    }
-
-    .card-img-wrapper {
-      width: 100px; height: 100px;
-      border-radius: 50%;
-      border: 3px solid rgba(255,255,255,0.3);
-      margin-bottom: 20px;
-      overflow: hidden;
-      display: flex; align-items: center; justify-content: center;
-      background: rgba(0,0,0,0.2);
-    }
-    .card-img-wrapper i { font-size: 40px; color: #fff; }
-
-    .card-title { font-size: 22px; font-weight: 600; margin-bottom: 5px; }
-    .card-role { font-size: 14px; color: rgba(255,255,255,0.7); margin-bottom: 30px; }
-
-    .btn-glass {
-      margin-top: auto;
-      background: #ffffff; color: #020617;
-      border: none; padding: 12px 30px;
-      border-radius: 8px; font-weight: 600;
-      cursor: pointer; transition: 0.3s;
-      text-transform: uppercase; font-size: 13px; letter-spacing: 1px;
-    }
-    .btn-glass:hover {
-      background: var(--primary); color: white;
-      box-shadow: 0 0 15px var(--primary);
-    }
-
-    /* ================= PRICING SECTION ================= */
-    #planos {
-      width: 100%; text-align: center; padding: 40px 20px;
-      z-index: 10; position: relative;
-    }
-    #planos h2 { font-size: 2.8rem; font-weight: 800; margin-bottom: 10px; text-shadow: 0 2px 10px rgba(0,0,0,0.5); line-height: 1.2; }
-    #planos p { max-width: 800px; margin: 0 auto 50px; color: rgba(255,255,255,0.8); font-size: 1.1rem; }
-
-    .pricing-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
-      gap: 20px;
-      max-width: 1300px;
-      margin: 0 auto;
-      padding: 0 10px;
-      align-items: stretch;
-    }
-
-    .price-card {
-      position: relative;
-      background: rgba(15, 23, 42, 0.6); 
-      border: 1px solid var(--glass-border);
-      border-radius: 20px;
-      padding: 30px 25px;
-      backdrop-filter: blur(12px);
-      transition: .3s;
-      display: flex; flex-direction: column;
-      text-align: left;
-    }
-
-    .price-card:hover { transform: translateY(-8px); box-shadow: 0 20px 40px -10px rgba(0,0,0,.6); }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Legacy Platform — Enterprise Cloud</title>
     
-    .price-card.featured {
-      border-color: var(--primary);
-      background: rgba(59, 130, 246, 0.08);
-      box-shadow: 0 0 30px rgba(59,130,246,.2);
-      transform: scale(1.02);
-      z-index: 11;
-    }
-    .price-card.featured:hover { transform: scale(1.02) translateY(-8px); }
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    .badge-best {
-      position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
-      background: var(--primary); color: #fff; padding: 6px 20px; border-radius: 20px;
-      font-size: .75rem; font-weight: 700; text-transform: uppercase;
-      box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
-    }
-
-    .plan-title { font-size: 1.4rem; font-weight: 700; margin-bottom: 5px; }
-    .plan-desc { font-size: .85rem; color: rgba(255,255,255,.6); margin-bottom: 20px; min-height: 40px; }
-
-    .price-box { margin-bottom: 5px; }
-    .price-value { font-size: 2.2rem; font-weight: 800; color: #fff; }
-    .price-suffix { font-size: 1rem; color: rgba(255,255,255,0.6); font-weight: 400; }
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@700&family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
-    .billing-note {
-        font-size: 0.8rem;
-        color: var(--success);
-        font-weight: 500;
-        margin-bottom: 25px;
-        display: block;
-        min-height: 20px;
-    }
-
-    .feature-list { list-style: none; padding: 0; margin-bottom: 30px; text-align: left; margin-top: auto; }
-    .feature-list li { display: flex; gap: 10px; margin-bottom: 12px; font-size: .85rem; align-items: flex-start; line-height: 1.4; color: rgba(255,255,255,0.85); }
-    .feature-list li i { color: var(--primary); margin-top: 3px; font-size: 0.9rem; flex-shrink: 0; }
-    .feature-list li.disabled { color: rgba(255,255,255,0.4); }
-    .feature-list li.disabled i { color: rgba(255,255,255,0.3); }
-
-    .btn-select-plan {
-      width: 100%;
-      padding: 12px; border-radius: 10px;
-      background: transparent; color: #fff;
-      border: 1px solid rgba(255,255,255,.2); cursor: pointer;
-      transition: 0.3s; font-weight: 600; font-size: 0.9rem;
-    }
-    .btn-select-plan:hover { background: rgba(255,255,255,0.1); border-color: #fff; }
-    
-    .price-card.featured .btn-select-plan { background: var(--primary); border-color: var(--primary); }
-    .price-card.featured .btn-select-plan:hover { background: #2563eb; }
-
-    /* ================= MODAL DE PAGAMENTO ================= */
-    #paymentModal {
-      display: none; position: fixed; inset: 0;
-      background: rgba(0,0,0,.9); z-index: 3000;
-      align-items: center; justify-content: center;
-      backdrop-filter: blur(5px);
-    }
-    #paymentModal .modal-box {
-      background: #0f172a; padding: 30px; border-radius: 20px;
-      max-width: 420px; width: 90%; text-align: center;
-      border: 1px solid var(--glass-border);
-      box-shadow: 0 0 50px rgba(59,130,246,0.3);
-    }
-    #paymentModal button {
-      margin-top: 20px; padding: 12px 24px; border-radius: 10px;
-      border: none; background: var(--primary); color: #fff; cursor: pointer;
-      font-weight: bold; transition: 0.3s;
-    }
-    #paymentModal button:hover { transform: scale(1.05); }
-
-    /* CUBE & ANIMATIONS */
-    .cube-header-wrapper { width: 50px; height: 50px; perspective: 800px; }
-    .cube-header { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; animation: rotateCube 12s linear infinite; }
-    .cube-face { position: absolute; width: 50px; height: 50px; background: rgba(59,130,246,0.2); border: 1px solid rgba(147,197,253,0.8); display: flex; align-items: center; justify-content: center; font-size: 20px; }
-    .face-front { transform: rotateY(0deg) translateZ(25px); } .face-back { transform: rotateY(180deg) translateZ(25px); }
-    .face-right { transform: rotateY(90deg) translateZ(25px); } .face-left { transform: rotateY(-90deg) translateZ(25px); }
-    .face-top { transform: rotateX(90deg) translateZ(25px); } .face-bottom { transform: rotateX(-90deg) translateZ(25px); }
-    @keyframes rotateCube { 0% { transform: rotateX(22deg) rotateY(0deg); } 100% { transform: rotateX(22deg) rotateY(360deg); } }
-    
-    .slider-arrow { color: rgba(255,255,255,0.5); font-size: 2rem; cursor: pointer; padding: 0 20px; transition: 0.3s; }
-    .slider-arrow:hover { color: #fff; transform: scale(1.1); }
-
-    /* ================= PORTAL DO CLIENTE (ATUALIZADO) ================= */
-    #plataforma_overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.95);
-      z-index: 4000;
-      backdrop-filter: blur(10px);
-    }
-
-    #plataforma_admin_modal {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.95);
-      z-index: 5000;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .plataforma_container {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: var(--bg-dark);
-      z-index: 4001;
-      overflow-y: auto;
-    }
-
-    .plataforma_modal_box {
-      background: #0f172a;
-      border-radius: 20px;
-      border: 1px solid var(--glass-border);
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-      position: relative;
-      max-width: 500px;
-      width: 90%;
-      margin: 50px auto;
-      padding: 40px;
-    }
-
-    .plataforma_header {
-      height: 80px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 30px;
-      background: rgba(2, 6, 23, 0.95);
-      border-bottom: 1px solid rgba(255,255,255,0.1);
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
-
-    .plataforma_header_brand {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-    }
-
-    .plataforma_header_brand strong {
-      font-family: 'Roboto Condensed', sans-serif;
-      font-size: 18px;
-      color: #fff;
-    }
-
-    .plataforma_header_brand span {
-      font-size: 10px;
-      color: var(--primary);
-      display: block;
-    }
-
-    .plataforma_card {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 16px;
-      padding: 25px;
-      margin-bottom: 20px;
-      backdrop-filter: blur(10px);
-    }
-
-    .plataforma_card_title {
-      font-size: 1.2rem;
-      font-weight: 600;
-      margin-bottom: 15px;
-      color: #fff;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .plataforma_status {
-      display: inline-flex;
-      align-items: center;
-      padding: 6px 12px;
-      border-radius: 20px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      margin-left: auto;
-    }
-
-    .plataforma_status.pendente { background: rgba(239, 68, 68, 0.2); color: #f87171; }
-    .plataforma_status.andamento { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
-    .plataforma_status.concluido { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
-    .plataforma_status.aguardando { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
-
-    .plataforma_timeline {
-      position: relative;
-      padding-left: 30px;
-      margin: 20px 0;
-    }
-
-    .plataforma_timeline::before {
-      content: '';
-      position: absolute;
-      left: 10px;
-      top: 0;
-      bottom: 0;
-      width: 2px;
-      background: rgba(59, 130, 246, 0.3);
-    }
-
-    .plataforma_timeline_item {
-      position: relative;
-      margin-bottom: 25px;
-    }
-
-    .plataforma_timeline_item::before {
-      content: '';
-      position: absolute;
-      left: -20px;
-      top: 5px;
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background: var(--primary);
-    }
-
-    .plataforma_timeline_date {
-      font-size: 0.8rem;
-      color: rgba(255, 255, 255, 0.6);
-      margin-bottom: 5px;
-    }
-
-    .plataforma_link_list {
-      list-style: none;
-      padding: 0;
-    }
-
-    .plataforma_link_item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px 15px;
-      background: rgba(255, 255, 255, 0.03);
-      border-radius: 10px;
-      margin-bottom: 10px;
-      transition: 0.3s;
-      text-decoration: none;
-      color: inherit;
-    }
-
-    .plataforma_link_item:hover {
-      background: rgba(59, 130, 246, 0.1);
-      transform: translateX(5px);
-    }
-
-    .plataforma_input_group {
-      margin-bottom: 20px;
-    }
-
-    .plataforma_label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: 500;
-      color: rgba(255, 255, 255, 0.9);
-    }
-
-    .plataforma_input {
-      width: 100%;
-      padding: 12px 16px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 10px;
-      color: #fff;
-      font-family: 'Poppins', sans-serif;
-    }
-
-    .plataforma_input:focus {
-      outline: none;
-      border-color: var(--primary);
-    }
-
-    .plataforma_textarea {
-      width: 100%;
-      padding: 12px 16px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 10px;
-      color: #fff;
-      font-family: 'Poppins', sans-serif;
-      min-height: 120px;
-      resize: vertical;
-    }
-
-    .plataforma_btn {
-      padding: 12px 24px;
-      border-radius: 10px;
-      border: none;
-      font-weight: 600;
-      cursor: pointer;
-      transition: 0.3s;
-      font-family: 'Poppins', sans-serif;
-    }
-
-    .plataforma_btn_primary {
-      background: var(--primary);
-      color: white;
-    }
-
-    .plataforma_btn_primary:hover {
-      background: #2563eb;
-      box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
-    }
-
-    .plataforma_btn_secondary {
-      background: transparent;
-      color: #fff;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-
-    .plataforma_btn_secondary:hover {
-      background: rgba(255, 255, 255, 0.1);
-    }
-
-    .plataforma_btn_small {
-      padding: 8px 16px;
-      font-size: 0.85rem;
-    }
-
-    .plataforma_btn_danger {
-      background: var(--danger);
-      color: white;
-    }
-
-    .plataforma_btn_danger:hover {
-      background: #dc2626;
-    }
-
-    .plataforma_btn_success {
-      background: var(--success);
-      color: white;
-    }
-
-    .plataforma_btn_success:hover {
-      background: #059669;
-    }
-
-    .plataforma_btn_warning {
-      background: var(--warning);
-      color: white;
-    }
-
-    .plataforma_btn_warning:hover {
-      background: #d97706;
-    }
-
-    .plataforma_admin_grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 20px;
-      margin-top: 20px;
-    }
-
-    .plataforma_table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 20px 0;
-    }
-
-    .plataforma_table th,
-    .plataforma_table td {
-      padding: 12px 15px;
-      text-align: left;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .plataforma_table th {
-      font-weight: 600;
-      color: rgba(255, 255, 255, 0.9);
-      background: rgba(255, 255, 255, 0.03);
-    }
-
-    .plataforma_table tr:hover {
-      background: rgba(255, 255, 255, 0.02);
-    }
-
-    .plataforma_badge {
-      display: inline-flex;
-      align-items: center;
-      padding: 4px 10px;
-      border-radius: 12px;
-      font-size: 0.75rem;
-      font-weight: 600;
-    }
-
-    .plataforma_badge.success { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
-    .plataforma_badge.warning { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
-    .plataforma_badge.danger { background: rgba(239, 68, 68, 0.2); color: #f87171; }
-    .plataforma_badge.info { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
-
-    .plataforma_alert {
-      padding: 15px 20px;
-      border-radius: 10px;
-      margin: 20px 0;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .plataforma_alert.info {
-      background: rgba(59, 130, 246, 0.1);
-      border-left: 4px solid var(--primary);
-    }
-
-    .plataforma_alert.warning {
-      background: rgba(245, 158, 11, 0.1);
-      border-left: 4px solid #f59e0b;
-    }
-
-    .plataforma_alert.danger {
-      background: rgba(239, 68, 68, 0.1);
-      border-left: 4px solid #ef4444;
-    }
-
-    .plataforma_alert.success {
-      background: rgba(34, 197, 94, 0.1);
-      border-left: 4px solid #10b981;
-    }
-
-    #plataforma_admin_access {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: rgba(59, 130, 246, 0.2);
-      border: 1px solid rgba(59, 130, 246, 0.5);
-      color: var(--primary);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      z-index: 100;
-      opacity: 0.3;
-      transition: 0.3s;
-    }
-
-    #plataforma_admin_access:hover {
-      opacity: 1;
-      background: rgba(59, 130, 246, 0.3);
-      transform: scale(1.1);
-    }
-
-    .alerta-whatsapp-btn {
-      background: #25D366;
-      color: white;
-      border: none;
-      padding: 6px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      font-size: 0.85rem;
-      transition: 0.3s;
-    }
-
-    .alerta-whatsapp-btn:hover {
-      background: #128C7E;
-      transform: scale(1.05);
-    }
-
-    .alerta-config-container {
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 10px;
-      padding: 15px;
-      margin-bottom: 15px;
-    }
-
-    .alerta-status {
-      display: inline-block;
-      padding: 4px 10px;
-      border-radius: 12px;
-      font-size: 0.75rem;
-      font-weight: 600;
-    }
-
-    .alerta-status.pendente { background: rgba(239, 68, 68, 0.2); color: #f87171; }
-    .alerta-status.enviado { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
-    .alerta-status.agendado { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
-
-    .vencimento-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px 15px;
-      background: rgba(255, 255, 255, 0.03);
-      border-radius: 10px;
-      margin-bottom: 10px;
-      border-left: 4px solid transparent;
-    }
-
-    .vencimento-item.vencido {
-      border-left-color: var(--danger);
-      background: rgba(239, 68, 68, 0.05);
-    }
-
-    .vencimento-item.proximo {
-      border-left-color: var(--warning);
-      background: rgba(245, 158, 11, 0.05);
-    }
-
-    .vencimento-item.ok {
-      border-left-color: var(--success);
-    }
-
-    .lembrete-item {
-      background: rgba(59, 130, 246, 0.05);
-      border-left: 4px solid var(--primary);
-      padding: 12px 15px;
-      border-radius: 10px;
-      margin-bottom: 10px;
-    }
-
-    .notificacoes-badge {
-      position: absolute;
-      top: -8px;
-      right: -8px;
-      background: var(--danger);
-      color: white;
-      font-size: 0.7rem;
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-    }
-
-    .notificacao-item {
-      background: rgba(239, 68, 68, 0.1);
-      border-left: 4px solid var(--danger);
-      padding: 15px;
-      border-radius: 10px;
-      margin-bottom: 10px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .notificacao-item .info { flex: 1; }
-    .notificacao-item .acoes { display: flex; gap: 10px; }
-
-    .cpf-input {
-      font-family: monospace;
-      letter-spacing: 1px;
-    }
-
-    /* MEDIA QUERIES */
-    @media (max-width: 1000px) {
-      header { padding: 15px 20px; height: auto; flex-direction: column; gap: 20px; }
-      .header-nav { width: 100%; justify-content: center; padding-bottom: 5px; gap: 20px; }
-      .header-spacer { display: none; }
-      
-      .glass-slider-container {
-        flex-wrap: nowrap; justify-content: flex-start; overflow-x: auto;
-        scroll-snap-type: x mandatory; padding: 20px 20px 60px 20px; width: 100%;
-      }
-      .glass-card { min-width: 85vw; margin-right: 15px; scroll-snap-align: center; }
-      .slider-arrow { display: none; }
-      main { padding-top: 160px; }
-      
-      .pricing-grid { grid-template-columns: 1fr; max-width: 400px; }
-
-      .plataforma_modal_box { width: 95%; padding: 25px; margin: 20px auto; }
-      .plataforma_header { padding: 0 20px; height: 70px; }
-      .plataforma_admin_grid { grid-template-columns: 1fr; }
-      .notificacao-item { flex-direction: column; gap: 10px; align-items: flex-start; }
-      .notificacao-item .acoes { width: 100%; justify-content: flex-end; }
-    }
-
-    @keyframes plataforma_fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .plataforma_fade_in { animation: plataforma_fadeIn 0.5s ease-out; }
-    @keyframes pulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.05); }
-      100% { transform: scale(1); }
-    }
-    .pulse { animation: pulse 2s infinite; }
-  </style>
+    <style>
+        /* ===== VARIÁVEIS CSS ===== */
+        :root {
+            --bg-dark: #020617;
+            --bg-darker: #0f172a;
+            --text-white: #ffffff;
+            --text-muted: rgba(255, 255, 255, 0.7);
+            --text-light: rgba(255, 255, 255, 0.9);
+            --primary: #3b82f6;
+            --primary-light: #60a5fa;
+            --primary-dark: #1d4ed8;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --glass-bg: rgba(255, 255, 255, 0.08);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            --glass-blur: blur(15px);
+            --spacing-xs: 8px;
+            --spacing-sm: 16px;
+            --spacing-md: 24px;
+            --spacing-lg: 32px;
+            --spacing-xl: 48px;
+            --spacing-xxl: 64px;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --radius-xxl: 24px;
+            --transition: all 0.3s ease;
+        }
+        
+        /* ===== RESET & BASE ===== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Poppins', 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-white);
+            min-height: 100vh;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+        
+        /* ===== UTILS ===== */
+        .hidden { display: none !important; }
+        
+        /* ===== TIPOGRAFIA ===== */
+        h1, h2, h3, h4, h5, h6 { font-weight: 600; line-height: 1.2; margin-bottom: var(--spacing-sm); }
+        h1 { font-size: 3.5rem; } h2 { font-size: 2.5rem; } h3 { font-size: 1.75rem; }
+        .brand-font { font-family: 'Roboto Condensed', sans-serif; text-transform: uppercase; letter-spacing: 1px; }
+        p { color: var(--text-muted); margin-bottom: var(--spacing-md); }
+        
+        /* ===== HEADER ===== */
+        .main-header {
+            position: fixed; top: 0; left: 0; width: 100%; height: 90px;
+            background: rgba(2, 6, 23, 0.85); backdrop-filter: var(--glass-blur);
+            border-bottom: 1px solid var(--glass-border);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 var(--spacing-xl); z-index: 1000; transition: var(--transition);
+        }
+        .logo-container { display: flex; align-items: center; gap: var(--spacing-md); }
+        .logo-cube { width: 50px; height: 50px; position: relative; transform-style: preserve-3d; animation: cubeRotate 12s linear infinite; }
+        .cube-face {
+            position: absolute; width: 100%; height: 100%;
+            background: rgba(59, 130, 246, 0.2); border: 1px solid rgba(147, 197, 253, 0.8);
+            display: flex; align-items: center; justify-content: center; font-size: 20px;
+        }
+        .face-front { transform: translateZ(25px); } .face-back { transform: rotateY(180deg) translateZ(25px); }
+        .face-right { transform: rotateY(90deg) translateZ(25px); } .face-left { transform: rotateY(-90deg) translateZ(25px); }
+        .face-top { transform: rotateX(90deg) translateZ(25px); } .face-bottom { transform: rotateX(-90deg) translateZ(25px); }
+        .logo-text { display: flex; flex-direction: column; }
+        .logo-text strong { font-size: 22px; color: var(--text-white); }
+        .logo-text span { font-size: 11px; letter-spacing: 3px; color: var(--primary); margin-top: 2px; }
+        
+        .main-nav { display: flex; gap: var(--spacing-lg); align-items: center; }
+        .nav-link {
+            color: var(--text-muted); text-decoration: none; font-size: 14px; font-weight: 500;
+            text-transform: uppercase; letter-spacing: 0.5px; transition: var(--transition);
+            display: flex; align-items: center; gap: var(--spacing-xs); padding-bottom: 5px;
+            border-bottom: 2px solid transparent; white-space: nowrap; cursor: pointer;
+        }
+        .nav-link:hover, .nav-link.active { color: var(--text-white); border-bottom-color: var(--primary); }
+        
+        /* ===== BACKGROUND EFFECTS ===== */
+        .background-effects { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; overflow: hidden; pointer-events: none; }
+        .blob { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.6; animation: blobFloat 8s ease-in-out infinite; }
+        .blob-1 { width: 500px; height: 500px; background: #ff007a; top: 20%; left: 20%; }
+        .blob-2 { width: 400px; height: 400px; background: var(--primary); bottom: 10%; right: 20%; animation-delay: -4s; }
+        
+        /* ===== MAIN CONTENT ===== */
+        .main-content { padding-top: 110px; min-height: 100vh; position: relative; z-index: 1; }
+        .dashboard-section { padding: var(--spacing-xxl) var(--spacing-xl); max-width: 1400px; margin: 0 auto; }
+        .dashboard-title { text-align: center; margin-bottom: var(--spacing-xxl); }
+        .dashboard-title h2 { font-size: 2.8rem; font-weight: 800; margin-bottom: var(--spacing-sm); text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5); }
+        .dashboard-title p { max-width: 800px; margin: 0 auto; font-size: 1.1rem; }
+        
+        .cards-container { display: flex; flex-wrap: wrap; gap: var(--spacing-lg); justify-content: center; margin-bottom: var(--spacing-xxl); }
+        .dashboard-card {
+            width: 300px; min-height: 420px; background: var(--glass-bg); backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--glass-border); border-radius: var(--radius-xl); padding: var(--spacing-lg);
+            display: flex; flex-direction: column; align-items: center; text-align: center;
+            box-shadow: var(--glass-shadow); transition: var(--transition); position: relative; overflow: hidden; z-index: 2;
+        }
+        .dashboard-card:hover { transform: translateY(-10px); background: rgba(255, 255, 255, 0.12); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3); }
+        .card-icon {
+            width: 100px; height: 100px; border-radius: 50%; border: 3px solid rgba(255, 255, 255, 0.3);
+            display: flex; align-items: center; justify-content: center; margin-bottom: var(--spacing-md); background: rgba(0, 0, 0, 0.2);
+        }
+        .card-icon i { font-size: 40px; color: var(--text-white); }
+        .card-title { font-size: 22px; font-weight: 600; margin-bottom: 5px; color: var(--text-white); }
+        .card-subtitle { font-size: 14px; color: var(--text-muted); margin-bottom: var(--spacing-lg); }
+        .card-btn {
+            margin-top: auto; background: var(--text-white); color: var(--bg-dark); border: none; padding: 12px 30px;
+            border-radius: var(--radius-md); font-weight: 600; cursor: pointer; transition: var(--transition);
+            text-transform: uppercase; font-size: 13px; letter-spacing: 1px; width: 100%; max-width: 200px;
+        }
+        .card-btn:hover { background: var(--primary); color: var(--text-white); box-shadow: 0 0 15px var(--primary); }
+        
+        /* ===== PRICING SECTION ===== */
+        .pricing-section { padding: var(--spacing-xxl) var(--spacing-xl); background: rgba(15, 23, 42, 0.3); margin-top: var(--spacing-xxl); }
+        .pricing-header { text-align: center; margin-bottom: var(--spacing-xxl); }
+        .pricing-header h2 { font-size: 2.8rem; font-weight: 800; margin-bottom: var(--spacing-sm); line-height: 1.2; }
+        .pricing-header p { max-width: 800px; margin: 0 auto var(--spacing-xl); font-size: 1.1rem; }
+        .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--spacing-lg); max-width: 1300px; margin: 0 auto; }
+        .pricing-card {
+            background: rgba(15, 23, 42, 0.6); border: 1px solid var(--glass-border); border-radius: var(--radius-xl);
+            padding: var(--spacing-lg); backdrop-filter: var(--glass-blur); transition: var(--transition); display: flex; flex-direction: column; position: relative;
+        }
+        .pricing-card:hover { transform: translateY(-8px); box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.6); }
+        .pricing-card.featured { border-color: var(--primary); background: rgba(59, 130, 246, 0.08); box-shadow: 0 0 30px rgba(59, 130, 246, 0.2); transform: scale(1.02); }
+        .pricing-card.featured:hover { transform: scale(1.02) translateY(-8px); }
+        .featured-badge {
+            position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--primary);
+            color: var(--text-white); padding: 6px 20px; border-radius: 20px; font-size: 12px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+        }
+        .plan-name { font-size: 1.4rem; font-weight: 700; margin-bottom: 5px; color: var(--text-white); }
+        .plan-description { font-size: 14px; color: var(--text-muted); margin-bottom: var(--spacing-md); min-height: 40px; }
+        .price-container { margin-bottom: 5px; }
+        .price { font-size: 2.2rem; font-weight: 800; color: var(--text-white); }
+        .price-period { font-size: 1rem; color: var(--text-muted); font-weight: 400; }
+        .price-note { font-size: 13px; color: var(--success); font-weight: 500; margin-bottom: var(--spacing-lg); display: block; min-height: 20px; }
+        .plan-features { list-style: none; margin-bottom: var(--spacing-lg); flex-grow: 1; }
+        .plan-features li { display: flex; gap: var(--spacing-xs); margin-bottom: 12px; font-size: 14px; align-items: flex-start; color: var(--text-light); }
+        .plan-features li i { color: var(--primary); margin-top: 3px; font-size: 14px; }
+        .plan-features li.disabled { color: rgba(255, 255, 255, 0.4); }
+        .plan-features li.disabled i { color: rgba(255, 255, 255, 0.3); }
+        .plan-btn {
+            width: 100%; padding: 12px; border-radius: var(--radius-md); background: transparent; color: var(--text-white);
+            border: 1px solid rgba(255, 255, 255, 0.2); cursor: pointer; transition: var(--transition); font-weight: 600; font-size: 14px;
+        }
+        .plan-btn:hover { background: rgba(255, 255, 255, 0.1); border-color: var(--text-white); }
+        .pricing-card.featured .plan-btn { background: var(--primary); border-color: var(--primary); }
+        .pricing-card.featured .plan-btn:hover { background: var(--primary-dark); }
+        
+        /* ===== PORTAL & MODALS BASE ===== */
+        .portal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.95); z-index: 2000; backdrop-filter: blur(10px); }
+        .portal-container { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-dark); z-index: 2001; overflow-y: auto; }
+        .portal-header {
+            height: 80px; display: flex; align-items: center; justify-content: space-between;
+            padding: 0 var(--spacing-lg); background: rgba(2, 6, 23, 0.95); border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: sticky; top: 0; z-index: 10;
+        }
+        .portal-content { max-width: 1200px; margin: 0 auto; padding: var(--spacing-xl); }
+        .portal-brand { display: flex; align-items: center; gap: var(--spacing-md); }
+        .portal-brand-icon { width: 40px; height: 40px; background: rgba(59, 130, 246, 0.2); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; }
+        .portal-brand-icon i { color: var(--primary); font-size: 20px; }
+        .portal-brand-text { display: flex; flex-direction: column; }
+        .portal-card { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: var(--radius-lg); padding: var(--spacing-lg); margin-bottom: var(--spacing-md); backdrop-filter: blur(10px); }
+        .portal-card-title { font-size: 1.2rem; font-weight: 600; margin-bottom: var(--spacing-md); color: var(--text-white); display: flex; align-items: center; gap: var(--spacing-xs); }
+        
+        /* ===== LOGIN MODAL ===== */
+        .login-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.95); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
+        .login-box { background: var(--bg-darker); border-radius: var(--radius-xl); border: 1px solid var(--glass-border); box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5); max-width: 400px; width: 90%; padding: var(--spacing-xl); }
+        .login-header { text-align: center; margin-bottom: var(--spacing-xl); }
+        .login-icon { width: 80px; height: 80px; background: rgba(59, 130, 246, 0.2); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--spacing-md); }
+        .login-icon i { font-size: 2rem; color: var(--primary); }
+        .form-group { margin-bottom: var(--spacing-md); }
+        .form-label { display: block; margin-bottom: var(--spacing-xs); font-weight: 500; color: var(--text-light); }
+        .form-input {
+            width: 100%; padding: 12px 16px; background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: var(--radius-md);
+            color: var(--text-white); font-family: 'Poppins', sans-serif; font-size: 14px;
+        }
+        .form-input:focus { outline: none; border-color: var(--primary); }
+        .form-note { font-size: 12px; color: var(--text-muted); margin-top: var(--spacing-xs); display: block; }
+        .btn-group { display: flex; gap: var(--spacing-sm); margin-top: var(--spacing-lg); }
+        .btn {
+            padding: 12px 24px; border-radius: var(--radius-md); border: none; font-weight: 600;
+            cursor: pointer; transition: var(--transition); font-family: 'Poppins', sans-serif; font-size: 14px;
+            display: flex; align-items: center; justify-content: center; gap: var(--spacing-xs);
+        }
+        .btn-primary { background: var(--primary); color: var(--text-white); }
+        .btn-primary:hover { background: var(--primary-dark); box-shadow: 0 0 20px rgba(59, 130, 246, 0.4); }
+        .btn-secondary { background: transparent; color: var(--text-white); border: 1px solid rgba(255, 255, 255, 0.2); }
+        .btn-secondary:hover { background: rgba(255, 255, 255, 0.1); }
+        .btn-danger { background: rgba(239, 68, 68, 0.2); color: var(--danger); border: 1px solid var(--danger); }
+        .btn-danger:hover { background: var(--danger); color: white; }
+        .btn-sm { padding: 8px 16px; font-size: 12px; }
+        .btn-full { width: 100%; }
+
+        /* ===== CSS ESPECÍFICO DA ÁREA ADM ===== */
+        .admin-table-container { overflow-x: auto; background: rgba(0,0,0,0.2); border-radius: var(--radius-lg); padding: var(--spacing-sm); }
+        .admin-table { width: 100%; border-collapse: collapse; min-width: 600px; }
+        .admin-table th, .admin-table td { padding: 15px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 14px; }
+        .admin-table th { color: var(--primary); font-weight: 700; text-transform: uppercase; font-size: 12px; letter-spacing: 1px; }
+        .admin-table tr:hover td { background: rgba(255,255,255,0.02); }
+        .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
+        .status-analise { background: rgba(250, 204, 21, 0.2); color: #facc15; }
+        .status-dev { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+        .status-pag { background: rgba(244, 114, 182, 0.2); color: #f472b6; }
+        .status-ok { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
+        
+        .action-buttons { display: flex; gap: 8px; }
+        .icon-btn { width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; border: none; transition: var(--transition); }
+        .btn-edit-row { background: rgba(59, 130, 246, 0.2); color: var(--primary); }
+        .btn-edit-row:hover { background: var(--primary); color: white; }
+        .btn-del-row { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+        .btn-del-row:hover { background: var(--danger); color: white; }
+        
+        /* ===== ADMIN ACCESS BUTTON ===== */
+        .admin-access-btn {
+            position: fixed; bottom: 20px; right: 20px; width: 50px; height: 50px; border-radius: 50%;
+            background: rgba(59, 130, 246, 0.2); border: 1px solid rgba(59, 130, 246, 0.5); color: var(--primary);
+            display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 100;
+            opacity: 0.3; transition: var(--transition);
+        }
+        .admin-access-btn:hover { opacity: 1; background: rgba(59, 130, 246, 0.3); transform: scale(1.1); }
+        
+        /* ===== ANIMATIONS & RESPONSIVE ===== */
+        @keyframes cubeRotate { 0% { transform: rotateX(22deg) rotateY(0deg); } 100% { transform: rotateX(22deg) rotateY(360deg); } }
+        @keyframes blobFloat { 0% { transform: translate(0, 0); } 50% { transform: translate(30px, -30px); } 100% { transform: translate(0, 0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-in { animation: fadeIn 0.5s ease-out; }
+        
+        @media (max-width: 768px) {
+            .main-header { height: auto; flex-direction: column; padding: var(--spacing-md); gap: var(--spacing-md); }
+            .main-nav { width: 100%; justify-content: center; flex-wrap: wrap; gap: var(--spacing-sm); }
+            .main-content { padding-top: 140px; }
+            .pricing-grid { grid-template-columns: 1fr; }
+            .admin-table { min-width: 100%; } 
+            .admin-table th, .admin-table td { display: block; width: 100%; }
+            .admin-table tr { margin-bottom: 15px; display: block; border: 1px solid var(--glass-border); padding: 10px; border-radius: 8px; }
+            .admin-table thead { display: none; }
+        }
+    </style>
 </head>
 <body>
-
-<header>
-  <div class="brand">
-    <div class="cube-header-wrapper">
-      <div class="cube-header">
-        <div class="cube-face face-front"><i class="fas fa-chart-line"></i></div>
-        <div class="cube-face face-back"><i class="fas fa-users"></i></div>
-        <div class="cube-face face-right"><i class="fas fa-project-diagram"></i></div>
-        <div class="cube-face face-left"><i class="fas fa-wallet"></i></div>
-        <div class="cube-face face-top"><i class="fas fa-cube"></i></div>
-        <div class="cube-face face-bottom"><i class="fas fa-database"></i></div>
-      </div>
-    </div>
-    <div class="brand-text">
-      <strong>Legacy Platform</strong>
-      <span>ENTERPRISE <i class="fas fa-cloud"></i> CLOUD</span>
-    </div>
-  </div>
-
-  <nav class="header-nav">
-    <a href="#" class="nav-link active"><i class="fas fa-chart-pie"></i> Dashboard</a>
-    <a href="#planos" class="nav-link"><i class="fas fa-layer-group"></i> Planos</a>
-    <a href="#" class="nav-link"><i class="fas fa-book"></i> Base/KB</a>
-    <a href="https://wa.me/5522992497662" target="_blank" class="nav-link"><i class="fas fa-headset"></i> Suporte</a>
-    <a href="#cliente" class="nav-link" onclick="plataforma_showLoginModal()">
-      <i class="fas fa-user-tie"></i> Clientes
-    </a>
-  </nav>
-  
-  <div class="header-spacer"></div>
-</header>
-<main>
-  <div class="background-blobs">
-    <div class="blob blob-1"></div>
-    <div class="blob blob-2"></div>
-  </div>
-<div class="glass-slider-container">
-    <div class="slider-arrow">
-      <i class="fas fa-chevron-left"></i>
-    </div>
-
-    <div class="glass-card">
-      <div class="card-img-wrapper">
-        <i class="fas fa-users"></i>
-      </div>
-      <h3 class="card-title">Legacy Cloud CRM</h3>
-      <p class="card-role">Enterprise Edition</p>
-      <button class="btn-glass" onclick="abrirPopup('https://legacycrm.netlify.app/')">
-        Acessar Sistema
-      </button>
-    </div>
-
-    <div class="glass-card">
-      <div class="card-img-wrapper">
-        <i class="fas fa-file-signature"></i>
-      </div>
-      <h3 class="card-title">Legacy Contracts</h3>
-      <p class="card-role">Gestão de Contratos</p>
-      <button class="btn-glass" onclick="abrirPopup('https://legacycontratos.netlify.app')">
-        Acessar Sistema
-      </button>
-    </div>
-
-    <div class="glass-card">
-      <div class="card-img-wrapper">
-        <i class="fas fa-clipboard-check"></i>
-      </div>
-      <h3 class="card-title">Legacy Forms</h3>
-      <p class="card-role">Gestão de Formulários</p>
-      <button class="btn-glass" onclick="abrirPopup('https://legacyforms.netlify.app')">
-        Acessar Sistema
-      </button>
-    </div>
-
-    <div class="slider-arrow">
-      <i class="fas fa-chevron-right"></i>
-    </div>
-  </div>
-
-  <section id="planos">
-    <h2>Seu negócio não pode viver preso no WhatsApp.<br>Nem desaparecer quando você troca de celular.</h2>
-    <p>Com a Legacy você organiza clientes, conversas, financeiro, agenda e contratos em um sistema em nuvem seguro, para você nunca mais perder informações ou oportunidades.</p>
+    <div id="portalOverlay" class="portal-overlay"></div>
     
-    <div class="pricing-grid">
-      <div class="price-card">
-        <h3 class="plan-title">SaaS Flex</h3>
-        <p class="plan-desc">Para quem busca liberdade sem fidelidade longa.</p>
-        <div class="price-box">
-          <span class="price-value">R$ 60</span><span class="price-suffix">/mês</span>
-        </div>
-        <span class="billing-note">Cobrança recorrente mensal</span>
-        <ul class="feature-list">
-          <li><i class="fas fa-check-circle"></i> Acesso Multi-device Android e Pc</li>
-          <li><i class="fas fa-rocket"></i> Implantação guiada</li>
-          <li><i class="fas fa-clock"></i> 3 Tickets Suporte/mês</li>
-          <li class="disabled"><i class="fas fa-ban"></i> Sem fidelidade</li>
-        </ul>
-        <button class="btn-select-plan" onclick="openPayment('SaaS Flex Mensal', 60)">Assinar Mensal</button>
-      </div>
-
-      <div class="price-card">
-        <h3 class="plan-title">Starter</h3>
-        <p class="plan-desc">O pacote inicial ideal para organizar a casa.</p>
-        <div class="price-box">
-          <span class="price-value">R$150</span><span class="price-suffix">Pgto único</span>
-        </div>
-        <span class="billing-note">Equivalente a R$50/mês</span>
-        <ul class="feature-list">
-          <li><i class="fas fa-check-circle"></i> Acesso Multi-device Android e Pc</li>
-          <li><i class="fas fa-laptop-code"></i> Implantação Guiada</li>
-          <li><i class="fas fa-ticket-alt"></i> 5 Tickets Suporte/mês</li>
-        </ul>
-        <button class="btn-select-plan" onclick="openPayment('Starter Trimestral', 150)">Assinar Trimestral</button>
-      </div>
-
-      <div class="price-card featured">
-        <div class="badge-best">MAIS POPULAR</div>
-        <h3 class="plan-title">Manager <i class="fas fa-crown" style="color: #facc15;"></i></h3>
-        <p class="plan-desc">Gestão completa e suporte estendido.</p>
-        <div class="price-box">
-          <span class="price-value">R$600</span><span class="price-suffix">Pgto único</span>
-        </div>
-        <span class="billing-note">Equivalente a R$50/mês</span>
-        <ul class="feature-list">
-        <li><i class="fas fa-check-circle"></i> Acesso Multi-device Android e Pc</li>
-          <li><i class="fas fa-laptop-code"></i> Implantação com o usuário</li>
-          <li><i class="fas fa-ticket-alt"></i> 8 Tickets Suporte/mês</li>
-        </ul>
-        <button class="btn-select-plan" onclick="openPayment('Manager Anual', 600)">Assinar Anual</button>
-      </div>
-
-      <div class="price-card">
-        <h3 class="plan-title">Controller</h3>
-        <p class="plan-desc">Equilíbrio perfeito entre custo e prazo.</p>
-        <div class="price-box">
-          <span class="price-value">R$300</span><span class="price-suffix">Pgto único</span>
-        </div>
-        <span class="billing-note">Equivalente a R$50/mês</span>
-        <ul class="feature-list">
-          <li><i class="fas fa-check-circle"></i> Acesso Multi-device Android e Pc</li>
-          <li><i class="fas fa-laptop-code"></i> Implantação Guiada</li>
-          <li><i class="fas fa-ticket-alt"></i> 5 Tickets Suporte/mês</li>
-        </ul>
-        <button class="btn-select-plan" onclick="openPayment('Controller Semestral', 300)">Assinar Semestral</button>
-      </div>
-    </div>
-  </section>
-</main>
-
-<div id="plataforma_admin_access" title="Acesso Administrativo">
-  <i class="fas fa-cogs"></i>
-</div>
-
-<div id="plataforma_overlay"></div>
-
-<div id="plataforma_client_portal" class="plataforma_container">
-  <div class="plataforma_header">
-    <div class="plataforma_header_brand">
-      <div style="width: 40px; height: 40px; background: rgba(59, 130, 246, 0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
-        <i class="fas fa-user-tie" style="color: var(--primary);"></i>
-      </div>
-      <div>
-        <strong>Portal do Cliente</strong>
-        <span>LEGACY PLATFORM</span>
-      </div>
-    </div>
-    <button class="plataforma_btn plataforma_btn_secondary plataforma_btn_small" onclick="plataforma_logout()">
-      <i class="fas fa-sign-out-alt"></i> Sair
-    </button>
-  </div>
-
-  <div style="max-width: 1200px; margin: 0 auto; padding: 30px;">
-    <div class="plataforma_card plataforma_fade_in">
-      <h2 class="plataforma_card_title" id="plataforma_client_name">
-        <i class="fas fa-user-circle"></i> Carregando...
-      </h2>
-      <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 15px;">
-        <div>
-          <div style="font-size: 0.9rem; color: rgba(255, 255, 255, 0.6);">Status</div>
-          <div class="plataforma_badge success" id="plataforma_client_status">Ativo</div>
-        </div>
-        <div>
-          <div style="font-size: 0.9rem; color: rgba(255, 255, 255, 0.6);">Último acesso</div>
-          <div id="plataforma_last_access">-</div>
-        </div>
-        <div>
-          <div style="font-size: 0.9rem; color: rgba(255, 255, 255, 0.6);">CPF</div>
-          <div id="plataforma_client_cpf">•••••••••••</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="plataforma_card plataforma_fade_in">
-      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
-        <h2 class="plataforma_card_title">
-          <i class="fas fa-project-diagram"></i> Projeto Atual
-        </h2>
-        <span class="plataforma_status andamento" id="plataforma_project_status">Em andamento</span>
-      </div>
-      
-      <h3 style="margin-bottom: 10px; color: #fff;" id="plataforma_project_title">Carregando projeto...</h3>
-      <p style="color: rgba(255, 255, 255, 0.7); margin-bottom: 20px;" id="plataforma_project_desc"></p>
-      
-      <div style="margin-bottom: 25px;">
-        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-          <span style="font-size: 0.9rem; color: rgba(255, 255, 255, 0.7);">Progresso</span>
-          <span style="font-size: 0.9rem; font-weight: 600;" id="plataforma_progress_text">0%</span>
-        </div>
-        <div style="height: 8px; background: rgba(255, 255, 255, 0.1); border-radius: 4px; overflow: hidden;">
-          <div id="plataforma_progress_bar" style="height: 100%; background: linear-gradient(90deg, var(--primary), #60a5fa); width: 0%; transition: width 0.5s ease;"></div>
-        </div>
-      </div>
-
-      <h3 style="margin: 25px 0 15px; color: #fff; font-size: 1.1rem;">
-        <i class="fas fa-history"></i> Linha do Tempo
-      </h3>
-      <div class="plataforma_timeline" id="plataforma_timeline">
-        <div class="plataforma_timeline_item">
-          <div class="plataforma_timeline_date">Carregando...</div>
-          <div style="color: rgba(255, 255, 255, 0.9);">Aguardando dados</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="plataforma_card plataforma_fade_in">
-      <h2 class="plataforma_card_title">
-        <i class="fas fa-link"></i> Links Importantes
-      </h2>
-      <ul class="plataforma_link_list" id="plataforma_links_list">
-        <li>
-          <a href="#" class="plataforma_link_item">
-            <i class="fas fa-spinner fa-spin"></i>
-            <span>Carregando links...</span>
-          </a>
-        </li>
-      </ul>
-    </div>
-
-    <div class="plataforma_card plataforma_fade_in">
-      <h2 class="plataforma_card_title">
-        <i class="fas fa-graduation-cap"></i> Orientações
-      </h2>
-      <div id="plataforma_orientacoes">
-        <div class="plataforma_alert info">
-          <i class="fas fa-info-circle"></i>
-          <div>Carregando orientações...</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="plataforma_card plataforma_fade_in">
-      <h2 class="plataforma_card_title">
-        <i class="fas fa-calendar-alt"></i> Prazos e Datas
-      </h2>
-      <div id="plataforma_prazos">
-        <div class="plataforma_alert warning">
-          <i class="fas fa-clock"></i>
-          <div>Carregando prazos...</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="plataforma_card plataforma_fade_in">
-      <h2 class="plataforma_card_title">
-        <i class="fas fa-bell"></i> Lembretes
-      </h2>
-      <div id="plataforma_lembretes">
-        <div class="plataforma_alert info">
-          <i class="fas fa-info-circle"></i>
-          <div>Carregando lembretes...</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div id="plataforma_admin_portal" class="plataforma_container">
-  <div class="plataforma_header">
-    <div class="plataforma_header_brand">
-      <div style="width: 40px; height: 40px; background: rgba(239, 68, 68, 0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
-        <i class="fas fa-user-shield" style="color: #ef4444;"></i>
-      </div>
-      <div>
-        <strong>Área Administrativa</strong>
-        <span>PORTAL DO CLIENTE</span>
-      </div>
-    </div>
-    <div style="display: flex; gap: 10px;">
-      <button class="plataforma_btn plataforma_btn_secondary plataforma_btn_small" onclick="plataforma_admin_showDashboard()">
-        <i class="fas fa-tachometer-alt"></i> Dashboard
-      </button>
-      <button class="plataforma_btn plataforma_btn_secondary plataforma_btn_small" onclick="plataforma_admin_showSection('notificacoes')" id="plataforma_notificacoes_btn">
-        <i class="fas fa-bell"></i> Notificações
-        <span class="notificacoes-badge" id="plataforma_notificacoes_count" style="display: none;">0</span>
-      </button>
-      <button class="plataforma_btn plataforma_btn_secondary plataforma_btn_small" onclick="plataforma_admin_logout()">
-        <i class="fas fa-sign-out-alt"></i> Sair
-      </button>
-    </div>
-  </div>
-
-  <div style="max-width: 1400px; margin: 0 auto; padding: 30px;">
-    <div id="plataforma_admin_dashboard">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-        <h1 style="font-size: 1.8rem; color: #fff;">Dashboard Administrativo</h1>
-        <button class="plataforma_btn plataforma_btn_primary" onclick="plataforma_admin_showSection('clientes')">
-          <i class="fas fa-plus"></i> Novo Cliente
-        </button>
-      </div>
-
-      <div class="plataforma_admin_grid">
-        <div class="plataforma_card">
-          <h3 class="plataforma_card_title">
-            <i class="fas fa-users"></i> Clientes
-          </h3>
-          <div style="font-size: 2.5rem; font-weight: 800; color: var(--primary); margin: 10px 0;" id="plataforma_admin_total_clientes">0</div>
-          <div style="color: rgba(255, 255, 255, 0.6);">Clientes cadastrados</div>
-        </div>
-
-        <div class="plataforma_card">
-          <h3 class="plataforma_card_title">
-            <i class="fas fa-project-diagram"></i> Projetos
-          </h3>
-          <div style="font-size: 2.5rem; font-weight: 800; color: #10b981; margin: 10px 0;" id="plataforma_admin_total_projetos">0</div>
-          <div style="color: rgba(255, 255, 255, 0.6);">Projetos ativos</div>
-        </div>
-
-        <div class="plataforma_card">
-          <h3 class="plataforma_card_title">
-            <i class="fas fa-bell"></i> Alertas Pendentes
-          </h3>
-          <div style="font-size: 2.5rem; font-weight: 800; color: #f59e0b; margin: 10px 0;" id="plataforma_admin_total_alertas">0</div>
-          <div style="color: rgba(255, 255, 255, 0.6);">Notificações a enviar</div>
-        </div>
-
-        <div class="plataforma_card">
-          <h3 class="plataforma_card_title">
-            <i class="fas fa-clock"></i> Vencimentos Hoje
-          </h3>
-          <div style="font-size: 2.5rem; font-weight: 800; color: #ef4444; margin: 10px 0;" id="plataforma_admin_total_vencimentos">0</div>
-          <div style="color: rgba(255, 255, 255, 0.6);">Prazos a vencer</div>
-        </div>
-      </div>
-
-      <div class="plataforma_card" style="margin-top: 30px;">
-        <h3 class="plataforma_card_title">
-          <i class="fas fa-list"></i> Lista de Clientes
-        </h3>
-        <div style="overflow-x: auto;">
-          <table class="plataforma_table">
-            <thead>
-              <tr>
-                <th>Nome</th>
-                <th>CPF</th>
-                <th>WhatsApp</th>
-                <th>Status</th>
-                <th>Projeto</th>
-                <th>Ações</th>
-              </tr>
-            </thead>
-            <tbody id="plataforma_admin_clientes_list">
-              <tr>
-                <td colspan="6" style="text-align: center; padding: 40px; color: rgba(255, 255, 255, 0.5);">
-                  <i class="fas fa-spinner fa-spin"></i> Carregando clientes...
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <div id="plataforma_admin_clientes" style="display: none;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-        <h1 style="font-size: 1.8rem; color: #fff;">
-          <i class="fas fa-user-plus"></i> Gestão de Clientes
-        </h1>
-        <button class="plataforma_btn plataforma_btn_secondary" onclick="plataforma_admin_showDashboard()">
-          <i class="fas fa-arrow-left"></i> Voltar
-        </button>
-      </div>
-
-      <div class="plataforma_admin_grid">
-        <div class="plataforma_card">
-          <h3 class="plataforma_card_title">
-            <i class="fas fa-plus-circle"></i> Novo Cliente
-          </h3>
-          <div class="plataforma_input_group">
-            <label class="plataforma_label">Nome Completo *</label>
-            <input type="text" class="plataforma_input" id="plataforma_novo_nome" placeholder="Nome do cliente">
-          </div>
-          
-          <div class="plataforma_input_group">
-            <label class="plataforma_label">Email *</label>
-            <input type="email" class="plataforma_input" id="plataforma_novo_email" placeholder="email@cliente.com">
-          </div>
-          
-          <div class="plataforma_input_group">
-            <label class="plataforma_label">CPF (Será a senha) *</label>
-            <input type="text" class="plataforma_input cpf-input" id="plataforma_novo_cpf" placeholder="000.000.000-00" maxlength="14">
-            <small style="color: rgba(255,255,255,0.5); font-size: 0.8rem; display: block; margin-top: 5px;">
-              O CPF será usado como senha de acesso do cliente
-            </small>
-          </div>
-          
-          <div class="plataforma_input_group">
-            <label class="plataforma_label">Telefone WhatsApp *</label>
-            <input type="text" class="plataforma_input" id="plataforma_novo_whatsapp" placeholder="(00) 00000-0000">
-          </div>
-
-          <div class="plataforma_input_group">
-            <label class="plataforma_label">Status</label>
-            <select class="plataforma_input" id="plataforma_novo_status">
-              <option value="ativo">Ativo</option>
-              <option value="inativo">Inativo</option>
-              <option value="pendente">Pendente</option>
-            </select>
-          </div>
-
-          <button class="plataforma_btn plataforma_btn_primary" style="width: 100%;" onclick="plataforma_admin_salvarCliente()">
-            <i class="fas fa-save"></i> Salvar Cliente
-          </button>
-        </div>
-
-        <div class="plataforma_card">
-          <h3 class="plataforma_card_title">
-            <i class="fas fa-project-diagram"></i> Projeto do Cliente
-          </h3>
-          
-          <div class="plataforma_input_group">
-            <label class="plataforma_label">Cliente</label>
-            <select class="plataforma_input" id="plataforma_projeto_cliente" onchange="plataforma_admin_carregarProjetoCliente()">
-              <option value="">Selecione um cliente</option>
-            </select>
-          </div>
-          
-          <div class="plataforma_input_group">
-            <label class="plataforma_label">Título do Projeto *</label>
-            <input type="text" class="plataforma_input" id="plataforma_projeto_titulo" placeholder="Nome do projeto">
-          </div>
-          
-          <div class="plataforma_input_group">
-            <label class="plataforma_label">Descrição</label>
-            <textarea class="plataforma_textarea" id="plataforma_projeto_desc" placeholder="Descreva o projeto..."></textarea>
-          </div>
-          
-          <div class="plataforma_input_group">
-            <label class="plataforma_label">Status do Projeto</label>
-            <select class="plataforma_input" id="plataforma_projeto_status">
-              <option value="pendente">Pendente</option>
-              <option value="andamento">Em andamento</option>
-              <option value="concluido">Concluído</option>
-              <option value="aguardando">Aguardando</option>
-            </select>
-          </div>
-          
-          <div class="plataforma_input_group">
-            <label class="plataforma_label">Progresso (%)</label>
-            <input type="range" class="plataforma_input" id="plataforma_projeto_progresso" min="0" max="100" step="5" value="0">
-            <div style="text-align: center; margin-top: 5px;">
-              <span id="plataforma_projeto_progresso_text">0%</span>
+    <header class="main-header">
+        <div class="logo-container">
+            <div class="logo-cube">
+                <div class="cube-face face-front"><i class="fas fa-chart-line"></i></div>
+                <div class="cube-face face-back"><i class="fas fa-users"></i></div>
+                <div class="cube-face face-right"><i class="fas fa-project-diagram"></i></div>
+                <div class="cube-face face-left"><i class="fas fa-wallet"></i></div>
+                <div class="cube-face face-top"><i class="fas fa-cube"></i></div>
+                <div class="cube-face face-bottom"><i class="fas fa-database"></i></div>
             </div>
-          </div>
-
-          <button class="plataforma_btn plataforma_btn_primary" style="width: 100%;" onclick="plataforma_admin_salvarProjeto()">
-            <i class="fas fa-save"></i> Salvar Projeto
-          </button>
+            <div class="logo-text">
+                <strong class="brand-font">Legacy Platform</strong>
+                <span>ENTERPRISE <i class="fas fa-cloud"></i> CLOUD</span>
+            </div>
         </div>
-
-        <div class="plataforma_card">
-          <h3 class="plataforma_card_title">
-            <i class="fas fa-cog"></i> Conteúdo do Portal
-          </h3>
-          
-          <div class="plataforma_input_group">
-            <label class="plataforma_label">Cliente</label>
-            <select class="plataforma_input" id="plataforma_conteudo_cliente" onchange="plataforma_admin_carregarConteudoCliente()">
-              <option value="">Selecione um cliente</option>
-            </select>
-          </div>
-
-          <div class="plataforma_input_group">
-            <label class="plataforma_label">Adicionar Link</label>
-            <input type="text" class="plataforma_input" id="plataforma_novo_link_nome" placeholder="Nome do link">
-            <input type="text" class="plataforma_input" style="margin-top: 8px;" id="plataforma_novo_link_url" placeholder="https://exemplo.com">
-            <button class="plataforma_btn plataforma_btn_secondary plataforma_btn_small" style="width: 100%; margin-top: 10px;" onclick="plataforma_admin_adicionarLink()">
-              <i class="fas fa-plus"></i> Adicionar Link
-            </button>
-          </div>
-
-          <div class="plataforma_input_group">
-            <label class="plataforma_label">Adicionar Orientação</label>
-            <textarea class="plataforma_textarea" id="plataforma_nova_orientacao" placeholder="Digite uma orientação..."></textarea>
-            <button class="plataforma_btn plataforma_btn_secondary plataforma_btn_small" style="width: 100%; margin-top: 10px;" onclick="plataforma_admin_adicionarOrientacao()">
-              <i class="fas fa-plus"></i> Adicionar
-            </button>
-          </div>
-
-          <div class="plataforma_input_group">
-            <label class="plataforma_label">Adicionar Prazo</label>
-            <input type="text" class="plataforma_input" id="plataforma_novo_prazo_titulo" placeholder="Título do prazo">
-            <input type="date" class="plataforma_input" style="margin-top: 8px;" id="plataforma_novo_prazo_data">
-            <button class="plataforma_btn plataforma_btn_secondary plataforma_btn_small" style="width: 100%; margin-top: 10px;" onclick="plataforma_admin_adicionarPrazo()">
-              <i class="fas fa-plus"></i> Adicionar Prazo
-            </button>
-          </div>
-
-          <div class="plataforma_input_group">
-            <label class="plataforma_label">Adicionar Lembrete</label>
-            <textarea class="plataforma_textarea" id="plataforma_novo_lembrete" placeholder="Digite um lembrete..."></textarea>
-            <button class="plataforma_btn plataforma_btn_secondary plataforma_btn_small" style="width: 100%; margin-top: 10px;" onclick="plataforma_admin_adicionarLembrete()">
-              <i class="fas fa-plus"></i> Adicionar Lembrete
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div id="plataforma_admin_notificacoes" style="display: none;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-        <h1 style="font-size: 1.8rem; color: #fff;">
-          <i class="fas fa-bell"></i> Notificações de Vencimentos
-        </h1>
-        <button class="plataforma_btn plataforma_btn_secondary" onclick="plataforma_admin_showDashboard()">
-          <i class="fas fa-arrow-left"></i> Voltar
-        </button>
-      </div>
-
-      <div class="plataforma_card">
-        <h3 class="plataforma_card_title">
-          <i class="fas fa-exclamation-triangle"></i> Alertas Pendentes
-        </h3>
-        <div id="plataforma_admin_alertas_lista">
-          <div style="text-align: center; padding: 40px; color: rgba(255, 255, 255, 0.5);">
-            <i class="fas fa-spinner fa-spin"></i> Carregando alertas...
-          </div>
-        </div>
-      </div>
-
-      <div class="plataforma_card" style="margin-top: 30px;">
-        <h3 class="plataforma_card_title">
-          <i class="fas fa-sliders-h"></i> Configuração de Alertas
-        </h3>
         
-        <div class="alerta-config-container">
-          <div class="plataforma_input_group">
-            <label class="plataforma_label">Dias para alerta antecipado</label>
-            <input type="number" class="plataforma_input" id="plataforma_alerta_dias" min="1" max="30" value="3">
-            <small style="color: rgba(255,255,255,0.5); font-size: 0.8rem;">
-              Número de dias antes do vencimento para enviar alerta
-            </small>
-          </div>
-          
-          <div class="plataforma_input_group">
-            <label class="plataforma_label">Mensagem padrão de alerta</label>
-            <textarea class="plataforma_textarea" id="plataforma_alerta_mensagem" placeholder="Digite a mensagem padrão para alertas..." rows="4">
-Olá {nome}! Este é um lembrete sobre o prazo: {titulo}
-Vencimento: {data}
-Acesse seu portal para mais detalhes: {link_portal}
-            </textarea>
-            <small style="color: rgba(255,255,255,0.5); font-size: 0.8rem;">
-              Variáveis disponíveis: {nome}, {titulo}, {data}, {link_portal}
-            </small>
-          </div>
-          
-          <button class="plataforma_btn plataforma_btn_primary" onclick="plataforma_admin_salvarConfigAlertas()">
-            <i class="fas fa-save"></i> Salvar Configurações
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div id="plataforma_login_modal" class="plataforma_container">
-  <div style="display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px;">
-    <div class="plataforma_modal_box plataforma_fade_in">
-      <div style="text-align: center; margin-bottom: 30px;">
-        <div style="width: 80px; height: 80px; background: rgba(59, 130, 246, 0.2); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
-          <i class="fas fa-user-tie" style="font-size: 2rem; color: var(--primary);"></i>
-        </div>
-        <h2 style="color: #fff; margin-bottom: 10px;">Portal do Cliente</h2>
-        <p style="color: rgba(255, 255, 255, 0.7);">Acesse com seu CPF cadastrado</p>
-      </div>
-
-      <div class="plataforma_input_group">
-        <label class="plataforma_label">CPF (Somente números)</label>
-        <input type="text" class="plataforma_input cpf-input" id="plataforma_input_cpf" placeholder="000.000.000-00" maxlength="14">
-        <small style="color: rgba(255,255,255,0.5); font-size: 0.8rem; display: block; margin-top: 5px;">
-          Digite seu CPF no formato: 000.000.000-00
-        </small>
-      </div>
-
-      <div style="display: flex; gap: 10px; margin-top: 25px;">
-        <button class="plataforma_btn plataforma_btn_secondary" style="flex: 1;" onclick="plataforma_fecharLoginModal()">
-          <i class="fas fa-arrow-left"></i> Voltar
-        </button>
-        <button class="plataforma_btn plataforma_btn_primary" style="flex: 2;" onclick="plataforma_login()">
-          <i class="fas fa-sign-in-alt"></i> Entrar
-        </button>
-      </div>
-
-      <div style="text-align: center; margin-top: 20px; color: rgba(255, 255, 255, 0.5); font-size: 0.85rem;">
-        <i class="fas fa-info-circle"></i> Acesso exclusivo para clientes Legacy Platform
-      </div>
-    </div>
-  </div>
-</div>
-
-<div id="plataforma_admin_modal">
-  <div class="plataforma_modal_box plataforma_fade_in">
-    <div style="text-align: center; margin-bottom: 30px;">
-      <div style="width: 80px; height: 80px; background: rgba(239, 68, 68, 0.2); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
-        <i class="fas fa-user-shield" style="font-size: 2rem; color: #ef4444;"></i>
-      </div>
-      <h2 style="color: #fff; margin-bottom: 10px;">Acesso Administrativo</h2>
-      <p style="color: rgba(255, 255, 255, 0.7);">Área restrita para administradores</p>
-    </div>
-
-    <div class="plataforma_input_group">
-      <label class="plataforma_label">Senha de Administrador</label>
-      <input type="password" class="plataforma_input" id="plataforma_admin_senha" placeholder="Digite a senha administrativa">
-    </div>
-
-    <button class="plataforma_btn plataforma_btn_primary" style="width: 100%; background: #ef4444;" onclick="plataforma_admin_login()">
-      <i class="fas fa-lock"></i> Acessar
-    </button>
-
-    <div style="text-align: center; margin-top: 20px;">
-      <button class="plataforma_btn plataforma_btn_secondary" onclick="plataforma_admin_fecharModal()">
-        <i class="fas fa-times"></i> Cancelar
-      </button>
-    </div>
-  </div>
-</div>
-
-<div id="paymentModal">
-  <div class="modal-box">
-    <div style="font-size: 3rem; color: var(--primary); margin-bottom: 15px;">
-      <i class="fas fa-shopping-cart"></i>
-    </div>
-    <h3>Confirmar Assinatura</h3>
-    <p style="margin: 10px 0; color: rgba(255,255,255,0.7);">Você selecionou o plano:</p>
-    <h2 id="modalPlanName" style="color: #fff; margin-bottom: 5px;"></h2>
-    <strong id="modalPrice" style="font-size: 1.5rem; color: var(--success); display: block; margin-bottom: 20px;"></strong>
-    <p style="font-size: 0.8rem; margin-bottom: 20px;">Você será redirecionado para finalizar a contratação via WhatsApp.</p>
-    <div style="display: flex; gap: 10px; justify-content: center;">
-      <button onclick="closePayment()" style="background: transparent; border: 1px solid rgba(255,255,255,0.3);">Cancelar</button>
-      <button onclick="confirmarAssinatura()">Confirmar</button>
-    </div>
-  </div>
-</div>
-<script>
-  // ==================== LÓGICA DE INTERFACE (MODAL PAGAMENTO) ====================
-  let planoSelecionado = "";
-  let valorSelecionado = "";
-
-  function abrirPopup(url) {
-    const width = window.innerWidth * 0.9;
-    const height = window.innerHeight * 0.9;
-    const left = (window.innerWidth - width) / 2;
-    const top = (window.innerHeight - height) / 2;
-    const features = `width=${width},height=${height},top=${top},left=${left},resizable=yes,scrollbars=yes`;
-    window.open(url, 'LegacySystemPopup', features);
-  }
-
-  const modal = document.getElementById('paymentModal');
-  const modalName = document.getElementById('modalPlanName');
-  const modalPrice = document.getElementById('modalPrice');
-
-  function openPayment(name, price) {
-    planoSelecionado = name;
-    valorSelecionado = price;
-    modalName.innerText = name;
-    modalPrice.innerText = 'Total: R$ ' + price + ',00';
-    modal.style.display = 'flex';
-  }
-
-  function closePayment() {
-    modal.style.display = 'none';
-  }
-
-  function confirmarAssinatura() {
-    const telefone = "5522992497662";
-    const mensagem = encodeURIComponent(`Olá! Gostaria de assinar o plano ${planoSelecionado} no valor de R$ ${valorSelecionado},00.`);
-    window.open(`https://wa.me/${telefone}?text=${mensagem}`, '_blank');
-    closePayment();
-  }
-
-  window.onclick = function(event) {
-    if (event.target == modal) closePayment();
-  }
-
-  // ==================== LÓGICA DO BANCO DE DADOS (CORRIGIDA) ====================
-  // Centraliza as operações no banco 'lg_crmDB' usando sufixo '_plataforma'
-  
-  const plataforma = {
-    db: null,
-    dbName: 'lg_crmDB', // Banco principal compartilhado
-    dbVersion: 9,       // Versão para garantir atualização da estrutura
-    adminPassword: 'admin@legacy2024',
-    currentUser: null,
-    isAdmin: false,
-    configAlertas: {
-      diasAntecedencia: 3,
-      mensagemPadrao: `Olá {nome}! Este é um lembrete sobre o prazo: {titulo}\nVencimento: {data}\nAcesse seu portal para mais detalhes: {link_portal}`
-    }
-  };
-
-  // Máscara para CPF
-  function formatarCPF(cpf) {
-    cpf = cpf.replace(/\D/g, '');
-    cpf = cpf.replace(/(\d{3})(\d)/, '$1.$2');
-    cpf = cpf.replace(/(\d{3})(\d)/, '$1.$2');
-    cpf = cpf.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
-    return cpf;
-  }
-
-  // Inicialização dos inputs
-  document.addEventListener('DOMContentLoaded', function() {
-    const cpfInputs = document.querySelectorAll('.cpf-input');
-    cpfInputs.forEach(input => {
-      input.addEventListener('input', function(e) {
-        let value = e.target.value.replace(/\D/g, '');
-        if (value.length > 11) value = value.substring(0, 11);
-        e.target.value = formatarCPF(value);
-      });
-    });
-  });
-
-  // Inicialização do IndexedDB
-  function plataforma_initDB() {
-    return new Promise((resolve, reject) => {
-      // Abre o banco compartilhado lg_crmDB
-      const request = indexedDB.open(plataforma.dbName, plataforma.dbVersion);
-      
-      request.onerror = (event) => {
-        console.error('Erro ao abrir o banco de dados:', event.target.error);
-        reject(event.target.error);
-      };
-      
-      request.onsuccess = (event) => {
-        plataforma.db = event.target.result;
-        console.log(`Banco de dados ${plataforma.dbName} conectado.`);
-        
-        // Carregar configurações iniciais
-        plataforma_carregarConfigAlertas();
-        
-        resolve(plataforma.db);
-      };
-      
-      // Criação das tabelas com sufixo _plataforma
-      request.onupgradeneeded = (event) => {
-        const db = event.target.result;
-        
-        // Cria tabelas apenas se não existirem (Safe Check)
-        const createStore = (name, keyPath, indexes = []) => {
-          if (!db.objectStoreNames.contains(name)) {
-            const store = db.createObjectStore(name, { keyPath: keyPath, autoIncrement: true });
-            indexes.forEach(idx => store.createIndex(idx.name, idx.key, { unique: idx.unique || false }));
-            console.log(`Tabela criada: ${name}`);
-          }
-        };
-
-        createStore('clientes_plataforma', 'id', [{name: 'cpf', key: 'cpf', unique: true}, {name: 'status', key: 'status'}]);
-        createStore('projetos_plataforma', 'id', [{name: 'clienteId', key: 'clienteId'}, {name: 'status', key: 'status'}]);
-        createStore('etapas_plataforma', 'id', [{name: 'projetoId', key: 'projetoId'}, {name: 'data', key: 'data'}]);
-        createStore('links_plataforma', 'id', [{name: 'clienteId', key: 'clienteId'}]);
-        createStore('orientacoes_plataforma', 'id', [{name: 'clienteId', key: 'clienteId'}]);
-        createStore('prazos_plataforma', 'id', [{name: 'clienteId', key: 'clienteId'}, {name: 'data', key: 'data'}, {name: 'statusAlerta', key: 'statusAlerta'}]);
-        createStore('lembretes_plataforma', 'id', [{name: 'clienteId', key: 'clienteId'}]);
-        createStore('alertas_plataforma', 'id', [{name: 'clienteId', key: 'clienteId'}, {name: 'prazoId', key: 'prazoId'}, {name: 'status', key: 'status'}]);
-        createStore('config_plataforma', 'id', [{name: 'chave', key: 'chave', unique: true}]);
-        createStore('usuarios_plataforma', 'id', [{name: 'tipo', key: 'tipo'}]);
-        
-        // Dados de demonstração/inicialização
-        const transaction = event.target.transaction;
-        
-        // Config Padrão
-        const configStore = transaction.objectStore('config_plataforma');
-        configStore.add({ chave: 'alertas_config', valor: JSON.stringify(plataforma.configAlertas) });
-
-        // Cliente Demo (opcional, para teste)
-        const clientesStore = transaction.objectStore('clientes_plataforma');
-        clientesStore.add({
-            nome: 'Cliente Demonstração',
-            email: 'demo@legacyplatform.com',
-            cpf: '12345678900',
-            whatsapp: '5522999999999',
-            status: 'ativo',
-            dataCadastro: new Date().toISOString()
-        });
-      };
-    });
-  }
-
-  // --- Funções Auxiliares de Banco de Dados ---
-
-  async function plataforma_carregarConfigAlertas() {
-    if(!plataforma.db) return;
-    try {
-      const transaction = plataforma.db.transaction(['config_plataforma'], 'readonly');
-      const store = transaction.objectStore('config_plataforma');
-      const index = store.index('chave');
-      const request = index.get('alertas_config');
-      
-      request.onsuccess = (event) => {
-        const config = event.target.result;
-        if (config && config.valor) {
-          plataforma.configAlertas = JSON.parse(config.valor);
-          const diasInput = document.getElementById('plataforma_alerta_dias');
-          const mensagemInput = document.getElementById('plataforma_alerta_mensagem');
-          if (diasInput) diasInput.value = plataforma.configAlertas.diasAntecedencia;
-          if (mensagemInput) mensagemInput.value = plataforma.configAlertas.mensagemPadrao;
-        }
-      };
-    } catch (e) { console.log('Config ainda não carregada'); }
-  }
-
-  async function plataforma_admin_salvarConfigAlertas() {
-    const dias = parseInt(document.getElementById('plataforma_alerta_dias').value);
-    const mensagem = document.getElementById('plataforma_alerta_mensagem').value.trim();
+        <nav class="main-nav">
+            <a href="#" class="nav-link active"><i class="fas fa-chart-pie"></i> Dashboard</a>
+            <a href="#pricing" class="nav-link"><i class="fas fa-layer-group"></i> Planos</a>
+            <a href="#" class="nav-link"><i class="fas fa-book"></i> Base/KB</a>
+            <a href="https://wa.me/5522992497662" target="_blank" class="nav-link"><i class="fas fa-headset"></i> Suporte</a>
+            <a href="#" class="nav-link" id="clientAccessBtn"><i class="fas fa-user-tie"></i> Acesso Clientes</a>
+        </nav>
+    </header>
     
-    plataforma.configAlertas.diasAntecedencia = dias;
-    plataforma.configAlertas.mensagemPadrao = mensagem;
+    <div class="background-effects">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
     
-    const transaction = plataforma.db.transaction(['config_plataforma'], 'readwrite');
-    const store = transaction.objectStore('config_plataforma');
-    const index = store.index('chave');
-    
-    index.get('alertas_config').onsuccess = (e) => {
-      const data = e.target.result || { chave: 'alertas_config' };
-      data.valor = JSON.stringify(plataforma.configAlertas);
-      store.put(data);
-      alert('Configurações salvas!');
-    };
-  }
-
-  // --- Autenticação ---
-
-  async function plataforma_login() {
-    let cpf = document.getElementById('plataforma_input_cpf').value.replace(/\D/g, '');
-    
-    if (cpf.length !== 11) { alert('CPF inválido'); return; }
-    
-    const transaction = plataforma.db.transaction(['clientes_plataforma'], 'readwrite');
-    const store = transaction.objectStore('clientes_plataforma');
-    const index = store.index('cpf');
-    
-    index.get(cpf).onsuccess = (e) => {
-      const cliente = e.target.result;
-      if (cliente && cliente.status === 'ativo') {
-        plataforma.currentUser = cliente;
-        cliente.ultimoAcesso = new Date().toISOString();
-        store.put(cliente); // Atualiza último acesso
-        plataforma_showClientPortal();
-      } else {
-        alert('Cliente não encontrado ou inativo.');
-      }
-    };
-  }
-
-  function plataforma_logout() {
-    plataforma.currentUser = null;
-    plataforma.isAdmin = false;
-    plataforma_showLoginModal();
-  }
-
-  function plataforma_showLoginModal() {
-    document.getElementById('plataforma_overlay').style.display = 'block';
-    document.getElementById('plataforma_login_modal').style.display = 'block';
-    document.getElementById('plataforma_client_portal').style.display = 'none';
-    document.getElementById('plataforma_admin_portal').style.display = 'none';
-    document.getElementById('plataforma_input_cpf').value = '';
-  }
-
-  function plataforma_fecharLoginModal() {
-    document.getElementById('plataforma_overlay').style.display = 'none';
-    document.getElementById('plataforma_login_modal').style.display = 'none';
-  }
-
-  // --- Portal do Cliente ---
-
-  function plataforma_showClientPortal() {
-    document.getElementById('plataforma_overlay').style.display = 'block';
-    document.getElementById('plataforma_client_portal').style.display = 'block';
-    document.getElementById('plataforma_login_modal').style.display = 'none';
-    plataforma_carregarDadosCliente();
-  }
-
-  function plataforma_carregarDadosCliente() {
-    const user = plataforma.currentUser;
-    if(!user) return;
-
-    document.getElementById('plataforma_client_name').innerHTML = `<i class="fas fa-user-circle"></i> ${user.nome}`;
-    document.getElementById('plataforma_client_cpf').textContent = formatarCPF(user.cpf);
-    document.getElementById('plataforma_last_access').textContent = new Date().toLocaleDateString('pt-BR');
-
-    // Carregar Projeto
-    const tx = plataforma.db.transaction(['projetos_plataforma', 'etapas_plataforma', 'links_plataforma', 'orientacoes_plataforma', 'prazos_plataforma', 'lembretes_plataforma'], 'readonly');
-    
-    // Projeto
-    const projStore = tx.objectStore('projetos_plataforma').index('clienteId');
-    projStore.get(user.id).onsuccess = (e) => {
-        const proj = e.target.result;
-        if(proj) {
-            document.getElementById('plataforma_project_title').textContent = proj.titulo;
-            document.getElementById('plataforma_project_desc').textContent = proj.descricao;
-            document.getElementById('plataforma_project_status').className = `plataforma_status ${proj.status}`;
-            document.getElementById('plataforma_project_status').textContent = proj.status;
-            document.getElementById('plataforma_progress_bar').style.width = `${proj.progresso}%`;
-            document.getElementById('plataforma_progress_text').textContent = `${proj.progresso}%`;
+    <main class="main-content">
+        <section class="dashboard-section">
+            <div class="dashboard-title">
+                <h2>Central de Controle Enterprise</h2>
+                <p>Gerencie todos os seus sistemas Legacy em uma única plataforma unificada com recursos avançados de gestão empresarial.</p>
+            </div>
             
-            // Etapas
-            const etapasStore = tx.objectStore('etapas_plataforma').index('projetoId');
-            etapasStore.getAll(proj.id).onsuccess = (ev) => {
-                const timeline = document.getElementById('plataforma_timeline');
-                timeline.innerHTML = '';
-                const etapas = ev.target.result || [];
-                etapas.sort((a,b) => new Date(a.data) - new Date(b.data)).forEach(etapa => {
-                    timeline.innerHTML += `
-                        <div class="plataforma_timeline_item">
-                          <div class="plataforma_timeline_date">${new Date(etapa.data).toLocaleDateString()}</div>
-                          <div style="color: rgba(255, 255, 255, 0.9);">${etapa.titulo}</div>
-                          <div style="color: rgba(255, 255, 255, 0.6); font-size: 0.9rem;">${etapa.descricao}</div>
-                        </div>`;
-                });
+            <div class="cards-container">
+                <div class="dashboard-card fade-in">
+                    <div class="card-icon"><i class="fas fa-users"></i></div>
+                    <h3 class="card-title">Legacy Cloud CRM</h3>
+                    <p class="card-subtitle">Enterprise Edition</p>
+                    <p>Gestão completa de relacionamento com clientes, vendas e pipeline comercial.</p>
+                    <button class="card-btn" onclick="openSystem('crm')">Acessar Sistema</button>
+                </div>
+                <div class="dashboard-card fade-in">
+                    <div class="card-icon"><i class="fas fa-file-signature"></i></div>
+                    <h3 class="card-title">Legacy Contracts</h3>
+                    <p class="card-subtitle">Gestão de Contratos</p>
+                    <p>Controle total de contratos, cláusulas, renovação e compliance jurídico.</p>
+                    <button class="card-btn" onclick="openSystem('contracts')">Acessar Sistema</button>
+                </div>
+                <div class="dashboard-card fade-in">
+                    <div class="card-icon"><i class="fas fa-clipboard-check"></i></div>
+                    <h3 class="card-title">Legacy Forms</h3>
+                    <p class="card-subtitle">Gestão de Formulários</p>
+                    <p>Criação e gerenciamento de formulários dinâmicos com automação de fluxos.</p>
+                    <button class="card-btn" onclick="openSystem('forms')">Acessar Sistema</button>
+                </div>
+            </div>
+        </section>
+        
+        <section id="pricing" class="pricing-section">
+            <div class="pricing-header">
+                <h2>Seu negócio não pode viver preso no WhatsApp.<br>Nem desaparecer quando você troca de celular.</h2>
+                <p>Com a Legacy você organiza clientes, conversas, financeiro, agenda e contratos em um sistema em nuvem seguro, para você nunca mais perder informações ou oportunidades.</p>
+            </div>
+            
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <h3 class="plan-name">SaaS Flex</h3>
+                    <p class="plan-description">Para quem busca liberdade sem fidelidade longa.</p>
+                    <div class="price-container"><span class="price">R$ 60</span><span class="price-period">/mês</span></div>
+                    <span class="price-note">Cobrança recorrente mensal</span>
+                    <ul class="plan-features">
+                        <li><i class="fas fa-check-circle"></i> Acesso Multi-device Android e PC</li>
+                        <li><i class="fas fa-rocket"></i> Implantação guiada</li>
+                        <li><i class="fas fa-clock"></i> 3 Tickets Suporte/mês</li>
+                    </ul>
+                    <button class="plan-btn" onclick="selectPlan('SaaS Flex Mensal', 60)">Assinar Mensal</button>
+                </div>
+                
+                <div class="pricing-card featured">
+                    <div class="featured-badge">MAIS POPULAR</div>
+                    <h3 class="plan-name">Manager <i class="fas fa-crown" style="color: #facc15;"></i></h3>
+                    <p class="plan-description">Gestão completa e suporte estendido.</p>
+                    <div class="price-container"><span class="price">R$ 600</span><span class="price-period">Pgto único</span></div>
+                    <span class="price-note">Equivalente a R$50/mês</span>
+                    <ul class="plan-features">
+                        <li><i class="fas fa-check-circle"></i> Acesso Multi-device Android e PC</li>
+                        <li><i class="fas fa-laptop-code"></i> Implantação com o usuário</li>
+                        <li><i class="fas fa-ticket-alt"></i> 8 Tickets Suporte/mês</li>
+                    </ul>
+                    <button class="plan-btn" onclick="selectPlan('Manager Anual', 600)">Assinar Anual</button>
+                </div>
+
+                <div class="pricing-card">
+                    <h3 class="plan-name">Controller</h3>
+                    <p class="plan-description">Equilíbrio perfeito entre custo e prazo.</p>
+                    <div class="price-container"><span class="price">R$ 300</span><span class="price-period">Pgto único</span></div>
+                    <span class="price-note">Equivalente a R$50/mês</span>
+                    <ul class="plan-features">
+                        <li><i class="fas fa-check-circle"></i> Acesso Multi-device Android e PC</li>
+                        <li><i class="fas fa-laptop-code"></i> Implantação Guiada</li>
+                        <li><i class="fas fa-ticket-alt"></i> 5 Tickets Suporte/mês</li>
+                    </ul>
+                    <button class="plan-btn" onclick="selectPlan('Controller Semestral', 300)">Assinar Semestral</button>
+                </div>
+            </div>
+        </section>
+    </main>
+<div id="loginModal" class="login-modal">
+        <div class="login-box fade-in">
+            <div class="login-icon"><i class="fas fa-user-lock"></i></div>
+            <div class="login-header">
+                <h3>Acesso do Cliente</h3>
+                <p>Digite seu CPF para acessar seus contratos e status.</p>
+            </div>
+            <div class="form-group">
+                <label class="form-label">CPF</label>
+                <input type="text" id="cpfInput" class="form-input" placeholder="000.000.000-00" maxlength="14" oninput="maskCPF(this)">
+                <span class="form-note"><i class="fas fa-lock"></i> Ambiente seguro e criptografado</span>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-primary btn-full" onclick="clientLogin()">
+                    <i class="fas fa-sign-in-alt"></i> Acessar Portal
+                </button>
+            </div>
+            <div style="text-align: center; margin-top: 15px;">
+                <button class="btn btn-secondary btn-sm" onclick="closeLoginModal()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="clientPortal" class="portal-container">
+        <header class="portal-header">
+            <div class="portal-brand">
+                <div class="portal-brand-icon"><i class="fas fa-id-card"></i></div>
+                <div class="portal-brand-text"><strong>ÁREA DO CLIENTE</strong><span>LEGACY SECURE ACCESS</span></div>
+            </div>
+            <button class="btn btn-secondary" onclick="closeClientPortal()"><i class="fas fa-sign-out-alt"></i> Sair</button>
+        </header>
+        <div class="portal-content">
+            <div class="dashboard-title" style="text-align: left; margin-bottom: 30px;">
+                <h2 id="portalClientName">Olá, Cliente</h2>
+                <p>Aqui está o status atualizado do seu projeto.</p>
+            </div>
+            <div class="portal-card">
+                <div class="portal-card-title"><i class="fas fa-tasks" style="color: var(--primary);"></i> Status Atual</div>
+                <div style="background: rgba(59, 130, 246, 0.1); padding: 20px; border-radius: 8px; border-left: 4px solid var(--primary);">
+                    <h3 id="portalStatus" style="color: var(--primary-light); margin-bottom: 10px;">-</h3>
+                    <p id="portalObs" style="color: white; margin-bottom: 0;">-</p>
+                </div>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                <div class="portal-card">
+                    <div class="portal-card-title"><i class="fas fa-file-contract"></i> Contratos</div>
+                    <p>Você possui documentos disponíveis para visualização.</p>
+                    <button class="btn btn-secondary btn-full">Ver Documentos</button>
+                </div>
+                <div class="portal-card">
+                    <div class="portal-card-title"><i class="fas fa-receipt"></i> Financeiro</div>
+                    <p>Faturas e comprovantes de pagamento.</p>
+                    <button class="btn btn-secondary btn-full">Acessar Faturas</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="paymentModal" class="login-modal">
+        <div class="login-box fade-in">
+            <div class="login-icon"><i class="fas fa-shopping-cart"></i></div>
+            <div class="login-header">
+                <h3>Resumo do Pedido</h3>
+                <p>Você está adquirindo:</p>
+            </div>
+            <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                <h4 id="selectedPlanName" style="color: var(--primary);">Plano Selecionado</h4>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+                    <span style="color: var(--text-muted);">Total a pagar:</span>
+                    <span id="selectedPlanPrice" style="font-size: 1.5rem; font-weight: 700;">R$ 00,00</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Seu WhatsApp</label>
+                <input type="tel" id="whatsappInput" class="form-input" placeholder="(00) 00000-0000" maxlength="15" oninput="maskPhone(this)">
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-primary btn-full" onclick="proceedToCheckout()"><i class="fab fa-whatsapp"></i> Contratar via WhatsApp</button>
+            </div>
+            <div style="text-align: center; margin-top: 15px;">
+                <button class="btn btn-secondary btn-sm" onclick="closePaymentModal()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="supabaseLoginModal" class="login-modal">
+        <div class="login-box fade-in">
+            <div class="login-icon"><i class="fas fa-shield-alt"></i></div>
+            <div class="login-header">
+                <h3>Acesso Administrativo</h3>
+                <p>Identifique-se para gerenciar os clientes.</p>
+            </div>
+            
+            <p id="login-error-msg" style="color: #ef4444; font-size: 13px; text-align: center; display: none; margin-bottom: 15px;"></p>
+
+            <div class="form-group">
+                <label class="form-label">E-mail</label>
+                <input type="email" id="login-email" class="form-input" placeholder="admin@legacy.com">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Senha</label>
+                <input type="password" id="login-password" class="form-input" placeholder="••••••••">
+            </div>
+            
+            <div class="btn-group">
+                <button id="btn-do-login" class="btn btn-primary btn-full" onclick="authManager.login()">
+                    <i class="fas fa-sign-in-alt"></i> Entrar no Sistema
+                </button>
+            </div>
+            <div style="text-align: center; margin-top: 15px;">
+                <button class="btn btn-secondary btn-sm" onclick="document.getElementById('supabaseLoginModal').style.display='none'">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="adminDashboard" class="portal-container">
+        <header class="portal-header">
+            <div class="portal-brand">
+                <div class="portal-brand-icon" style="background: rgba(16, 185, 129, 0.2);"><i class="fas fa-database" style="color: var(--success);"></i></div>
+                <div class="portal-brand-text"><strong>PAINEL ADMIN</strong><span>GERENCIAMENTO DB</span></div>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-primary" onclick="openAdminForm()"><i class="fas fa-plus"></i> Novo Cliente</button>
+                <button class="btn btn-secondary" onclick="authManager.logout()"><i class="fas fa-sign-out-alt"></i> Sair</button>
+            </div>
+        </header>
+
+        <div class="portal-content">
+            <div class="dashboard-title" style="text-align: left;">
+                <h2>Base de Clientes</h2>
+                <p>Gerencie quem tem acesso ao portal do cliente.</p>
+            </div>
+
+            <div class="admin-table-container">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>CPF (Chave)</th>
+                            <th>Nome do Cliente</th>
+                            <th>Status Projeto</th>
+                            <th>Última Atualização</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminTableBody">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="adminFormModal" class="login-modal" style="z-index: 2005;">
+        <div class="login-box fade-in" style="max-width: 500px;">
+            <div class="login-header" style="margin-bottom: 20px;">
+                <h3 id="formTitle">Dados do Cliente</h3>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">CPF (Apenas números)</label>
+                <input type="text" id="adminCpf" class="form-input" placeholder="000.000.000-00" oninput="maskCPF(this)">
+                <span class="form-note">O CPF é a chave única de acesso.</span>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Nome Completo</label>
+                <input type="text" id="adminNome" class="form-input" placeholder="Ex: João da Silva">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Status</label>
+                <select id="adminStatus" class="form-input" style="background: rgba(255,255,255,0.05);">
+                    <option value="Em Análise">Em Análise</option>
+                    <option value="Em Desenvolvimento">Em Desenvolvimento</option>
+                    <option value="Aguardando Pagamento">Aguardando Pagamento</option>
+                    <option value="Concluído">Concluído</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Observações / Mensagem</label>
+                <textarea id="adminObs" class="form-input" rows="3" placeholder="Mensagem visível para o cliente..."></textarea>
+            </div>
+            
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="saveClientData()">
+                    <i class="fas fa-save"></i> Salvar Registro
+                </button>
+                <button class="btn btn-secondary" onclick="document.getElementById('adminFormModal').style.display='none'">
+                    Fechar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="adminAccessBtn" class="admin-access-btn" title="Área Administrativa">
+        <i class="fas fa-cog"></i>
+    </div>
+
+    <script>
+        // --- 1. CONFIGURAÇÃO SUPABASE ---
+        const SUPABASE_URL = 'https://rjyxkouegrropsarrhje.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJqeXhrb3VlZ3Jyb3BzYXJyaGplIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk1NjYxNjcsImV4cCI6MjA4NTE0MjE2N30.UjNPnVBVhQcUSirXeWZ3RmYmAhDMqqbbVUChG_Mv57U';
+
+        // Inicializa Cliente Supabase
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // --- 2. CONFIGURAÇÃO INDEXEDDB ---
+        const DB_NAME = 'lg_crmDB';
+        const STORE_NAME = 'clientsportalusuario';
+        let db;
+
+        function initDB() {
+            const request = indexedDB.open(DB_NAME, 2);
+
+            request.onerror = (event) => console.error("Erro DB:", event.target.error);
+
+            request.onupgradeneeded = (event) => {
+                const db = event.target.result;
+                if (!db.objectStoreNames.contains(STORE_NAME)) {
+                    db.createObjectStore(STORE_NAME, { keyPath: "cpf" });
+                }
             };
-        } else {
-            document.getElementById('plataforma_project_title').textContent = "Nenhum projeto ativo";
+
+            request.onsuccess = (event) => {
+                db = event.target.result;
+                console.log("DB Conectado.");
+                // Se o admin já estiver logado e a tabela aberta, carrega os dados
+                if(document.getElementById('adminDashboard').style.display === 'block'){
+                    loadAdminTable();
+                }
+            };
         }
-    };
+        window.addEventListener('load', initDB);
 
-    // Links
-    tx.objectStore('links_plataforma').index('clienteId').getAll(user.id).onsuccess = (e) => {
-        const list = document.getElementById('plataforma_links_list');
-        list.innerHTML = e.target.result.map(l => `<li><a href="${l.url}" target="_blank" class="plataforma_link_item"><i class="fas fa-link"></i> ${l.nome}</a></li>`).join('') || '<li>Sem links</li>';
-    };
+        // --- 3. GERENCIADOR DE AUTENTICAÇÃO (AUTH MANAGER) ---
+        const authManager = {
+            init: async () => {
+                // Checa sessão atual
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                authManager.updateUI(session);
 
-    // Prazos
-    tx.objectStore('prazos_plataforma').index('clienteId').getAll(user.id).onsuccess = (e) => {
-        const container = document.getElementById('plataforma_prazos');
-        container.innerHTML = '';
-        e.target.result.forEach(p => {
-            const diff = Math.ceil((new Date(p.data) - new Date()) / (1000*60*60*24));
-            const cls = diff < 0 ? 'vencido' : (diff < 3 ? 'proximo' : 'ok');
-            container.innerHTML += `<div class="vencimento-item ${cls}"><div><strong>${p.titulo}</strong><br><small>${new Date(p.data).toLocaleDateString()}</small></div></div>`;
-        });
-    };
-  }
+                // Ouve mudanças (Login/Logout)
+                supabaseClient.auth.onAuthStateChange((event, session) => {
+                    authManager.updateUI(session);
+                });
+            },
 
-  // --- Área Administrativa ---
+            updateUI: (session) => {
+                const btnAdmin = document.getElementById('adminAccessBtn');
+                const adminDashboard = document.getElementById('adminDashboard');
+                const loginModal = document.getElementById('supabaseLoginModal');
 
-  document.getElementById('plataforma_admin_access').addEventListener('click', () => {
-    document.getElementById('plataforma_admin_modal').style.display = 'flex';
-  });
+                if (session) {
+                    // USUÁRIO LOGADO
+                    console.log("Admin logado:", session.user.email);
+                    btnAdmin.style.background = "var(--success)"; // Indicador visual
+                    btnAdmin.style.opacity = "1";
+                    
+                    // Comportamento do botão gear: Abre o Dashboard
+                    btnAdmin.onclick = () => {
+                        adminDashboard.style.display = 'block';
+                        document.getElementById('portalOverlay').style.display = 'block';
+                        loadAdminTable(); // Carrega dados do IndexedDB
+                    };
 
-  function plataforma_admin_fecharModal() {
-    document.getElementById('plataforma_admin_modal').style.display = 'none';
-  }
+                    // Fecha modal de login se estiver aberto
+                    loginModal.style.display = 'none';
 
-  function plataforma_admin_login() {
-    const senha = document.getElementById('plataforma_admin_senha').value;
-    if (senha === plataforma.adminPassword) {
-      plataforma.isAdmin = true;
-      plataforma_admin_fecharModal();
-      plataforma_showAdminPortal();
-    } else {
-      alert('Senha incorreta');
-    }
-  }
+                } else {
+                    // USUÁRIO DESLOGADO
+                    btnAdmin.style.background = ""; 
+                    btnAdmin.style.opacity = "0.3";
+                    
+                    // Comportamento do botão gear: Abre Login
+                    btnAdmin.onclick = () => {
+                        document.getElementById('portalOverlay').style.display = 'block';
+                        loginModal.style.display = 'flex';
+                    };
+                    
+                    // Esconde dashboard
+                    adminDashboard.style.display = 'none';
+                }
+            },
 
-  function plataforma_showAdminPortal() {
-    document.getElementById('plataforma_overlay').style.display = 'block';
-    document.getElementById('plataforma_admin_portal').style.display = 'block';
-    plataforma_admin_carregarDashboard();
-    plataforma_admin_carregarClientesSelect();
-  }
+            login: async () => {
+                const email = document.getElementById('login-email').value;
+                const password = document.getElementById('login-password').value;
+                const errorMsg = document.getElementById('login-error-msg');
+                const btn = document.getElementById('btn-do-login');
 
-  function plataforma_admin_logout() {
-    plataforma.isAdmin = false;
-    document.getElementById('plataforma_overlay').style.display = 'none';
-    document.getElementById('plataforma_admin_portal').style.display = 'none';
-  }
+                if (!email || !password) {
+                    authManager.showError('Preencha email e senha.');
+                    return;
+                }
 
-  function plataforma_admin_showSection(section) {
-    ['dashboard', 'clientes', 'notificacoes'].forEach(s => {
-        const el = document.getElementById(`plataforma_admin_${s}`);
-        if(el) el.style.display = 'none';
-    });
-    
-    if (section === 'clientes') document.getElementById('plataforma_admin_clientes').style.display = 'block';
-    else if (section === 'notificacoes') {
-        document.getElementById('plataforma_admin_notificacoes').style.display = 'block';
-        plataforma_admin_carregarAlertas();
-    }
-    else document.getElementById('plataforma_admin_dashboard').style.display = 'block';
-  }
+                btn.innerText = 'Autenticando...';
+                btn.disabled = true;
+                errorMsg.style.display = 'none';
 
-  function plataforma_admin_showDashboard() {
-    plataforma_admin_showSection('dashboard');
-    plataforma_admin_carregarDashboard();
-  }
+                const { data, error } = await supabaseClient.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
 
-  async function plataforma_admin_carregarDashboard() {
-    const tx = plataforma.db.transaction(['clientes_plataforma', 'projetos_plataforma', 'prazos_plataforma'], 'readonly');
-    
-    tx.objectStore('clientes_plataforma').count().onsuccess = (e) => 
-        document.getElementById('plataforma_admin_total_clientes').textContent = e.target.result;
-    
-    tx.objectStore('projetos_plataforma').count().onsuccess = (e) => 
-        document.getElementById('plataforma_admin_total_projetos').textContent = e.target.result;
-        
-    plataforma_admin_carregarListaClientes();
-  }
+                btn.innerText = 'Entrar no Sistema';
+                btn.disabled = false;
 
-  function plataforma_admin_carregarListaClientes() {
-    const tx = plataforma.db.transaction(['clientes_plataforma', 'projetos_plataforma'], 'readonly');
-    const tbody = document.getElementById('plataforma_admin_clientes_list');
-    tbody.innerHTML = '';
-    
-    tx.objectStore('clientes_plataforma').openCursor().onsuccess = (e) => {
-      const cursor = e.target.result;
-      if (cursor) {
-        const c = cursor.value;
-        tbody.innerHTML += `
-            <tr>
-                <td><strong>${c.nome}</strong><br><small>${c.email}</small></td>
-                <td>${formatarCPF(c.cpf)}</td>
-                <td>${c.whatsapp}</td>
-                <td>${c.status}</td>
-                <td>-</td>
-                <td><button class="plataforma_btn_small" onclick="alert('Funcionalidade em desenvolvimento')"><i class="fas fa-edit"></i></button></td>
-            </tr>`;
-        cursor.continue();
-      }
-    };
-  }
+                if (error) {
+                    authManager.showError('Erro: ' + error.message);
+                } else {
+                    // Sucesso: onAuthStateChange cuidará da UI
+                }
+            },
 
-  function plataforma_admin_carregarClientesSelect() {
-    const select1 = document.getElementById('plataforma_projeto_cliente');
-    const select2 = document.getElementById('plataforma_conteudo_cliente');
-    if(!select1) return;
-    
-    select1.innerHTML = '<option value="">Selecione...</option>';
-    select2.innerHTML = '<option value="">Selecione...</option>';
-    
-    const store = plataforma.db.transaction(['clientes_plataforma'], 'readonly').objectStore('clientes_plataforma');
-    store.openCursor().onsuccess = (e) => {
-        const cursor = e.target.result;
-        if(cursor) {
-            const opt = `<option value="${cursor.value.id}">${cursor.value.nome}</option>`;
-            select1.innerHTML += opt;
-            select2.innerHTML += opt;
-            cursor.continue();
-        }
-    };
-  }
+            logout: async () => {
+                if(confirm("Sair do painel administrativo?")) {
+                    await supabaseClient.auth.signOut();
+                    document.getElementById('portalOverlay').style.display = 'none';
+                }
+            },
 
-  function plataforma_admin_salvarCliente() {
-    const nome = document.getElementById('plataforma_novo_nome').value;
-    const cpf = document.getElementById('plataforma_novo_cpf').value.replace(/\D/g, '');
-    const email = document.getElementById('plataforma_novo_email').value;
-    const whatsapp = document.getElementById('plataforma_novo_whatsapp').value;
-    const status = document.getElementById('plataforma_novo_status').value;
-
-    if(!nome || cpf.length !== 11) { alert('Dados inválidos'); return; }
-
-    const store = plataforma.db.transaction(['clientes_plataforma'], 'readwrite').objectStore('clientes_plataforma');
-    store.add({ nome, cpf, email, whatsapp, status, dataCadastro: new Date().toISOString() }).onsuccess = () => {
-        alert('Cliente salvo!');
-        plataforma_admin_showDashboard();
-    };
-  }
-
-  // --- Funções de Projeto e Conteúdo ---
-  // (Mantêm a mesma lógica, apenas garantindo o uso de store '_plataforma')
-
-  function plataforma_admin_salvarProjeto() {
-    const clienteId = parseInt(document.getElementById('plataforma_projeto_cliente').value);
-    const titulo = document.getElementById('plataforma_projeto_titulo').value;
-    const status = document.getElementById('plataforma_projeto_status').value;
-    const progresso = document.getElementById('plataforma_projeto_progresso').value;
-    
-    if(!clienteId) return alert('Selecione um cliente');
-
-    const tx = plataforma.db.transaction(['projetos_plataforma', 'etapas_plataforma'], 'readwrite');
-    const store = tx.objectStore('projetos_plataforma');
-    
-    // Verifica se já existe projeto para atualizar
-    const index = store.index('clienteId');
-    index.get(clienteId).onsuccess = (e) => {
-        const proj = e.target.result || { clienteId, dataCriacao: new Date().toISOString() };
-        proj.titulo = titulo;
-        proj.status = status;
-        proj.progresso = progresso;
-        proj.descricao = document.getElementById('plataforma_projeto_desc').value;
-        
-        store.put(proj).onsuccess = (ev) => {
-            // Adiciona etapa automática de atualização
-            tx.objectStore('etapas_plataforma').add({
-                projetoId: proj.id || ev.target.result,
-                titulo: `Status: ${status}`,
-                descricao: `Progresso atualizado para ${progresso}%`,
-                data: new Date().toISOString()
-            });
-            alert('Projeto salvo!');
+            showError: (msg) => {
+                const el = document.getElementById('login-error-msg');
+                el.innerText = msg;
+                el.style.display = 'block';
+            }
         };
-    };
-  }
 
-  function plataforma_admin_adicionarLink() {
-      const clienteId = parseInt(document.getElementById('plataforma_conteudo_cliente').value);
-      const nome = document.getElementById('plataforma_novo_link_nome').value;
-      const url = document.getElementById('plataforma_novo_link_url').value;
-      if(!clienteId || !url) return;
-      
-      plataforma.db.transaction(['links_plataforma'], 'readwrite')
-        .objectStore('links_plataforma')
-        .add({ clienteId, nome, url })
-        .onsuccess = () => alert('Link adicionado');
-  }
+        // Inicia Auth
+        authManager.init();
 
-  // Inicialização Geral
-  window.addEventListener('DOMContentLoaded', async () => {
-    try {
-      await plataforma_initDB();
-      // Slider listener
-      const slider = document.getElementById('plataforma_projeto_progresso');
-      if(slider) slider.addEventListener('input', (e) => document.getElementById('plataforma_projeto_progresso_text').textContent = e.target.value + '%');
-    } catch (e) { console.error(e); }
-  });
 
-</script>
+        // --- 4. FUNÇÕES CRUD (ADMINISTRATIVO) ---
 
-<script>
-  const SUPABASE_URL = 'https://rjyxkouegrropsarrhje.supabase.co';
-  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJqeXhrb3VlZ3Jyb3BzYXJyaGplIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk1NjYxNjcsImV4cCI6MjA4NTE0MjE2N30.UjNPnVBVhQcUSirXeWZ3RmYmAhDMqqbbVUChG_Mv57U';
+        // Carregar Tabela
+        function loadAdminTable() {
+            if (!db) return;
+            const tbody = document.getElementById('adminTableBody');
+            tbody.innerHTML = '';
 
-  window.supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            const transaction = db.transaction([STORE_NAME], "readonly");
+            const objectStore = transaction.objectStore(STORE_NAME);
+            const request = objectStore.openCursor();
 
-  // Sistema Admin Supabase
-  const supabase_admin = {
-    init: function() {
-        // Verifica botão existente e injeta modal se necessário
-        const btn = document.getElementById('plataforma_admin_access');
-        if(btn) {
-            btn.onclick = (e) => {
-                // Se já estiver logado admin local, abre portal
-                if(plataforma.isAdmin) return;
-                // Senão, abre modal local (simplificado para manter funcionalidade pedida)
-                document.getElementById('plataforma_admin_modal').style.display = 'flex';
+            request.onsuccess = (event) => {
+                const cursor = event.target.result;
+                if (cursor) {
+                    const data = cursor.value;
+                    
+                    // Formatar Status Badge
+                    let statusClass = 'status-dev';
+                    if(data.status === 'Concluído') statusClass = 'status-ok';
+                    if(data.status === 'Em Análise') statusClass = 'status-analise';
+                    if(data.status === 'Aguardando Pagamento') statusClass = 'status-pag';
+
+                    const row = `
+                        <tr>
+                            <td><i class="fas fa-key" style="color:#555; margin-right:5px;"></i> ${formatCPF(data.cpf)}</td>
+                            <td style="font-weight:600; color:white;">${data.nome}</td>
+                            <td><span class="status-badge ${statusClass}">${data.status}</span></td>
+                            <td style="font-size:12px; color:#aaa;">${new Date(data.updatedAt).toLocaleDateString()}</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="icon-btn btn-edit-row" onclick="editClient('${data.cpf}')" title="Editar">
+                                        <i class="fas fa-pen"></i>
+                                    </button>
+                                    <button class="icon-btn btn-del-row" onclick="deleteClient('${data.cpf}')" title="Excluir">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                    tbody.innerHTML += row;
+                    cursor.continue();
+                } else {
+                    if(tbody.innerHTML === '') {
+                        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px;">Nenhum cliente cadastrado.</td></tr>';
+                    }
+                }
+            };
+        }
+
+        // Abrir Modal para Novo Cliente
+        function openAdminForm() {
+            document.getElementById('adminCpf').value = '';
+            document.getElementById('adminCpf').disabled = false; // CPF editável na criação
+            document.getElementById('adminNome').value = '';
+            document.getElementById('adminStatus').value = 'Em Análise';
+            document.getElementById('adminObs').value = '';
+            document.getElementById('formTitle').innerText = 'Novo Cliente';
+            document.getElementById('adminFormModal').style.display = 'flex';
+        }
+
+        // Abrir Modal para Editar
+        function editClient(cpfKey) {
+            const transaction = db.transaction([STORE_NAME], "readonly");
+            const objectStore = transaction.objectStore(STORE_NAME);
+            const request = objectStore.get(cpfKey);
+
+            request.onsuccess = (event) => {
+                const data = event.target.result;
+                if(data) {
+                    document.getElementById('adminCpf').value = formatCPF(data.cpf);
+                    document.getElementById('adminCpf').disabled = true; // Não muda CPF na edição (chave)
+                    document.getElementById('adminNome').value = data.nome;
+                    document.getElementById('adminStatus').value = data.status;
+                    document.getElementById('adminObs').value = data.obs;
+                    document.getElementById('formTitle').innerText = 'Editar Cliente';
+                    document.getElementById('adminFormModal').style.display = 'flex';
+                }
+            };
+        }
+
+        // Salvar (Create/Update)
+        function saveClientData() {
+            const cpfRaw = document.getElementById('adminCpf').value;
+            const nome = document.getElementById('adminNome').value;
+            const status = document.getElementById('adminStatus').value;
+            const obs = document.getElementById('adminObs').value;
+            
+            const cpfClean = cpfRaw.replace(/\D/g, '');
+
+            if (cpfClean.length !== 11) {
+                alert("Por favor, insira um CPF válido com 11 dígitos.");
+                return;
+            }
+            if (!nome) {
+                alert("Nome é obrigatório.");
+                return;
+            }
+
+            const clientData = {
+                cpf: cpfClean,
+                nome: nome,
+                status: status,
+                obs: obs,
+                updatedAt: new Date().toISOString()
+            };
+
+            const transaction = db.transaction([STORE_NAME], "readwrite");
+            const objectStore = transaction.objectStore(STORE_NAME);
+            const request = objectStore.put(clientData);
+
+            request.onsuccess = () => {
+                document.getElementById('adminFormModal').style.display = 'none';
+                loadAdminTable(); // Atualiza a lista
+            };
+
+            request.onerror = (e) => alert("Erro ao salvar: " + e.target.error);
+        }
+
+        // Deletar
+        function deleteClient(cpf) {
+            if(confirm("Tem certeza que deseja excluir este cliente? O acesso dele será revogado.")) {
+                const transaction = db.transaction([STORE_NAME], "readwrite");
+                const objectStore = transaction.objectStore(STORE_NAME);
+                const request = objectStore.delete(cpf);
+
+                request.onsuccess = () => {
+                    loadAdminTable();
+                };
             }
         }
-    }
-  };
-  document.addEventListener('DOMContentLoaded', supabase_admin.init);
-</script>
 
+
+        // --- 5. FUNÇÕES PÚBLICAS DO CLIENTE ---
+
+        document.getElementById('clientAccessBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            document.getElementById('portalOverlay').style.display = 'block';
+            document.getElementById('loginModal').style.display = 'flex';
+        });
+
+        function clientLogin() {
+            const cpfRaw = document.getElementById('cpfInput').value;
+            const cpfClean = cpfRaw.replace(/\D/g, '');
+
+            if (cpfClean.length !== 11) {
+                alert("Digite um CPF válido.");
+                return;
+            }
+
+            const transaction = db.transaction([STORE_NAME], "readonly");
+            const objectStore = transaction.objectStore(STORE_NAME);
+            const request = objectStore.get(cpfClean);
+
+            request.onsuccess = (event) => {
+                const data = event.target.result;
+                if (data) {
+                    populatePortal(data);
+                    closeLoginModal();
+                    document.getElementById('clientPortal').style.display = 'block';
+                    document.getElementById('portalOverlay').style.display = 'block';
+                } else {
+                    alert("Cadastro não encontrado.");
+                }
+            };
+        }
+
+        function populatePortal(data) {
+            document.getElementById('portalClientName').innerText = `Olá, ${data.nome}`;
+            document.getElementById('portalStatus').innerText = data.status;
+            document.getElementById('portalObs').innerText = data.obs || "Nenhuma observação recente.";
+        }
+
+
+        // --- 6. UTILS & UI HELPERS ---
+
+        function formatCPF(cpf) {
+            return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+        }
+
+        function maskCPF(input) {
+            let value = input.value.replace(/\D/g, '');
+            if (value.length > 11) value = value.slice(0, 11);
+            if (value.length > 9) value = value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+            else if (value.length > 6) value = value.replace(/(\d{3})(\d{3})(\d{3})/, "$1.$2.$3");
+            else if (value.length > 3) value = value.replace(/(\d{3})(\d{3})/, "$1.$2");
+            input.value = value;
+        }
+
+        function maskPhone(input) {
+            let value = input.value.replace(/\D/g, '');
+            if (value.length > 11) value = value.slice(0, 11);
+            if (value.length > 10) value = value.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
+            else if (value.length > 5) value = value.replace(/(\d{2})(\d{4})(\d{0,4})/, "($1) $2-$3");
+            input.value = value;
+        }
+
+        function closeLoginModal() {
+            document.getElementById('loginModal').style.display = 'none';
+            document.getElementById('portalOverlay').style.display = 'none';
+        }
+        
+        function closeClientPortal() {
+            document.getElementById('clientPortal').style.display = 'none';
+            document.getElementById('portalOverlay').style.display = 'none';
+            document.getElementById('cpfInput').value = '';
+        }
+
+        function closePaymentModal() {
+            document.getElementById('paymentModal').style.display = 'none';
+            document.getElementById('portalOverlay').style.display = 'none';
+        }
+
+        function selectPlan(name, price) {
+            document.getElementById('selectedPlanName').innerText = name;
+            document.getElementById('selectedPlanPrice').innerText = 'R$ ' + price;
+            document.getElementById('portalOverlay').style.display = 'block';
+            document.getElementById('paymentModal').style.display = 'flex';
+        }
+
+        function proceedToCheckout() {
+            const phone = document.getElementById('whatsappInput').value;
+            const plan = document.getElementById('selectedPlanName').innerText;
+            if(phone.length < 14) { alert("Digite um WhatsApp válido"); return; }
+            const msg = `Olá! Gostaria de contratar o plano *${plan}*. Meu contato é: ${phone}`;
+            window.open(`https://wa.me/5522992497662?text=${encodeURIComponent(msg)}`, '_blank');
+            closePaymentModal();
+        }
+
+        function openSystem(sys) {
+            alert(`Acesso ao módulo ${sys.toUpperCase()} solicitado.`);
+        }
+
+        // Fecha modais ao clicar no fundo
+        document.getElementById('portalOverlay').addEventListener('click', function() {
+            // Evita fechar se estiver em área crítica (como admin dashboard ou portal)
+            if(document.getElementById('adminDashboard').style.display === 'block') return;
+            if(document.getElementById('clientPortal').style.display === 'block') return;
+            
+            closeLoginModal();
+            closePaymentModal();
+            document.getElementById('supabaseLoginModal').style.display = 'none';
+        });
+
+    </script>
 <script>
 /**
- * 🚀 UNIVERSAL IDB SYNC - ADAPTADO PARA LG_CRMDB
- * Sincroniza tabelas com sufixo _plataforma automaticamente
+ * 🚀 UNIVERSAL IDB SYNC - FIXED (ANTI-ZOMBIE DATA)
+ * - Correção: Persistência de DeviceID (Evita auto-download após F5).
+ * - Correção: Force Delete (Deleta do disco mesmo se não estiver no Cache).
  */
 (function () {
+    // ==========================================================
+    // 1. CONFIGURAÇÕES & CONSTANTES
+    // ==========================================================
     const SYNC_TABLE = 'lg_crm_supadb';
-    const CANONICAL_DB = 'lg_crmDB'; // Força o uso do banco correto
+    const CANONICAL_DB = 'lg_crmDB';
     
+    // FIX 1: Mantém a identidade da aba mesmo após refresh (SessionStorage)
+    // Isso impede que a aba baixe de volta um dado que ela mesma acabou de deletar
     let storedId = sessionStorage.getItem('sync_device_id');
     if (!storedId) {
         storedId = crypto.randomUUID();
         sessionStorage.setItem('sync_device_id', storedId);
     }
     const DEVICE_ID = storedId;
+    
     let isReplicating = false; 
+    let syncInterval = null;
+
+    // 🧠 CACHE INTELIGENTE
     const syncCache = new Map();
 
-    const getClient = () => window.supabase;
+    // ==========================================================
+    // 2. UTILITÁRIOS
+    // ==========================================================
+    const getClient = () => window.supabaseClient || window.supabase;
+
     const waitForSupabase = () => new Promise(resolve => {
         const check = () => getClient() ? resolve(getClient()) : setTimeout(check, 100);
         check();
     });
 
-    // Funções de Sync
+    async function getUserId() {
+        const client = await waitForSupabase();
+        const { data } = await client.auth.getSession();
+        return data?.session?.user?.id || null;
+    }
+
+    function generateSignature(value) {
+        // Garante que null/undefined sejam tratados iguais
+        if (value === null || value === undefined) return 'null';
+        return JSON.stringify(value);
+    }
+
+    // ==========================================================
+    // 3. INTERCEPTAÇÃO REAL-TIME (IndexDB -> Supabase)
+    // ==========================================================
+    const original = {
+        put: IDBObjectStore.prototype.put,
+        add: IDBObjectStore.prototype.add,
+        delete: IDBObjectStore.prototype.delete
+    };
+
     async function scheduleRealtimeUpload(storeName, method, key, value) {
         if (isReplicating) return; 
+
         const client = getClient();
-        // Upload genérico sem user_id estrito para demonstração, 
-        // ou pegue da sessão se houver auth implementado.
-        const userId = 'admin_system_user'; 
+        const userId = await getUserId();
+        if (!client || !userId) return;
 
         const cacheKey = `${storeName}-${key}`;
-        if (method === 'delete') syncCache.delete(cacheKey);
-        else syncCache.set(cacheKey, JSON.stringify(value));
+        
+        // Atualiza cache local imediatamente
+        if (method === 'delete') {
+            syncCache.delete(cacheKey);
+        } else {
+            syncCache.set(cacheKey, generateSignature(value));
+        }
 
+        // Envia para Supabase
+        // FIX: Tratamento de erro silencioso para evitar travar a UI
         client.from(SYNC_TABLE).upsert({
             user_id: userId,
             db_name: CANONICAL_DB,
@@ -2028,73 +1038,213 @@ Acesse seu portal para mais detalhes: {link_portal}
             is_deleted: method === 'delete',
             device_id: DEVICE_ID,
             updated_at: new Date().toISOString()
-        }, { onConflict: 'user_id,db_name,store_name,record_key' }).then(({ error }) => {
-            if (error) console.warn(`Sync Warn:`, error.message);
+        }, { onConflict: 'user_id,db_name,store_name,record_key' })
+        .then(({ error }) => {
+            if (error) console.warn(`⚠️ Sync Upload Falhou:`, error.message);
         });
     }
-
-    // Intercepta IndexedDB para Upload
-    const original = { put: IDBObjectStore.prototype.put, add: IDBObjectStore.prototype.add, delete: IDBObjectStore.prototype.delete };
 
     IDBObjectStore.prototype.put = function (v, k) {
         const req = original.put.apply(this, arguments);
         const storeName = this.name;
-        // Sincroniza apenas tabelas da plataforma
-        if(storeName.includes('_plataforma')) {
-            req.onsuccess = (e) => scheduleRealtimeUpload(storeName, 'put', k || e.target.result, v);
-        }
+        req.onsuccess = (e) => scheduleRealtimeUpload(storeName, 'put', k || e.target.result, v);
         return req;
     };
 
     IDBObjectStore.prototype.add = function (v, k) {
         const req = original.add.apply(this, arguments);
         const storeName = this.name;
-        if(storeName.includes('_plataforma')) {
-            req.onsuccess = (e) => scheduleRealtimeUpload(storeName, 'add', k || e.target.result, v);
-        }
+        req.onsuccess = (e) => scheduleRealtimeUpload(storeName, 'add', k || e.target.result, v);
         return req;
     };
 
     IDBObjectStore.prototype.delete = function (k) {
         const req = original.delete.apply(this, arguments);
         const storeName = this.name;
-        if(storeName.includes('_plataforma')) {
-            req.onsuccess = (e) => scheduleRealtimeUpload(storeName, 'delete', k, null);
-        }
+        req.onsuccess = (e) => scheduleRealtimeUpload(storeName, 'delete', k, null);
         return req;
     };
 
-    // Download Loop (Simplificado)
-    async function smartDownloadLoop() {
+    console.log('🪤 Sistema de Sync Híbrido Ativado (v2 Anti-Zombie)');
+
+    // ==========================================================
+    // 4. SMART UPLOAD LOOP (PC -> CLOUD)
+    // ==========================================================
+    async function smartUploadLoop() {
+        const userId = await getUserId();
         const client = getClient();
-        const userId = 'admin_system_user'; // Mock ID para manter sync ativo
+        if (!userId || !client) return;
+
+        const req = indexedDB.open(CANONICAL_DB);
         
-        const { data, error } = await client.from(SYNC_TABLE).select('*').eq('db_name', CANONICAL_DB);
+        req.onsuccess = (e) => {
+            const db = e.target.result;
+            const storeNames = Array.from(db.objectStoreNames);
+
+            storeNames.forEach(storeName => {
+                const tx = db.transaction([storeName], 'readonly');
+                const store = tx.objectStore(storeName);
+                
+                Promise.all([
+                    new Promise(r => store.getAll().onsuccess = (ev) => r(ev.target.result)),
+                    new Promise(r => store.getAllKeys().onsuccess = (ev) => r(ev.target.result))
+                ]).then(async ([records, keys]) => {
+                    if (!records.length) return;
+
+                    const changedRecords = [];
+
+                    records.forEach((item, index) => {
+                        const key = String(keys[index]);
+                        const cacheKey = `${storeName}-${key}`;
+                        const currentSig = generateSignature(item);
+
+                        // Só sobe se mudou em relação ao que sabemos
+                        if (syncCache.get(cacheKey) !== currentSig) {
+                            changedRecords.push({
+                                user_id: userId,
+                                db_name: CANONICAL_DB,
+                                store_name: storeName,
+                                record_key: key,
+                                record_value: item,
+                                is_deleted: false,
+                                device_id: DEVICE_ID,
+                                updated_at: new Date().toISOString()
+                            });
+                            syncCache.set(cacheKey, currentSig);
+                        }
+                    });
+
+                    if (changedRecords.length > 0) {
+                        console.log(`📤 Upload Batch: ${changedRecords.length} itens`);
+                        await client.from(SYNC_TABLE).upsert(changedRecords, { 
+                            onConflict: 'user_id,db_name,store_name,record_key' 
+                        });
+                    }
+                });
+            });
+        };
+    }
+
+    // ==========================================================
+    // 5. SMART DOWNLOAD LOOP (CLOUD -> PC)
+    // ==========================================================
+    async function smartDownloadLoop() {
+        const userId = await getUserId();
+        const client = getClient();
+        if (!userId || !client) return;
+
+        const { data, error } = await client
+            .from(SYNC_TABLE)
+            .select('*')
+            .eq('user_id', userId)
+            .eq('db_name', CANONICAL_DB);
+
         if (error || !data || !data.length) return;
 
         const req = indexedDB.open(CANONICAL_DB);
         req.onsuccess = (e) => {
             const db = e.target.result;
-            const tx = db.transaction(db.objectStoreNames, 'readwrite');
+            const localStores = Array.from(db.objectStoreNames);
+            
+            const validRecords = data.filter(r => localStores.includes(r.store_name));
+            if (!validRecords.length) return;
+
+            const tx = db.transaction([...new Set(validRecords.map(r => r.store_name))], 'readwrite');
             isReplicating = true;
 
-            data.forEach(r => {
-                if (r.device_id === DEVICE_ID || !db.objectStoreNames.contains(r.store_name)) return;
+            let writes = 0;
+
+            validRecords.forEach(r => {
+                // ANTI-ECHO: Se o dado veio deste mesmo DEVICE_ID, ignoramos.
+                // Como agora usamos sessionStorage, isso persiste após refresh.
+                if (r.device_id === DEVICE_ID) return;
+
                 const store = tx.objectStore(r.store_name);
+                // Converte chave numérica se necessário
                 const key = !isNaN(r.record_key) ? Number(r.record_key) : r.record_key;
+                const cacheKey = `${r.store_name}-${r.record_key}`;
                 
-                if (r.is_deleted) store.delete(key);
-                else store.put(r.record_value);
+                // LÓGICA DE DELETE (CORRIGIDA)
+                if (r.is_deleted) {
+                    // FIX: Deleta incondicionalmente. Se não existir, não dá erro.
+                    // Antes verificávamos o cache, o que impedia deletes em sessões novas.
+                    store.delete(key);
+                    
+                    if (syncCache.has(cacheKey)) {
+                        syncCache.delete(cacheKey);
+                        writes++;
+                    }
+                    return;
+                }
+
+                // LÓGICA DE UPDATE/INSERT
+                const incomingSig = generateSignature(r.record_value);
+                const localSig = syncCache.get(cacheKey);
+
+                if (incomingSig === localSig) {
+                    return; 
+                }
+
+                // Atualiza IDB
+                const val = r.record_value;
+                if (store.keyPath && val && typeof val === 'object') {
+                    // Se a store usa keyPath inline, injetamos a chave se necessário
+                    if (!val[store.keyPath]) val[store.keyPath] = key;
+                    store.put(val);
+                } else {
+                    store.put(val, key);
+                }
+                
+                syncCache.set(cacheKey, incomingSig);
+                writes++;
             });
+
+            tx.oncomplete = () => {
+                isReplicating = false;
+                if (writes > 0) console.log(`📥 Download Sync: ${writes} alterações aplicadas.`);
+            };
             
-            tx.oncomplete = () => { isReplicating = false; };
+            tx.onerror = () => isReplicating = false;
         };
     }
 
-    // Inicia Sync
-    waitForSupabase().then(() => {
-        console.log('Sync System Active for lg_crmDB');
-        setInterval(smartDownloadLoop, 15000); // Sync a cada 15s
+    // ==========================================================
+    // 6. INICIALIZAÇÃO
+    // ==========================================================
+    async function startService() {
+        const userId = await getUserId();
+        if (!userId) return;
+
+        console.log('✅ Serviço de Sync Iniciado para:', userId);
+        const client = getClient();
+
+        client.channel('global-sync-live')
+            .on('postgres_changes', { 
+                event: '*', schema: 'public', table: SYNC_TABLE, filter: `user_id=eq.${userId}` 
+            }, payload => {
+                // Só dispara download se o evento veio de OUTRO device
+                if (payload.new && payload.new.device_id !== DEVICE_ID) {
+                    smartDownloadLoop();
+                }
+            })
+            .subscribe();
+
+        // Ordem estratégica: Carrega Cache Local -> Baixa Nuvem -> Inicia Loop
+        await smartUploadLoop(); 
+        setTimeout(smartDownloadLoop, 500); // Pequeno delay para garantir que o Upload populou o cache
+
+        if (syncInterval) clearInterval(syncInterval);
+        syncInterval = setInterval(async () => {
+            await smartUploadLoop();
+            await smartDownloadLoop();
+        }, 10000);
+    }
+
+    waitForSupabase().then(client => {
+        client.auth.onAuthStateChange((event, session) => {
+            if (event === 'SIGNED_IN' && session) startService();
+        });
+        getUserId().then(id => { if (id) startService(); });
     });
 
 })();
