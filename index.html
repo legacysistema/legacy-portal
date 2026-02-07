@@ -1,1 +1,550 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Legacy Platform — Enterprise Edition</title>
 
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@700&family=Inter:wght@300;400;500;600&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    :root {
+      --bg-dark: #020617;
+      --text-white: #ffffff;
+      --glass-bg: rgba(255, 255, 255, 0.08);
+      --glass-border: rgba(255, 255, 255, 0.15);
+      --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+      --primary: #3b82f6;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Poppins', 'Inter', sans-serif;
+      background: var(--bg-dark);
+      color: var(--text-white);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* ================= HEADER ================= */
+    header {
+      height: 90px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 48px;
+      background: rgba(2, 6, 23, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 1000;
+      transition: all 0.3s ease;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      flex-shrink: 0;
+    }
+
+    .brand-text strong {
+      font-family: 'Roboto Condensed', sans-serif;
+      font-size: 22px;
+      color: #fff;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .brand-text span {
+      font-size: 11px;
+      letter-spacing: 3px;
+      color: var(--primary);
+      display: block;
+    }
+
+    /* Navegação Topo */
+    .header-nav {
+      display: flex;
+      gap: 30px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .header-nav::-webkit-scrollbar { display: none; }
+
+    .nav-link {
+      color: rgba(255,255,255,0.7);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      transition: 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding-bottom: 5px;
+      border-bottom: 2px solid transparent;
+      white-space: nowrap;
+    }
+
+    .nav-link:hover, .nav-link.active {
+      color: #fff;
+      border-bottom-color: var(--primary);
+    }
+
+    .header-spacer { width: 50px; }
+
+    /* ================= MAIN STRUTUCTURE ================= */
+    main {
+      padding-top: 110px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      padding-bottom: 100px;
+    }
+
+    /* Blobs de Fundo */
+    .background-blobs {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      z-index: 0; pointer-events: none; overflow: hidden;
+      position: fixed;
+    }
+
+    .blob {
+      position: absolute; border-radius: 50%;
+      filter: blur(80px); opacity: 0.6;
+    }
+    .blob-1 {
+      width: 500px; height: 500px; background: #ff007a;
+      top: 20%; left: 20%; animation: float 6s ease-in-out infinite;
+    }
+    .blob-2 {
+      width: 400px; height: 400px; background: #3b82f6;
+      bottom: 10%; right: 20%; animation: float 8s ease-in-out infinite reverse;
+    }
+
+    @keyframes float {
+      0% { transform: translate(0, 0); }
+      50% { transform: translate(30px, -30px); }
+      100% { transform: translate(0, 0); }
+    }
+
+    /* ================= GLASS CARDS (DASHBOARD) ================= */
+    .glass-slider-container {
+      position: relative; z-index: 10;
+      display: flex; gap: 30px; padding: 20px;
+      width: 100%; max-width: 1200px;
+      justify-content: center; 
+      flex-wrap: wrap;
+      margin-bottom: 80px;
+    }
+
+    .glass-card {
+      width: 300px; height: 420px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      padding: 30px;
+      display: flex; flex-direction: column;
+      align-items: center; text-align: center;
+      box-shadow: var(--glass-shadow);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      color: #fff;
+      flex-shrink: 0;
+    }
+    .glass-card:hover {
+      transform: translateY(-10px);
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .card-img-wrapper {
+      width: 100px; height: 100px;
+      border-radius: 50%;
+      border: 3px solid rgba(255,255,255,0.3);
+      margin-bottom: 20px;
+      overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(0,0,0,0.2);
+    }
+    .card-img-wrapper i { font-size: 40px; color: #fff; }
+
+    .card-title { font-size: 22px; font-weight: 600; margin-bottom: 5px; }
+    .card-role { font-size: 14px; color: rgba(255,255,255,0.7); margin-bottom: 30px; }
+
+    .btn-glass {
+      margin-top: auto;
+      background: #ffffff; color: #020617;
+      border: none; padding: 12px 30px;
+      border-radius: 8px; font-weight: 600;
+      cursor: pointer; transition: 0.3s;
+      text-transform: uppercase; font-size: 13px; letter-spacing: 1px;
+    }
+    .btn-glass:hover {
+      background: var(--primary); color: white;
+      box-shadow: 0 0 15px var(--primary);
+    }
+
+    /* ================= PRICING SECTION ================= */
+    #planos {
+      width: 100%; text-align: center; padding: 40px 20px;
+      z-index: 10; position: relative;
+    }
+    #planos h2 { font-size: 2.8rem; font-weight: 800; margin-bottom: 10px; text-shadow: 0 2px 10px rgba(0,0,0,0.5); line-height: 1.2; }
+    #planos p { max-width: 800px; margin: 0 auto 50px; color: rgba(255,255,255,0.8); font-size: 1.1rem; }
+
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
+      gap: 20px;
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 0 10px;
+      align-items: stretch;
+    }
+
+    .price-card {
+      position: relative;
+      background: rgba(15, 23, 42, 0.6); 
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      padding: 30px 25px;
+      backdrop-filter: blur(12px);
+      transition: .3s;
+      display: flex; flex-direction: column;
+      text-align: left;
+    }
+
+    .price-card:hover { transform: translateY(-8px); box-shadow: 0 20px 40px -10px rgba(0,0,0,.6); }
+    
+    .price-card.featured {
+      border-color: var(--primary);
+      background: rgba(59, 130, 246, 0.08);
+      box-shadow: 0 0 30px rgba(59,130,246,.2);
+      transform: scale(1.02);
+      z-index: 11;
+    }
+    .price-card.featured:hover { transform: scale(1.02) translateY(-8px); }
+
+    .badge-best {
+      position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
+      background: var(--primary); color: #fff; padding: 6px 20px; border-radius: 20px;
+      font-size: .75rem; font-weight: 700; text-transform: uppercase;
+      box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+    }
+
+    .plan-title { font-size: 1.4rem; font-weight: 700; margin-bottom: 5px; }
+    .plan-desc { font-size: .85rem; color: rgba(255,255,255,.6); margin-bottom: 20px; min-height: 40px; }
+
+    .price-box { margin-bottom: 5px; }
+    .price-value { font-size: 2.2rem; font-weight: 800; color: #fff; }
+    .price-suffix { font-size: 1rem; color: rgba(255,255,255,0.6); font-weight: 400; }
+    
+    .billing-note {
+        font-size: 0.8rem;
+        color: var(--success);
+        font-weight: 500;
+        margin-bottom: 25px;
+        display: block;
+        min-height: 20px;
+    }
+
+    .feature-list { list-style: none; padding: 0; margin-bottom: 30px; text-align: left; margin-top: auto; }
+    .feature-list li { display: flex; gap: 10px; margin-bottom: 12px; font-size: .85rem; align-items: flex-start; line-height: 1.4; color: rgba(255,255,255,0.85); }
+    .feature-list li i { color: var(--primary); margin-top: 3px; font-size: 0.9rem; flex-shrink: 0; }
+    .feature-list li.disabled { color: rgba(255,255,255,0.4); }
+    .feature-list li.disabled i { color: rgba(255,255,255,0.3); }
+
+    .btn-select-plan {
+      width: 100%;
+      padding: 12px; border-radius: 10px;
+      background: transparent; color: #fff;
+      border: 1px solid rgba(255,255,255,.2); cursor: pointer;
+      transition: 0.3s; font-weight: 600; font-size: 0.9rem;
+    }
+    .btn-select-plan:hover { background: rgba(255,255,255,0.1); border-color: #fff; }
+    
+    .price-card.featured .btn-select-plan { background: var(--primary); border-color: var(--primary); }
+    .price-card.featured .btn-select-plan:hover { background: #2563eb; }
+
+    /* ================= MODAL ================= */
+    #paymentModal {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,.9); z-index: 3000;
+      align-items: center; justify-content: center;
+      backdrop-filter: blur(5px);
+    }
+    #paymentModal .modal-box {
+      background: #0f172a; padding: 30px; border-radius: 20px;
+      max-width: 420px; width: 90%; text-align: center;
+      border: 1px solid var(--glass-border);
+      box-shadow: 0 0 50px rgba(59,130,246,0.3);
+    }
+    #paymentModal button {
+      margin-top: 20px; padding: 12px 24px; border-radius: 10px;
+      border: none; background: var(--primary); color: #fff; cursor: pointer;
+      font-weight: bold; transition: 0.3s;
+    }
+    #paymentModal button:hover { transform: scale(1.05); }
+
+    /* CUBE & ANIMATIONS */
+    .cube-header-wrapper { width: 50px; height: 50px; perspective: 800px; }
+    .cube-header { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; animation: rotateCube 12s linear infinite; }
+    .cube-face { position: absolute; width: 50px; height: 50px; background: rgba(59,130,246,0.2); border: 1px solid rgba(147,197,253,0.8); display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .face-front { transform: rotateY(0deg) translateZ(25px); } .face-back { transform: rotateY(180deg) translateZ(25px); }
+    .face-right { transform: rotateY(90deg) translateZ(25px); } .face-left { transform: rotateY(-90deg) translateZ(25px); }
+    .face-top { transform: rotateX(90deg) translateZ(25px); } .face-bottom { transform: rotateX(-90deg) translateZ(25px); }
+    @keyframes rotateCube { 0% { transform: rotateX(22deg) rotateY(0deg); } 100% { transform: rotateX(22deg) rotateY(360deg); } }
+    
+    .slider-arrow { color: rgba(255,255,255,0.5); font-size: 2rem; cursor: pointer; padding: 0 20px; transition: 0.3s; }
+    .slider-arrow:hover { color: #fff; transform: scale(1.1); }
+
+    /* MEDIA QUERIES */
+    @media (max-width: 1000px) {
+      header { padding: 15px 20px; height: auto; flex-direction: column; gap: 20px; }
+      .header-nav { width: 100%; justify-content: center; padding-bottom: 5px; gap: 20px; }
+      .header-spacer { display: none; }
+      
+      .glass-slider-container {
+        flex-wrap: nowrap; justify-content: flex-start; overflow-x: auto;
+        scroll-snap-type: x mandatory; padding: 20px 20px 60px 20px; width: 100%;
+      }
+      .glass-card { min-width: 85vw; margin-right: 15px; scroll-snap-align: center; }
+      .slider-arrow { display: none; }
+      main { padding-top: 160px; }
+      
+      .pricing-grid { grid-template-columns: 1fr; max-width: 400px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="cube-header-wrapper">
+      <div class="cube-header">
+        <div class="cube-face face-front"><i class="fas fa-chart-line"></i></div>
+        <div class="cube-face face-back"><i class="fas fa-users"></i></div>
+        <div class="cube-face face-right"><i class="fas fa-project-diagram"></i></div>
+        <div class="cube-face face-left"><i class="fas fa-wallet"></i></div>
+        <div class="cube-face face-top"><i class="fas fa-cube"></i></div>
+        <div class="cube-face face-bottom"><i class="fas fa-database"></i></div>
+      </div>
+    </div>
+    <div class="brand-text">
+      <strong>Legacy Platform</strong>
+      <span>ENTERPRISE <i class="fas fa-cloud"></i> CLOUD</span>
+    </div>
+  </div>
+
+  <nav class="header-nav">
+    <a href="#" class="nav-link active"><i class="fas fa-chart-pie"></i> Dashboard</a>
+    <a href="#planos" class="nav-link"><i class="fas fa-layer-group"></i> Planos</a>
+    <a href="#" class="nav-link"><i class="fas fa-book"></i> Base/KB</a>
+    <a href="https://wa.me/5522992497662" target="_blank" class="nav-link"><i class="fas fa-headset"></i> Suporte</a>
+    <!-- BOTÃO CLIENTE ATUALIZADO PARA LINK EXTERNO -->
+    <a href="http://legacysistema.github.io/legacy-user" class="nav-link" target="_blank">
+      <i class="fas fa-user-tie"></i> Clientes
+    </a>
+  </nav>
+  
+  <div class="header-spacer"></div>
+</header>
+
+<main>
+  <div class="background-blobs">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+  </div>
+  
+  <div class="glass-slider-container">
+    <div class="slider-arrow">
+      <i class="fas fa-chevron-left"></i>
+    </div>
+
+    <div class="glass-card">
+      <div class="card-img-wrapper">
+        <i class="fas fa-users"></i>
+      </div>
+      <h3 class="card-title">Legacy Cloud CRM</h3>
+      <p class="card-role">Enterprise Edition</p>
+      <button class="btn-glass" onclick="abrirPopup('https://legacysistema.github.io/legacy-crm')">
+        Acessar Sistema
+      </button>
+    </div>
+
+    <div class="glass-card">
+      <div class="card-img-wrapper">
+        <i class="fas fa-file-signature"></i>
+      </div>
+      <h3 class="card-title">Legacy Contracts</h3>
+      <p class="card-role">Gestão de Contratos</p>
+      <button class="btn-glass" onclick="abrirPopup('https://legacysistema.github.io/legacy-contrato')">
+        Acessar Sistema
+      </button>
+    </div>
+
+    <div class="glass-card">
+      <div class="card-img-wrapper">
+        <i class="fas fa-clipboard-check"></i>
+      </div>
+      <h3 class="card-title">Legacy Forms</h3>
+      <p class="card-role">Gestão de Formulários</p>
+      <button class="btn-glass" onclick="abrirPopup('https://legacysistema.github.io/legacy-form')">
+        Acessar Sistema
+      </button>
+    </div>
+
+    <div class="slider-arrow">
+      <i class="fas fa-chevron-right"></i>
+    </div>
+  </div>
+
+  <section id="planos">
+    <h2>Seu negócio não pode viver preso no WhatsApp.<br>Nem desaparecer quando você troca de celular.</h2>
+    <p>Com a Legacy você organiza clientes, conversas, financeiro, agenda e contratos em um sistema em nuvem seguro, para você nunca mais perder informações ou oportunidades.</p>
+    
+    <div class="pricing-grid">
+      <div class="price-card">
+        <h3 class="plan-title">SaaS Flex</h3>
+        <p class="plan-desc">Para quem busca liberdade sem fidelidade longa.</p>
+        <div class="price-box">
+          <span class="price-value">R$ 60</span><span class="price-suffix">/mês</span>
+        </div>
+        <span class="billing-note">Cobrança recorrente mensal</span>
+        <ul class="feature-list">
+          <li><i class="fas fa-check-circle"></i> Acesso Multi-device Android e Pc</li>
+          <li><i class="fas fa-rocket"></i> Implantação guiada</li>
+          <li><i class="fas fa-clock"></i> 3 Tickets Suporte/mês</li>
+          <li class="disabled"><i class="fas fa-ban"></i> Sem fidelidade</li>
+        </ul>
+        <button class="btn-select-plan" onclick="openPayment('SaaS Flex Mensal', 60)">Assinar Mensal</button>
+      </div>
+
+      <div class="price-card">
+        <h3 class="plan-title">Starter</h3>
+        <p class="plan-desc">O pacote inicial ideal para organizar a casa.</p>
+        <div class="price-box">
+          <span class="price-value">R$150</span><span class="price-suffix">Pgto único</span>
+        </div>
+        <span class="billing-note">Equivalente a R$50/mês</span>
+        <ul class="feature-list">
+          <li><i class="fas fa-check-circle"></i> Acesso Multi-device Android e Pc</li>
+          <li><i class="fas fa-laptop-code"></i> Implantação Guiada</li>
+          <li><i class="fas fa-ticket-alt"></i> 5 Tickets Suporte/mês</li>
+        </ul>
+        <button class="btn-select-plan" onclick="openPayment('Starter Trimestral', 150)">Assinar Trimestral</button>
+      </div>
+
+      <div class="price-card featured">
+        <div class="badge-best">MAIS POPULAR</div>
+        <h3 class="plan-title">Manager <i class="fas fa-crown" style="color: #facc15;"></i></h3>
+        <p class="plan-desc">Gestão completa e suporte estendido.</p>
+        <div class="price-box">
+          <span class="price-value">R$600</span><span class="price-suffix">Pgto único</span>
+        </div>
+        <span class="billing-note">Equivalente a R$50/mês</span>
+        <ul class="feature-list">
+        <li><i class="fas fa-check-circle"></i> Acesso Multi-device Android e Pc</li>
+          <li><i class="fas fa-laptop-code"></i> Implantação com o usuário</li>
+          <li><i class="fas fa-ticket-alt"></i> 8 Tickets Suporte/mês</li>
+        </ul>
+        <button class="btn-select-plan" onclick="openPayment('Manager Anual', 600)">Assinar Anual</button>
+      </div>
+
+      <div class="price-card">
+        <h3 class="plan-title">Controller</h3>
+        <p class="plan-desc">Equilíbrio perfeito entre custo e prazo.</p>
+        <div class="price-box">
+          <span class="price-value">R$300</span><span class="price-suffix">Pgto único</span>
+        </div>
+        <span class="billing-note">Equivalente a R$50/mês</span>
+        <ul class="feature-list">
+          <li><i class="fas fa-check-circle"></i> Acesso Multi-device Android e Pc</li>
+          <li><i class="fas fa-laptop-code"></i> Implantação Guiada</li>
+          <li><i class="fas fa-ticket-alt"></i> 5 Tickets Suporte/mês</li>
+        </ul>
+        <button class="btn-select-plan" onclick="openPayment('Controller Semestral', 300)">Assinar Semestral</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- Modal de Pagamento Original -->
+<div id="paymentModal">
+  <div class="modal-box">
+    <div style="font-size: 3rem; color: var(--primary); margin-bottom: 15px;">
+      <i class="fas fa-shopping-cart"></i>
+    </div>
+    <h3>Confirmar Assinatura</h3>
+    <p style="margin: 10px 0; color: rgba(255,255,255,0.7);">Você selecionou o plano:</p>
+    <h2 id="modalPlanName" style="color: #fff; margin-bottom: 5px;"></h2>
+    <strong id="modalPrice" style="font-size: 1.5rem; color: var(--success); display: block; margin-bottom: 20px;"></strong>
+    <p style="font-size: 0.8rem; margin-bottom: 20px;">Você será redirecionado para finalizar a contratação via WhatsApp.</p>
+    <div style="display: flex; gap: 10px; justify-content: center;">
+      <button onclick="closePayment()" style="background: transparent; border: 1px solid rgba(255,255,255,0.3);">Cancelar</button>
+      <button onclick="confirmarAssinatura()">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ==================== SISTEMA EXISTENTE (NÃO ALTERAR) ====================
+  let planoSelecionado = "";
+  let valorSelecionado = "";
+
+  function abrirPopup(url) {
+    const width = window.innerWidth * 0.9;
+    const height = window.innerHeight * 0.9;
+    const left = (window.innerWidth - width) / 2;
+    const top = (window.innerHeight - height) / 2;
+    const features = `width=${width},height=${height},top=${top},left=${left},resizable=yes,scrollbars=yes`;
+    window.open(url, 'LegacySystemPopup', features);
+  }
+
+  const modal = document.getElementById('paymentModal');
+  const modalName = document.getElementById('modalPlanName');
+  const modalPrice = document.getElementById('modalPrice');
+
+  function openPayment(name, price) {
+    planoSelecionado = name;
+    valorSelecionado = price;
+    modalName.innerText = name;
+    modalPrice.innerText = 'Total: R$ ' + price + ',00';
+    modal.style.display = 'flex';
+  }
+
+  function closePayment() {
+    modal.style.display = 'none';
+  }
+
+  function confirmarAssinatura() {
+    const telefone = "5522992497662";
+    const mensagem = encodeURIComponent(`Olá! Gostaria de assinar o plano ${planoSelecionado} no valor de R$ ${valorSelecionado},00.`);
+    window.open(`https://wa.me/${telefone}?text=${mensagem}`, '_blank');
+    closePayment();
+  }
+
+  window.onclick = function(event) {
+    if (event.target == modal) closePayment();
+  }
+</script>
+
+</body>
+</html>
